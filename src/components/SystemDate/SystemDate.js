@@ -27,12 +27,22 @@ class SystemDate extends Component {
     const formattedDate = this.state.formattedDate;
     return (
       <Row className={styles.h100}>
-        <Col span={24} className={styles.h50}>
-          {`${formattedDate.hours}:${formattedDate.minutes}:${formattedDate.seconds}`}
+        <Col
+          span={24}
+          className={[styles.textFormat, styles.h50].join(" ")}
+        >
+          <span>
+            {`${formattedDate.hours}:${formattedDate.minutes}:${formattedDate.seconds}`}
+          </span>
         </Col>
 
-        <Col span={24} className={styles.h50}>
-          {`${formattedDate.weekdayName}, ${formattedDate.month} ${formattedDate.weekdayNumber}, ${formattedDate.year}`}
+        <Col
+          span={24}
+          className={[styles.textFormat, styles.h50].join(" ")}
+        >
+          <span>
+            {`${formattedDate.weekdayName}, ${formattedDate.month} ${formattedDate.weekdayNumber}, ${formattedDate.year}`}
+          </span>
         </Col>
       </Row>
     )

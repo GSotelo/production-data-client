@@ -5,3 +5,13 @@
 .h50 {
   height: 50%;
 }
+
+.textFormat {
+  align-items: center;
+  color: #fff;
+  display: flex !important;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 1rem;
+  font-weight: bold;
+  justify-content: center;
+}

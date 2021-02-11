@@ -4,24 +4,23 @@
 }
 
 .header {
-  background-color: lawngreen;
+  background-color: #0071be;
   height: 7%;
 }
 
 .main {
-  background-color: lightcoral;
   display: flex;
   height: 92%;
 }
 
 .sideBar {
-  background-color: black;
+  background-color: #fff;
   height: 100%;
   width: 15%;
 }
 
 .screen {
-  background-color: blue;
+  background-color: #f5f8fa;
   height: 100%;
   width: 85%;
 }

@@ -9,11 +9,10 @@ class App extends Component {
     return (
       <div className={styles.app}>
         <header className={styles.header}>
-          <TopBar 
-            logo='logo'
-            close='close'
-          
-
+          <TopBar
+            brandLogo='logo'
+            currentDate={<SystemDate />}
+            closeButton='close'
           />
         </header>
         <main className={styles.main}>
