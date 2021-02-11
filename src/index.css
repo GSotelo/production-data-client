@@ -1,0 +1,17 @@
+/*
+* Current style applies ONLY for "index.js"
+*/
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body, #root {
+  height: 100vh;
+}
+
+.h50{
+  height: 50%;
+}

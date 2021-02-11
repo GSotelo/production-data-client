@@ -1,0 +1,28 @@
+.app {
+  height: 100%;
+}
+
+.header {
+  height: 7%;
+  background-color: lightpink;
+}
+
+.sideBar {
+  height: 100%;
+  background-color: red;
+}
+
+.screen {
+  height: 100%;
+  background-color: purple;
+}
+
+.footer {
+  background-color: #0071be;
+  height: 1rem;
+  padding: 0;
+}
+
+.h50{
+  height: 50% !important;
+}
