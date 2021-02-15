@@ -5,8 +5,10 @@ import styles from "./SystemDate.module.css";
 
 class SystemDate extends Component {
 
-  // State management
-  state = { currentDate: new Date(), formattedDate: {} }
+  state = { 
+    currentDate: new Date(), 
+    formattedDate: {} 
+  }
 
   componentDidMount() {
     this.timerID = setInterval(() => {
@@ -31,7 +33,7 @@ class SystemDate extends Component {
           span={24}
           className={[styles.textFormat, styles.h50].join(" ")}
         >
-          <span>
+          <span className={styles.alignBottom}>
             {`${formattedDate.hours}:${formattedDate.minutes}:${formattedDate.seconds}`}
           </span>
         </Col>
@@ -40,7 +42,7 @@ class SystemDate extends Component {
           span={24}
           className={[styles.textFormat, styles.h50].join(" ")}
         >
-          <span>
+          <span className={styles.alignTop}>
             {`${formattedDate.weekdayName}, ${formattedDate.month} ${formattedDate.weekdayNumber}, ${formattedDate.year}`}
           </span>
         </Col>

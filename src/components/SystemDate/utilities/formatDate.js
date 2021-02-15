@@ -14,19 +14,19 @@ const months = [
 ];
 
 const days = [
+  "Sunday",
   "Monday",
   "Tuesday",
   "Wednesday",
   "Thursday",
   "Friday",
-  "Saturday",
-  "Sunday",
+  "Saturday"
 ];
 
 export const formatDate = (date) => {
   if (date instanceof Date) {
     const weekdayName = days[date.getDay()];
-    const weekdayNumber = date.getDay();
+    const weekdayNumber = date.getDate();
     const month = months[date.getMonth()];
     const year = date.getFullYear();
     const hours = date.getHours();

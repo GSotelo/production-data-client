@@ -1,0 +1,44 @@
+.menu {
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.submenu {
+  background-color: #f5f8fa;
+  color: #33475b;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.item {
+  color: #33475b;
+  font-weight: normal;
+  font-size: 0.9rem;
+  letter-spacing: 0.09px;
+}
+
+.menu :global(.ant-menu-item-selected) {
+  background-color: #e5f2fa !important;
+}
+
+.menu :global(.ant-menu-sub.ant-menu-inline) {
+  background-color: #fff !important;
+}
+
+.menu :global(.ant-menu-submenu-selected), .menu :global(.ant-menu-item-selected) {
+  color: #0071be !important;
+}
+
+.menu :global(.ant-menu-item::after) {
+  border:2px solid #0071be !important
+}
+
+@media only screen and (max-width:900px) {
+  .submenu {
+    font-size: 0.8rem;
+  }
+  .item {
+    font-size: 0.8rem;
+  }
+}

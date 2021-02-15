@@ -4,7 +4,7 @@ import styles from "./TopBar.module.css";
 
 const TopBar = (props) => {
   return (
-    <Row className={styles.h100} align="bottom">
+    <Row className={styles.h100}>
       {
         Object.entries(props).map(([key, value]) =>
           <Col

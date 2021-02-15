@@ -1,33 +1,3 @@
 .app {
-  background-color: lightcoral;
   height: 100%;
-}
-
-.header {
-  background-color: #0071be;
-  height: 7%;
-}
-
-.main {
-  display: flex;
-  height: 92%;
-}
-
-.sideBar {
-  background-color: #fff;
-  height: 100%;
-  width: 15%;
-}
-
-.screen {
-  background-color: #f5f8fa;
-  height: 100%;
-  width: 85%;
-}
-
-.footer {
-  background-color: #0071be;
-  height: 1%;
-  margin: 0;
-  padding: 0;
 }
