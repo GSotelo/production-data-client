@@ -1,0 +1,130 @@
+.freshPowder {
+  height: 100%;
+  width: 100%;
+  padding: 0.5rem;
+}
+
+/*
+* Top layout configuration
+*/
+
+.top {
+  display: flex;
+  height: 50%;
+  padding-bottom: 0.5rem;
+}
+
+.top .trendBox {
+  width: 66.67%;
+  height: 100%;
+  padding-right: 0.25rem;
+}
+
+.top .deckBox {
+  width: 33.33%;
+  height: 100%;
+  padding-left: 0.25rem;
+}
+
+/*
+* General height configuration for each graph container
+*/
+
+.freshPowder :global(.graphContainer .titleBox) {
+  height: 10%;
+}
+
+.freshPowder :global(.graphContainer .controlBox) {
+  height: 16.67%;
+}
+
+.freshPowder :global(.graphContainer .graphBox) {
+  height: 73.33%;
+}
+
+.freshPowder .bottom .deckBox :global(.graphContainer .graphBox) {
+  height: 90%;
+}
+
+/*
+* Total sprayed powder trend
+*/
+
+.freshPowder .top .trendBox :global(.graphContainer .controlBox) {
+  width: 50%;
+}
+
+.freshPowder .top .trendBox :global(.graphContainer .titleBox .wa) {
+  width: 4.5%;
+}
+
+.freshPowder .top .trendBox :global(.graphContainer .titleBox .wb) {
+  width: 95.5%;
+}
+
+/*
+* Total sprayed powder deck / Spectrum HD trend
+*/
+
+.freshPowder .top .deckBox :global(.graphContainer .titleBox .wa), .freshPowder .bottom .trendBox :global(.graphContainer .titleBox .wa) {
+  width: 9%;
+}
+
+.freshPowder .top .deckBox :global(.graphContainer .titleBox .wb), .freshPowder .bottom .trendBox :global(.graphContainer .titleBox .wb) {
+  width: 91%;
+}
+
+.freshPowder .bottom .deckBox :global(.graphContainer .titleBox .wa){
+  width: 18%;
+}
+
+.freshPowder .bottom .deckBox :global(.graphContainer .titleBox .wb){
+  width: 82%;
+}
+
+/*
+* Big bag trend
+*/
+
+.freshPowder .bottom .trendBox :global(.graphContainer .titleBox .wx) {
+  width: 9%;
+}
+
+.freshPowder .bottom .trendBox :global(.graphContainer .titleBox .wy) {
+  width: 61%;
+}
+
+.freshPowder .bottom .trendBox :global(.graphContainer .titleBox .wz) {
+  width: 30%;
+}
+
+/*
+* Bottom layout configuration
+*/
+
+.bottom {
+  display: flex;
+  height: 50%;
+}
+
+.bottom .trendBox {
+  height: 100%;
+  width: 33.33%;
+  padding-right: 0.5rem;
+}
+
+.bottom .deckBox {
+  height: 100%;
+  width: 16.6%;
+}
+
+.foo {
+  height: 100%;
+  width: 100%;
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.1)
+}
+
+.prx {
+  padding-left: 0.5rem;
+}

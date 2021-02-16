@@ -1,5 +1,5 @@
 .header {
-  background-color: #0071be;
+  background-color: var(--color-nordson-blue);
   height: 7%;
 }
 
@@ -15,14 +15,14 @@
 }
 
 .screen {
-  background-color: #f5f8fa;
+  background-color: var(--color-gypsum);
   display: flex;
   height: 100%;
   width: 83%;
 }
 
 .footer {
-  background-color: #0071be;
+  background-color: var(--color-nordson-blue);
   height: 1%;
   margin: 0;
   padding: 0;

@@ -1,0 +1,31 @@
+.customChart {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.customChart .top {
+  height: 100%;
+  width: 71%;
+}
+
+.customChart .bottom {
+  height: 100%;
+  width: 25%;
+  display: flex;
+  align-items: center;
+}
+
+.customChart .bottom :global(.cardWithFooter) {
+  height: 70%;
+}
+
+.customCard {
+  height: 67%;
+  width: 50%;
+}
+
+.customCard :global(.cardWithoutFooter .content .value) {
+  font-size: 2.6rem;
+}

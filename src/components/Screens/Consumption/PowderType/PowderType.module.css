@@ -1,0 +1,59 @@
+.powderType {
+  height: 100%;
+  width: 100%;
+  padding: 0.5rem;
+}
+
+.left {
+  height: 100%;
+  width: 66.7%;
+}
+
+.left .top {
+  height: 50%;
+  padding-bottom: 0.5rem;
+  padding-right: 0.25rem;
+}
+
+.left .bottom {
+  height: 50%;
+  height: 50%;
+  padding-right: 0.25rem;
+}
+
+.left :global(.titleBox) {
+  height: 10%;
+}
+
+.left :global(.controlBox) {
+  height: 16.67%;
+  width: 66.67%;
+}
+
+.left :global(.graphBox) {
+  height: 73.33%;
+}
+
+.left :global(.titleBox) :global(.wx) {
+  width: 5%;
+}
+
+.left :global(.titleBox) :global(.wy) {
+  width: 76.3%;
+}
+
+.left :global(.titleBox) :global(.wz) {
+  width: 18.7%;
+}
+
+.right {
+  height: 100%;
+  width: 33.3%;
+}
+
+.full {
+  background-color: #fff;
+  border: 1px solid var(--color-light-gray);
+  height: 100%;
+  width: 100%;
+}

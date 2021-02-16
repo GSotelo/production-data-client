@@ -1,28 +1,15 @@
 import React, { Suspense } from "react";
 import ErrorBoundary from "../ErrorBoundary/ErrorBoundary";
-import { Switch, Route } from "react-router-dom";
-import { Monitoring } from "./utilities/lazyLoad";
-import routeCategories from "./utilities/routes";
 import { Spin } from 'antd';
+import { Switch } from "react-router-dom";
 
-const Screen = () => (
+import Routes from "./Routes";
+
+const Screen = (props) => (
   <ErrorBoundary>
     <Suspense fallback={<Spin size="large" />}>
       <Switch>
-        <Route exact path="/">
-          <Monitoring />
-        </Route>
-        {
-          routeCategories.map(routeCategory => routeCategory.map(
-            route =>
-              <Route
-                key={route.key}
-                path={route.path}
-              >
-                {route.screen}
-              </Route>
-          ))
-        }
+        <Routes />
       </Switch>
     </Suspense>
   </ErrorBoundary>

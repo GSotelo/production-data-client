@@ -1,4 +1,59 @@
 .monitoring {
-  height: 5%;
-  width: 15%;
+  height: 100%;
+  width: 100%;
+}
+
+.left {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 0.5rem;
+  width: 33%;
+}
+
+.right {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 0.5rem;
+  padding-left: 0;
+  width: 67%;
+}
+
+.left>div {
+  height: 33.3%;
+  padding-bottom: 0.5rem;
+}
+
+.right>div {
+  height: 50%;
+  padding-bottom: 0.5rem;
+  width: 100%;
+}
+
+.group {
+  padding: 0;
+}
+
+.group>div {
+  height: 100%;
+  display: flex;
+  padding-right: 0;
+}
+
+.group>div>div {
+  width: 50%;
+  padding-right: 0.5rem;
+}
+
+.group>div>div:last-child {
+  padding-right: 0;
+}
+
+.pr0 {
+  padding-right: 0 !important;
+}
+
+.pb0 {
+  padding-bottom: 0 !important;
 }
