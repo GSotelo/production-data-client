@@ -17,13 +17,45 @@ class SprayedPowder extends Component {
 
   // TEST
   state = {
-    user: {},
+    user1: {},
+    user2: {},
+    data:{}
   }
 
   // Method to update state
-  setUser = (user,id) => {
-    console.log("[GENERAL]: Updating user with id:", id);
+  setUser = (user, id) => {
+    console.log("[GENERAL]: ID:", id, ",USER: ", user);
+    
+    if(id==="SPCT" && user.type === "day") {
+      console.log("AXIOS TO SPCT DAY");
+    }
+
+    if(id==="SPCT" && user.type === "week") {
+      console.log("AXIOS TO SPCT WEEK");
+    }
+   
+    if(id==="SPCT" && user.type === "month") {
+      console.log("AXIOS TO SPCT MONTH");
+    }
+   
+    if(id==="SPCR" && user.type === "day") {
+      console.log("AXIOS TO SPCR DAY");
+    }
+   
+    if(id==="SPCR" && user.type === "week") {
+      console.log("AXIOS TO SPCR WEEK");
+    }
+   
+    if(id==="SPCR" && user.type === "month") {
+      console.log("AXIOS TO SPCR MONTH");
+    }
+   
+   
+    
+    
+
     this.setState((prevState) => ({ user }))
+
   }
 
 
@@ -166,16 +198,13 @@ class SprayedPowder extends Component {
 
 
 
-    //const user = { name: 'Tania', loggedIn: true }
-
-
     return (
       <Row className={styles.sprayedPowder}>
         <Col className={styles.left}>
           <div className={styles.top}>
 
 
-            <ThemeContext.Provider value={{ user: this.state.user, setUser: this.setUser, id: "SPCT" }}>
+            <ThemeContext.Provider value={{ user: this.state.user1, setUser: this.setUser, id: "SPCT" }}>
               <GraphContainer {...propsSPCT} graph={graphSPCT} />
             </ThemeContext.Provider>
 
@@ -184,9 +213,10 @@ class SprayedPowder extends Component {
 
           <div className={styles.bottom}>
 
-            {/* <ThemeContext.Provider value={{ user: this.state.user, setUser: this.setUser, id: "SPCR" }}>
-            </ThemeContext.Provider> */}
+            <ThemeContext.Provider value={{ user: this.state.user2, setUser: this.setUser, id: "SPCR" }}>
               <GraphContainer {...propsSPCR} graph={graphSPCR} dropdown={dropdownSPCR} />
+            </ThemeContext.Provider>
+            {/* <GraphContainer {...propsSPCR} graph={graphSPCR} dropdown={dropdownSPCR} /> */}
 
           </div>
         </Col>

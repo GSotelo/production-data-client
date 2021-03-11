@@ -6,7 +6,7 @@ const HorizontalCards = ({ cards }) => {
   return (
     <div className="deck">
       {
-        cards.map(card => <div className="cardBox">{card}</div>)
+        cards.map((card, index) => <div key={index} className="cardBox">{card}</div>)
       }
     </div>
   );

@@ -10,7 +10,7 @@ const ControlButtons = (props) => {
     <Fragment>
       {
         types.map(type =>
-          <Col className={[styles.col, styles.w12].join(" ")}>
+          <Col key={type} className={[styles.col, styles.w12].join(" ")}>
             <ControlButton type={type} />
           </Col>
         )

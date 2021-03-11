@@ -14,19 +14,17 @@ const ControlButton = ({ type }) => {
 
   const { user, setUser, id } = useContext(ThemeContext);
 
-  console.log(user, id);
-
+ 
 
   return (
     <div
       className={styles.controlButton}
-     
-    >
-      {type === "day" && <Day  onClick={(e) => {
+      onClick={() => {
         const newUser = { type }
-        console.log(e.target)
-        setUser(newUser,id);
-      }} />}
+        setUser(newUser, id);
+      }}
+    >
+      {type === "day" && <Day />}
       {type === "week" && <Week />}
       {type === "month" && <Month />}
     </div>
