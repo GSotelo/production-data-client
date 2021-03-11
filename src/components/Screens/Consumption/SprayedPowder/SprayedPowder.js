@@ -9,9 +9,27 @@ import { Row, Col } from "antd";
 import { propsSPCT, propsSPCTC, propsSPCR, propsSPCRC } from "./utilities/props";
 import styles from "./SprayedPowder.module.css";
 
+
+// TEST MODE
+import { ThemeContext } from "./utilities/context";
+
 class SprayedPowder extends Component {
 
+  // TEST
+  state = {
+    user: {},
+  }
+
+  // Method to update state
+  setUser = (user,id) => {
+    console.log("[GENERAL]: Updating user with id:", id);
+    this.setState((prevState) => ({ user }))
+  }
+
+
+
   render() {
+
     // Dropdown options: Sprayed powder calculated recipe
     const optionsSPCR = [
       { key: 1, text: 'RE1', value: 1 },
@@ -146,15 +164,30 @@ class SprayedPowder extends Component {
     ];
     const cardsSPCRC = dataSPCRC.map(el => <CustomCard {...el} />);
 
+
+
+    //const user = { name: 'Tania', loggedIn: true }
+
+
     return (
       <Row className={styles.sprayedPowder}>
         <Col className={styles.left}>
           <div className={styles.top}>
-            <GraphContainer {...propsSPCT} graph={graphSPCT} />
+
+
+            <ThemeContext.Provider value={{ user: this.state.user, setUser: this.setUser, id: "SPCT" }}>
+              <GraphContainer {...propsSPCT} graph={graphSPCT} />
+            </ThemeContext.Provider>
+
+
           </div>
 
           <div className={styles.bottom}>
-            <GraphContainer {...propsSPCR} graph={graphSPCR} dropdown={dropdownSPCR} />
+
+            {/* <ThemeContext.Provider value={{ user: this.state.user, setUser: this.setUser, id: "SPCR" }}>
+            </ThemeContext.Provider> */}
+              <GraphContainer {...propsSPCR} graph={graphSPCR} dropdown={dropdownSPCR} />
+
           </div>
         </Col>
 
