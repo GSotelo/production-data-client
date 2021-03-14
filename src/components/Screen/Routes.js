@@ -22,7 +22,7 @@ const productionCategory = [
   {
     key: "production-r1",
     path: "/production/monitoring",
-    screen: <Monitoring />
+   screen: <Monitoring />
   },
   {
     key: "production-r2",
@@ -81,12 +81,12 @@ const qualityCategory = [
   {
     key: "quality-r1",
     path: "/quality/coatmaster_flex",
-    screen: <CoatmasterFlex />
+   screen: <CoatmasterFlex />
   },
   {
     key: "quality-r2",
     path: "/quality/coatmaster_3d",
-    screen: <Coatmaster3D />
+  screen: <Coatmaster3D />
   }
 ];
 
@@ -94,7 +94,7 @@ const efficiencyCategory = [
   {
     key: "efficiency-r1",
     path: "/efficiency/performance",
-    screen: <Performance />
+   screen: <Performance />
   }
 ];
 

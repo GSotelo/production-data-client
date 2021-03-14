@@ -26,8 +26,22 @@ const CustomChart = ({ data, id }) => {
   if (id === "SPCT") layout = layoutSPCT;
   if (id === "SPCR") layout = layoutSPCR;
 
+  const defaultLineData = [
+    {
+      id,
+      data: [{ x: new Date().toISOString(), y: 0 }]
+    }
+  ];
+
+  /**
+   *  If express server provides no data, then use the default one.
+   *  If no default value, the line chart crashes because
+   *  of the time scale defined for the x-axis
+   */
+  const lineData = data[0].data.length > 0 ? data : defaultLineData;
+
   return (
-    <Line {...layout} data={data} />
+    <Line {...layout} data={lineData} />
   );
 };
 

@@ -5,158 +5,73 @@ import HorizontalCards from "../../../UI/Cards/HorizontalCards/HorizontalCards";
 import GraphContainer from "../../../Container/GraphContainer";
 import CustomCard from "../../../UI/Card/CustomCard/CustomCard";
 import { Row, Col } from "antd";
-
 import { propsSPCT, propsSPCTC, propsSPCR, propsSPCRC } from "./utilities/props";
 import styles from "./SprayedPowder.module.css";
 
-
 // TEST MODE
-import { ThemeContext } from "./utilities/context";
+import { GraphContext } from "../../../Context/GraphContext";
+import { connectAPI, getFilenameEndpoint } from "./utilities/requestData";
+import { dropdownOptionsSPCR } from "./configuration/dropdownOptions";
+
 
 class SprayedPowder extends Component {
-
-  // TEST
+  
   state = {
-    user1: {},
-    user2: {},
-    data:{}
+    api: {
+      dataSPCT: [],
+      dataSPCR: []
+    },
+    dropdown: {
+      currentValue: 1
+    }
   }
 
-  // Method to update state
-  setUser = (user, id) => {
-    console.log("[GENERAL]: ID:", id, ",USER: ", user);
-    
-    if(id==="SPCT" && user.type === "day") {
-      console.log("AXIOS TO SPCT DAY");
-    }
+  /**
+   * Dropdown value property points to one specific recipe file
+   */
+  updateDropdownSelection = (e, { value }) => this.setState({ dropdown: { currentValue: value } })
 
-    if(id==="SPCT" && user.type === "week") {
-      console.log("AXIOS TO SPCT WEEK");
-    }
-   
-    if(id==="SPCT" && user.type === "month") {
-      console.log("AXIOS TO SPCT MONTH");
-    }
-   
-    if(id==="SPCR" && user.type === "day") {
-      console.log("AXIOS TO SPCR DAY");
-    }
-   
-    if(id==="SPCR" && user.type === "week") {
-      console.log("AXIOS TO SPCR WEEK");
-    }
-   
-    if(id==="SPCR" && user.type === "month") {
-      console.log("AXIOS TO SPCR MONTH");
-    }
-   
-   
-    
-    
+  /**
+   * Send "GET" and "POST" request to "express" server
+   */
+  requestData = async (id, timeRange) => {
 
-    this.setState((prevState) => ({ user }))
+    // Check if "timeRange" is an array or a string
+    const requestByDatepicker = timeRange instanceof Array;
 
+    // Get endpoint and filename for API requests
+    const recipe = this.state.dropdown.currentValue;
+    const { filename, endpoint } = getFilenameEndpoint(id, timeRange, recipe);
+
+    // Perform API requests. Then Filter data according to "Line" graph
+    let filteredData;
+    if (!requestByDatepicker) filteredData = await connectAPI.get(endpoint);
+    if (requestByDatepicker) filteredData = await connectAPI.post("/", { filename, timeRange });
+
+    // Update state based on data from API
+    const selector = `data${id}`;
+    this.setState(prevState => {
+      const nextUpdate = { ...prevState };
+      nextUpdate.api[selector] = filteredData;
+      return { nextUpdate };
+    });
   }
-
-
 
   render() {
+    const { dataSPCT, dataSPCR } = this.state.api;
 
-    // Dropdown options: Sprayed powder calculated recipe
-    const optionsSPCR = [
-      { key: 1, text: 'RE1', value: 1 },
-      { key: 2, text: 'RE2', value: 2 },
-      { key: 3, text: 'RE3', value: 3 },
-      { key: 4, text: 'RE4', value: 4 }
-    ];
-    // Dropdown: Sprayed powder calculated recipe
-    const dropdownSPCR = <Dropdown options={optionsSPCR} />
-    // Dropdown: Sprayed powder calculated recipe card
-    const dropdownSPCRC = <Dropdown options={optionsSPCR} />
+    /**
+     * Dropdowns: Sprayed powder calculated (trend/cards)
+     */ 
+    const dropdownSPCR = <Dropdown options={dropdownOptionsSPCR} />
+    const dropdownSPCRC = <Dropdown options={dropdownOptionsSPCR} />
 
-    // Data for SPCT
-    const dataSPCT = [
-      {
-        id: 'Total',
-        data: [
-          { x: '2021-01-01', y: 7 },
-          { x: '2021-01-02', y: 5 },
-          { x: '2021-01-03', y: 11 },
-          { x: '2021-01-04', y: 9 },
-          { x: '2021-01-05', y: 12 },
-          { x: '2021-01-06', y: 16 },
-          { x: '2021-01-07', y: 3 },
-          { x: '2021-01-08', y: 13 },
-          { x: '2021-01-09', y: 13 },
-          { x: '2021-01-10', y: 13 },
-          { x: '2021-01-11', y: 7 },
-          { x: '2021-01-12', y: 5 },
-          { x: '2021-01-13', y: 11 },
-          { x: '2021-01-14', y: 9 },
-          { x: '2021-01-15', y: 12 },
-          { x: '2021-01-16', y: 16 },
-          { x: '2021-01-17', y: 13 },
-          { x: '2021-01-18', y: 3 },
-          { x: '2021-01-19', y: 13 },
-          { x: '2021-01-20', y: 3 },
-          { x: '2021-01-21', y: 7 },
-          { x: '2021-01-22', y: 5 },
-          { x: '2021-01-23', y: 11 },
-          { x: '2021-01-24', y: 9 },
-          { x: '2021-01-25', y: 12 },
-          { x: '2021-01-26', y: 16 },
-          { x: '2021-01-27', y: 13 },
-          { x: '2021-01-28', y: 13 },
-          { x: '2021-01-29', y: 13 },
-          { x: '2021-01-30', y: 11 },
-        ]
-      }
-    ];
+    /**
+     * Graphs for containers
+     */
+    const graphSPCT = <Chart id="SPCT" data={[{ id: "Total", data: dataSPCT }]} />;
+    const graphSPCR = <Chart id="SPCR" data={[{ id: "Recipe", data: dataSPCR }]} />;
 
-    // Data for SPCR
-    const dataSPCR = [
-      {
-        id: 'Recipe',
-        data: [
-          { x: '2021-01-01', y: 17 },
-          { x: '2021-01-02', y: 5 },
-          { x: '2021-01-03', y: 1 },
-          { x: '2021-01-04', y: 9 },
-          { x: '2021-01-05', y: 2 },
-          { x: '2021-01-06', y: 16 },
-          { x: '2021-01-07', y: 3 },
-          { x: '2021-01-08', y: 13 },
-          { x: '2021-01-09', y: 13 },
-          { x: '2021-01-10', y: 16 },
-          { x: '2021-01-11', y: 7 },
-          { x: '2021-01-12', y: 5 },
-          { x: '2021-01-13', y: 1 },
-          { x: '2021-01-14', y: 6 },
-          { x: '2021-01-15', y: 2 },
-          { x: '2021-01-16', y: 16 },
-          { x: '2021-01-17', y: 11 },
-          { x: '2021-01-18', y: 3 },
-          { x: '2021-01-19', y: 13 },
-          { x: '2021-01-20', y: 3 },
-          { x: '2021-01-21', y: 7 },
-          { x: '2021-01-22', y: 5 },
-          { x: '2021-01-23', y: 11 },
-          { x: '2021-01-24', y: 9 },
-          { x: '2021-01-25', y: 12 },
-          { x: '2021-01-26', y: 16 },
-          { x: '2021-01-27', y: 11 },
-          { x: '2021-01-28', y: 13 },
-          { x: '2021-01-29', y: 3 },
-          { x: '2021-01-30', y: 16 },
-        ]
-      }
-    ];
-
-    // Graph: SPCT
-    const graphSPCT = <Chart id="SPCT" data={dataSPCT} />;
-
-    // Graph: SPCR
-    const graphSPCR = <Chart id="SPCR" data={dataSPCR} />;
 
     // Horizontal cards: SPCTC
     const dataSPCTC = [
@@ -196,28 +111,36 @@ class SprayedPowder extends Component {
     ];
     const cardsSPCRC = dataSPCRC.map(el => <CustomCard {...el} />);
 
+    /**
+     * Context values
+     */
+    const contextValueSPCT = {
+      id: "SPCT", 
+      requestData: this.requestData
+    };
 
+    const contextValueSPCR = {
+      id: "SPCR",
+      stateDropdown: this.state.dropdown.currentValue,
+      requestData: this.requestData,
+      updateDropdownSelection: this.updateDropdownSelection
+    };
+
+    console.log(this.state.dropdown.currentValue);
 
     return (
       <Row className={styles.sprayedPowder}>
         <Col className={styles.left}>
           <div className={styles.top}>
-
-
-            <ThemeContext.Provider value={{ user: this.state.user1, setUser: this.setUser, id: "SPCT" }}>
+            <GraphContext.Provider value={contextValueSPCT}>
               <GraphContainer {...propsSPCT} graph={graphSPCT} />
-            </ThemeContext.Provider>
-
-
+            </GraphContext.Provider>
           </div>
 
           <div className={styles.bottom}>
-
-            <ThemeContext.Provider value={{ user: this.state.user2, setUser: this.setUser, id: "SPCR" }}>
+            <GraphContext.Provider value={contextValueSPCR}>
               <GraphContainer {...propsSPCR} graph={graphSPCR} dropdown={dropdownSPCR} />
-            </ThemeContext.Provider>
-            {/* <GraphContainer {...propsSPCR} graph={graphSPCR} dropdown={dropdownSPCR} /> */}
-
+            </GraphContext.Provider>
           </div>
         </Col>
 

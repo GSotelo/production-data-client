@@ -9,16 +9,16 @@ const CustomSymbol = ({ size, borderWidth, borderColor }) => (
   </g>
 );
 
-export const axisBottom = {
-  format: '%b %d',
-  legendOffset: 20,
-  legendPosition: 'middle',
-  tickPadding: 500,
-};
-
 export const axisLeft = {
   legendOffset: -43,
   legendPosition: 'middle',
+};
+
+export const axisBottom = {
+  legendOffset: 20,
+  legendPosition: 'middle',
+  tickPadding: 500,
+  format: "%x",
 };
 
 export const general = {
@@ -35,13 +35,14 @@ export const general = {
   pointBorderWidth: 2,
   pointSize: 6,
   pointSymbol: CustomSymbol,
-  xFormat: "time:%Y/%m/%d",
+
+  xFormat: "time:%Y/%m/%d %H:%M",
   xScale: {
-    format: '%Y-%m-%d',
-    precision: 'day',
+    format: '%Y-%m-%dT%H:%M:%S.%LZ',
     type: 'time',
-    useUTC: true
+    useUTC: false
   },
+
   yScale: {
     type: 'linear',
     stacked: false,

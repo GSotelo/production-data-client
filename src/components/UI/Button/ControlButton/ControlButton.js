@@ -6,13 +6,12 @@ import { ReactComponent as Month } from "../../../../assets/svg/month.svg";
 import styles from "./ControlButton.module.css";
 
 // TEST MODE FOR CONTEXT
-import { ThemeContext } from "../../../Screens/Consumption/SprayedPowder/utilities/context";
-
+import {GraphContext} from "../../../Context/GraphContext";
 
 const ControlButton = ({ type }) => {
 
 
-  const { user, setUser, id } = useContext(ThemeContext);
+  const { id, requestData  } = useContext(GraphContext);
 
  
 
@@ -20,8 +19,8 @@ const ControlButton = ({ type }) => {
     <div
       className={styles.controlButton}
       onClick={() => {
-        const newUser = { type }
-        setUser(newUser, id);
+        
+        requestData(id, type);
       }}
     >
       {type === "day" && <Day />}
