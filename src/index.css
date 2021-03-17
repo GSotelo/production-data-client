@@ -1,15 +1,16 @@
 :root {
-  --color-10-blue:#e5f2fa;
-  --color-background-gray:#f5f6f8;
+  --color-10-blue: #e5f2fa;
+  --color-background-gray: #f5f6f8;
   --color-denim: #005293;
-  --color-gray:#a7a6ab;
-  --color-gypsum:#f5f8fa;
-  --color-idle:#dfdfdf;
+  --color-gray: #a7a6ab;
+  --color-gypsum: #f5f8fa;
+  --color-idle: #dfdfdf;
   --color-light-blue: #e8eef9;
-  --color-light-gray:#c2c7cb;
-  --color-manatee:#c2c7cb;
-  --color-nordson-blue:#0071be;
-  --color-slate:#8996a0;
+  --color-light-gray: #c2c7cb;
+  --color-manatee: #c2c7cb;
+  --color-midnight: #33475b;
+  --color-nordson-blue: #0071be;
+  --color-slate: #8996a0;
 }
 
 * {
@@ -23,6 +24,6 @@ body, #root {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-.h10{
+.h10 {
   height: 50%;
 }

@@ -1,0 +1,48 @@
+.batchInformation {
+  height: 100%;
+  padding: 0.5rem;
+  width: 100%;
+}
+
+.left {
+  height: 100%;
+  width: 25%;
+  padding-right: 0.25rem;
+}
+
+.left :global(.cardBI .titleBox) {
+  height: 6.5%;
+}
+
+.left :global(.cardBI .rowContainer) {
+  height: 93.5%;
+  overflow: auto;
+}
+
+.left :global(.cardBI .row) {
+  height: 16.65%;
+}
+
+.right {
+  height: 100%;
+  width: 75%;
+  padding-left: 0.25rem;
+}
+
+.right :global(.cardBI) {
+  width: 32.9%;
+}
+
+.right .top {
+  display: flex;
+  height: 50%;
+  justify-content: space-between;
+  padding-bottom: 0.25rem;
+}
+
+.right .bottom {
+  display: flex;
+  height: 50%;
+  justify-content: space-between;
+  padding-top: 0.25rem;
+}
