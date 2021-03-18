@@ -7,3 +7,24 @@ export const propsCPT = {
   title: "Consumption per powder type",
   type: 3
 };
+
+// Props: Powder type table
+export const propsCPTT = {
+  columns:[
+    {
+      field: "type",
+      headerName: "Powder type",
+      sortable: true,
+      width: "50%"
+    },
+    {
+      field: "consumption",
+      headerName: "Consumption (kg)",
+      sortable: true,
+      type: "number",
+      width: "50%"
+    }
+  ],
+
+  pageSize:14
+};

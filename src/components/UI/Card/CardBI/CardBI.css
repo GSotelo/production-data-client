@@ -3,10 +3,12 @@
   cursor: pointer;
   height: 100%;
   width: 100%;
+  border: 1px solid var(--color-light-gray);
 }
 
 .cardBI .titleBox {
   background-color: var(--color-midnight);
+  background-color: var(--color-denim);
   display: flex;
   height: 13%;
   width: 100%;
@@ -59,7 +61,7 @@
 }
 
 .cardBI .rowContainer:hover {
-  background-color: var(--color-light-blue);
+  background-color: var(--color-gypsum);
 }
 
 .cardBI .row .iconBox {

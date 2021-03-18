@@ -26,3 +26,24 @@ export const propsCCA = {
   title: "Color changes aborted",
   type: 2
 };
+
+// Props: Aborted color changes table
+export const propsCCAT = {
+  columns:[
+    {
+      field: "date",
+      headerName: "Date",
+      sortable: true,
+      width: "50%"
+    },
+    {
+      field: "pressure",
+      headerName: "Pressure (bar)",
+      sortable: true,
+      type: "number",
+      width: "50%"
+    }
+  ],
+
+  pageSize:5
+}
