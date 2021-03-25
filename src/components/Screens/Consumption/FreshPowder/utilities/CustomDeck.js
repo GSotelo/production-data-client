@@ -30,11 +30,11 @@ const Deck = ({ orientation, deck }) => {
   return (
     <div className={customStyle}>
       {
-        deck.map(card => {
+        deck.map((card, index) => {
           if (card.icon === "total") card.icon = <Total />
           if (card.icon === "average") card.icon = <Average />
           return (
-            <div className={styles.cardBox}>
+            <div className={styles.cardBox} key={index}>
               <Card
                 {...card}
               />

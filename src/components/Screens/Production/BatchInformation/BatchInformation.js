@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import Card from "./utilities/CustomCard";
 
-
 import styles from "./BatchInformation.module.css";
 import { Row, Col } from "antd";
 import { 

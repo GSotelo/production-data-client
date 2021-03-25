@@ -18,7 +18,7 @@ export const propsTopBar = {
 };
 
 export const propsLayout = {
-  topBar:<TopBar {...propsTopBar} />,
-  sideBar:<SideBar {...propsSideBar} />,
-  screen:<Screen />
+  topBar: <TopBar {...propsTopBar} />,
+  sideBar: <SideBar {...propsSideBar} />,
+  screen: <Screen />
 }
