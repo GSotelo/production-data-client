@@ -1,10 +1,22 @@
 import React, { Component } from 'react';
-import { Row, Col } from "antd";
-import   Deck  from "./utilities/CustomDeck";
+import Deck from "./utilities/CustomDeck";
 import GraphContainer from "../../../Container/GraphContainer";
-import { propsTFP, propsTFPC, propsSHD, propsSHDC, propsBB, propsBBC } from "./utilities/props";
-import CustomChart from "./utilities/CustomChart";
+import LineChart from "./utilities/LineChart";
+import { Row, Col } from "antd";
+
 import styles from "./FreshPowder.module.css";
+import {
+  propsTitleBarBBT,
+  propsTitleBarBBD,
+  propsTitleBarSHDT,
+  propsTitleBarSHDD,
+  propsTitleBarTFPT,
+  propsTitleBarTFPD,
+} from "./utilities/propsTitleBar";
+
+//  TEST
+import { GraphContext } from "../../../Context/GraphContext";
+import { connectServer } from "./utilities/connectServer";
 
 /**
  * Data for deck: Total fresh powder
@@ -27,7 +39,7 @@ const dataDeckTFP = [
     previousValue: "10 kg/h"
   }
 ];
-const graphDeckTFP = <Deck orientation="horizontal" deck={dataDeckTFP}/>;
+const graphTFPD = <Deck orientation="horizontal" deck={dataDeckTFP} />;
 
 /**
  * Data for deck: Spectrum HD
@@ -50,7 +62,7 @@ const dataDeckSHD = [
     previousValue: "7 kg/h"
   }
 ];
-const graphDeckSHD = <Deck orientation="vertical" deck={dataDeckSHD}/>;
+const graphSHDD = <Deck orientation="vertical" deck={dataDeckSHD} />;
 
 /**
  * Data for deck: Big bag
@@ -73,28 +85,11 @@ const dataDeckBB = [
     previousValue: "5 kg/h"
   }
 ];
-const graphDeckBB = <Deck orientation="vertical" deck={dataDeckBB}/>;
+const graphBBD = <Deck orientation="vertical" deck={dataDeckBB} />;
 
-/**
- * Data for trend: Total fresh powder
- */
-const dataTFP = [
-  {
-    id: 'Powder',
-    data: [
-      { x: '2021-03-13T23:59:00.000Z', y: 7 },
-      { x: '2021-04-13T23:59:00.000Z', y: 13 },
-      { x: '2021-05-13T23:59:00.000Z', y: 27 },
-      { x: '2021-06-13T23:59:00.000Z', y: 9 },
-    ]
-  }
-];
-const graphTFP = <CustomChart id="TFP" data = {dataTFP}/>
 
-/**
- * Data for trend: Spectrum hd
- */
-const dataSHD = [
+
+const dataSHDT = [
   {
     id: 'Powder',
     data: [
@@ -105,12 +100,8 @@ const dataSHD = [
     ]
   }
 ];
-const graphSHD = <CustomChart id="SHD" data = {dataSHD}/>
 
-/**
- * Data for trend: Bigbag
- */
-const dataBB = [
+const dataBBT = [
   {
     id: 'Powder',
     data: [
@@ -121,58 +112,92 @@ const dataBB = [
     ]
   }
 ];
-const graphBB = <CustomChart id="BB" data = {dataBB}/>
 
+/**
+ * When a LineChart component is created,
+ * be sure the "id" matches the ones required
+ * by the "LineChart" component. Refer to 
+ * the component definition for more details
+ */
 
+const graphSHDT = <LineChart id="SHDT" data={dataSHDT} />
+const graphBBT = <LineChart id="BBT" data={dataBBT} />
 
 class FreshPowder extends Component {
 
+  /**
+   * [api]: Contains received data from express server
+   * [dataTFP]: Total fresh powder data. Attempts to read "powder_total_fresh.csv"
+   * [dataSHD]: Spectrum HD powder data. Attempts to read "powder_spectrum.csv"
+   */
+  state = {
+    api: {
+      dataTFPT: [],
+      dataSHD: []
+    }
+  }
+
+  /**
+   * [getDataFromServer]
+   */
+  getDataFromServer = async (id, timeRange) => {
+    const filteredData = await connectServer(id, timeRange);
+
+    this.setState(prevState => {
+      const nextUpdate = { ...prevState };
+      const selector = `data${id}`;
+      nextUpdate.api[selector] = filteredData;
+      return { nextUpdate };
+    });
+
+  }
+
+
   render() {
+
+    const graphTFPT = <LineChart id="TFPT" data={[{ id: "Total", data: this.state.api.dataTFPT }]} />
+    
+    const contextValueTFPT = {
+      id: "TFPT",
+      requestData: this.getDataFromServer,
+    };
+
+
     return (
       <div className={styles.freshPowder}>
         <Row className={styles.top}>
           <Col className={styles.trendBox}>
-            <GraphContainer
-              {...propsTFP}
-              graph={graphTFP}
-            />
+            <GraphContext.Provider value={contextValueTFPT}>
+              <GraphContainer {...propsTitleBarTFPT} graph={graphTFPT} />
+            </GraphContext.Provider>
           </Col>
 
-          <Col className={styles.deckBox}>
-            <GraphContainer
-              {...propsTFPC}
-              graph={graphDeckTFP}
-            />
-          </Col>
+          <GraphContext.Provider value={contextValueTFPT}>
+            <Col className={styles.deckBox}>
+              <GraphContainer {...propsTitleBarTFPD} graph={graphTFPD} />
+            </Col>
+          </GraphContext.Provider>
         </Row>
 
         <Row className={styles.bottom}>
           <Col className={styles.trendBox}>
-            <GraphContainer
-              {...propsSHD}
-              graph={graphSHD}
-            />
+            <GraphContext.Provider value={contextValueTFPT}>
+              <GraphContainer {...propsTitleBarSHDT} graph={graphSHDT} />
+            </GraphContext.Provider>
           </Col>
 
           <Col className={styles.deckBox}>
-            <GraphContainer
-              {...propsSHDC}
-              graph={graphDeckSHD}
-            />
+            <GraphContainer {...propsTitleBarSHDD} graph={graphSHDD} />
           </Col>
 
           <Col className={[styles.trendBox, styles.prx].join(" ")}>
-            <GraphContainer
-              {...propsBB}
-              graph={graphBB}
-            />
+            <GraphContext.Provider value={contextValueTFPT}>
+              <GraphContainer {...propsTitleBarBBT} graph={graphBBT} />
+            </GraphContext.Provider>
           </Col>
 
           <Col className={styles.deckBox}>
-            <GraphContainer
-              {...propsBBC}
-              graph={graphDeckBB}
-            />
+            <GraphContainer {...propsTitleBarBBD} graph={graphBBD} />
           </Col>
         </Row>
       </div>

@@ -1,18 +1,16 @@
 import React, { Component } from 'react';
 import Chart from "./utilities/CustomChart";
+import CustomCard from "../../../UI/Card/CustomCard/CustomCard";
 import Dropdown from "../../../UI/Dropdown/Dropdown";
 import HorizontalCards from "../../../UI/Cards/HorizontalCards/HorizontalCards";
 import GraphContainer from "../../../Container/GraphContainer";
-import CustomCard from "../../../UI/Card/CustomCard/CustomCard";
+import { GraphContext } from "../../../Context/GraphContext";
 import { Row, Col } from "antd";
 import { propsSPCT, propsSPCTC, propsSPCR, propsSPCRC } from "./utilities/props";
-import styles from "./SprayedPowder.module.css";
 
-// TEST MODE
-import { GraphContext } from "../../../Context/GraphContext";
+import styles from "./SprayedPowder.module.css";
 import { connectAPI, getFilenameEndpoint } from "./utilities/requestData";
 import { dropdownOptionsSPCR } from "./configuration/dropdownOptions";
-
 
 class SprayedPowder extends Component {
   
@@ -41,15 +39,18 @@ class SprayedPowder extends Component {
 
     // Get endpoint and filename for API requests
     const recipe = this.state.dropdown.currentValue;
+
+    // This is valid for post requests
     const { filename, endpoint } = getFilenameEndpoint(id, timeRange, recipe);
 
-    // Perform API requests. Then Filter data according to "Line" graph
+    // Execute API requests. Then Filter data according to "Line" graph
     let filteredData;
     if (!requestByDatepicker) filteredData = await connectAPI.get(endpoint);
     if (requestByDatepicker) filteredData = await connectAPI.post("/", { filename, timeRange });
 
-    // Update state based on data from API
+    // Update state based on data from express server
     const selector = `data${id}`;
+    
     this.setState(prevState => {
       const nextUpdate = { ...prevState };
       nextUpdate.api[selector] = filteredData;
@@ -125,8 +126,6 @@ class SprayedPowder extends Component {
       requestData: this.requestData,
       updateDropdownSelection: this.updateDropdownSelection
     };
-
-    console.log(this.state.dropdown.currentValue);
 
     return (
       <Row className={styles.sprayedPowder}>

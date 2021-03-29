@@ -12,7 +12,7 @@ export const electricityAirAPI = axios.create({
   baseURL: "/consumption/electricity-air"
 });
 
-export const freshPowderAPI = axios.create({
+export const axiosFreshPowder = axios.create({
   baseURL: "/consumption/fresh-powder"
 });
 

@@ -5,22 +5,17 @@ import { ReactComponent as Month } from "../../../../assets/svg/month.svg";
 
 import styles from "./ControlButton.module.css";
 
-// TEST MODE FOR CONTEXT
-import {GraphContext} from "../../../Context/GraphContext";
+import { GraphContext } from "../../../Context/GraphContext";
 
 const ControlButton = ({ type }) => {
-
-
-  const { id, requestData  } = useContext(GraphContext);
-
- 
-
+  const timeRange = type;
+  const { id, requestData } = useContext(GraphContext);
   return (
     <div
       className={styles.controlButton}
       onClick={() => {
-        
-        requestData(id, type);
+        console.log(id, timeRange);
+        requestData(id, timeRange);
       }}
     >
       {type === "day" && <Day />}

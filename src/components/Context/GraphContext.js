@@ -2,8 +2,8 @@ import React from "react";
 
 export const GraphContext = React.createContext({
   id: "id",
-  requestData: () => { },
   stateDropdown: "1",
+  requestData: () => { },
   updateDropdownState: () => { }
 }
 );

@@ -5,7 +5,7 @@
 }
 
 /*
-* Top layout configuration
+* Target elements: All elements contained in top row
 */
 
 .top {
@@ -27,7 +27,30 @@
 }
 
 /*
-* General height configuration for each graph container
+* Target elements: All elements contained in bottom row
+*/
+
+.bottom {
+  display: flex;
+  height: 50%;
+}
+
+.bottom .trendBox {
+  height: 100%;
+  width: 33.33%;
+  padding-right: 0.5rem;
+}
+
+.bottom .deckBox {
+  height: 100%;
+  width: 16.6%;
+}
+
+/*
+* Set height for main elements in "graphContainer":
+* 1. Title box:
+* 2. Control box:
+* 3. Graph box: 
 */
 
 .freshPowder :global(.graphContainer .titleBox) {
@@ -47,7 +70,10 @@
 }
 
 /*
-* Total sprayed powder trend
+* Target element: Total fresh powder trend
+* Width: 66%
+* Title bar: Standard. Classes: wa, wb
+* Control bar: Takes 50% of available space
 */
 
 .freshPowder .top .trendBox :global(.graphContainer .controlBox) {
@@ -63,7 +89,9 @@
 }
 
 /*
-* Total sprayed powder deck / Spectrum HD trend
+* Target elements: Total fresh powder deck, Spectrum HD trend, Bigbag trend
+* Width: 33%
+* Title bar: Standard. Classes: wa, wb
 */
 
 .freshPowder .top .deckBox :global(.graphContainer .titleBox .wa), .freshPowder .bottom .trendBox :global(.graphContainer .titleBox .wa) {
@@ -74,16 +102,24 @@
   width: 91%;
 }
 
-.freshPowder .bottom .deckBox :global(.graphContainer .titleBox .wa){
+/*
+* Target elements: Spectrum HD deck, Bigbag deck
+* Width: 16.6%
+* Title bar: Standard. Classes: wa, wb
+*/
+
+.freshPowder .bottom .deckBox :global(.graphContainer .titleBox .wa) {
   width: 18%;
 }
 
-.freshPowder .bottom .deckBox :global(.graphContainer .titleBox .wb){
+.freshPowder .bottom .deckBox :global(.graphContainer .titleBox .wb) {
   width: 82%;
 }
 
 /*
-* Big bag trend
+* Target element: Bigbag trend
+* Width: 33%
+* Title bar: Title bar with dropdown. Classes: wx, wy, wz
 */
 
 .freshPowder .bottom .trendBox :global(.graphContainer .titleBox .wx) {
@@ -99,31 +135,8 @@
 }
 
 /*
-* Bottom layout configuration
+* General purpose
 */
-
-.bottom {
-  display: flex;
-  height: 50%;
-}
-
-.bottom .trendBox {
-  height: 100%;
-  width: 33.33%;
-  padding-right: 0.5rem;
-}
-
-.bottom .deckBox {
-  height: 100%;
-  width: 16.6%;
-}
-
-.foo {
-  height: 100%;
-  width: 100%;
-  background-color: #fff;
-  border: 1px solid rgba(0, 0, 0, 0.1)
-}
 
 .prx {
   padding-left: 0.5rem;

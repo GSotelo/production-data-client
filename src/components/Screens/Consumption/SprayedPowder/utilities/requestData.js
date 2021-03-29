@@ -1,9 +1,8 @@
-import { sprayedPowderAPI } from "../../../../../api/serverAPI";
+import { sprayedPowderAPI } from "../../../../../api/axios";
 
 export const getFilenameEndpoint = (id, timeRange, recipe) => {
   let endpoint;
   let filename;
-
   switch (id) {
     case "SPCT":
       filename = "sprayed_powder_total.csv";

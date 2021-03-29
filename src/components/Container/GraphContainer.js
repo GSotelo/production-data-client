@@ -1,11 +1,21 @@
 import React, { Component } from "react";
 import ControlBar from "../Bar/ControlBar/ControlBar";
-import { Row, Col } from "antd";
+import DropdownTitleBar from "../Bar/TitleBar/DropdownTitleBar";
 import StandardTitleBar from "../Bar/TitleBar/StandardTitleBar";
 import TwoIconsTitleBar from "../Bar/TitleBar/TwoIconsTitleBar";
-import DropdownTitleBar from "../Bar/TitleBar/DropdownTitleBar";
 
 import "./GraphContainer.css";
+import { Row, Col } from "antd";
+
+/**
+ * General notes:
+ * This component provides a container in which you can 
+ * input three main elements: title bar, control bar and
+ * graph. All mentioned elements can be found in the UI
+ * folder. The css style applied to this component is global.
+ * That means we can override css classes from more specific 
+ * components.
+ */
 
 class GraphContainer extends Component {
 
@@ -21,6 +31,11 @@ class GraphContainer extends Component {
       controlBarVisibility
     } = this.props;
 
+    /**
+     * Allows to set visibility of control bar. This helps to hide
+     * the control bar when the provided space is too narrow. 
+     * Default value: Control bar is visible
+     */
     const setControlBarVisibility = typeof controlBarVisibility !== 'undefined' ? controlBarVisibility : true;
 
     return (
