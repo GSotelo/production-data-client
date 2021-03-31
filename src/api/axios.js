@@ -24,7 +24,7 @@ export const monitoringAPI = axios.create({
   baseURL: "/production/monitoring"
 });
 
-export const powderTypeAPI = axios.create({
+export const axiosPowderType = axios.create({
   baseURL: "/consumption/powder-type"
 });
 

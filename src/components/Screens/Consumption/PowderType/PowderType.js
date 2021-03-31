@@ -10,6 +10,14 @@ import CustomChart from "./utilities/CustomChart";
 import Dropdown from "../../../UI/Dropdown/Dropdown";
 import Table from "../../../UI/Table/MaterialUI/Table";
 
+
+
+
+import { GraphContext } from "../../../Context/GraphContext";
+import { connectServer } from "./utilities/connectServer";
+
+
+
 /**
  * dataCPT1: Data for powder consumption per type - 1 (CPT1)
  * graphCPT1: Graph for powder consumption per type - 1 (CPT1)
@@ -103,25 +111,90 @@ const rows = [
 ];
 
 class PowderType extends Component {
+  constructor(props) {
+    super(props);
+    //  this.contextValueCPTT =
+
+  }
+
+  /**
+   * [api]: Contains received data from express server
+   * [dataTFPT]: Holds "powder_total_fresh.csv" data for trend element
+   */
+  state = {
+    api: {
+      dataCPT1: [],
+      dataCPT2: []
+    },
+    currentTimeRange: {
+      timeRangeCPT1: "week",
+      timeRangeCPT2: "week"
+    },
+    currentDropdownValue: {
+      dropdownCPT1: 1,
+      dropdownCPT2: 2
+    }
+  }
+
+  /**
+   * Dropdown value property points to one specific recipe file
+   */
+  updateDropdownSelection = (e, { value }) => this.setState(prevState => {
+    console.log("The value is: ", value);
+    //const dataSelector = ` dropdownCPT${value}`;
+    const nextUpdate = { ...prevState };
+    nextUpdate.currentDropdownValue["dropdownCPT1"] = value;
+    return { nextUpdate };
+  })
+
+  /**
+   * [getDataFromServer]: Establish connection to express server via HTTP requests (GET, POST)
+   * [id]: Helps to determine the correct endpoint, filename and axios instance
+   * [timeRange]: It can be a string ("day", "week", "month") or an array of two "moment" objects
+   */
+   getDataFromServer = async (id, timeRange) => {
+    /**
+     * Contains response data from API. The data is formatted based on nivo library
+     */
+    const filteredData = await connectServer(id, timeRange);
+
+    this.setState(prevState => {
+      const dataSelector = `data${id}`; // dataTFPT, dataSHDT, etc...
+      const currentTimeRange = `timeRange${id}`; // timeRangeTFPT, timeRangeSHDT, etc...
+
+      const nextUpdate = { ...prevState };
+      nextUpdate.currentTimeRange[currentTimeRange] = timeRange;
+      nextUpdate.api[dataSelector] = filteredData;
+      return { nextUpdate };
+    });
+  }
 
   render() {
+    console.log("dropdown", this.state.currentDropdownValue);
+    const graphCPT1 = <CustomChart id="CPT1" data={dataCPT1} />
+    const contextValueCPT1 = { 
+      id: "CPT1", 
+      stateDropdown:this.state.currentDropdownValue.dropdownCPT1,
+      getDataFromServer:this.getDataFromServer,
+      updateDropdownSelection:this.updateDropdownSelection,
+     }
+
+  
     return (
       <Row className={styles.powderType}>
         <Col className={styles.left}>
+
           <div className={styles.top}>
-            <GraphContainer
-              {...propsCPT}
-              dropdown={dropdownCPT1}
-              graph={graphCPT1}
-            />
+            <GraphContext.Provider value={contextValueCPT1}>
+              <GraphContainer {...propsCPT} dropdown={dropdownCPT1} graph={graphCPT1} />
+            </GraphContext.Provider>
           </div>
 
           <div className={styles.bottom}>
-            <GraphContainer
-              {...propsCPT}
-              dropdown={dropdownCPT2}
-              graph={graphCPT2}
-            />
+            {/* <GraphContext.Provider>
+              <GraphContainer {...propsCPT} dropdown={dropdownCPT2} graph={graphCPT2} />
+            </GraphContext.Provider> */}
+            <GraphContainer {...propsCPT} dropdown={dropdownCPT2} graph={graphCPT2} />
           </div>
         </Col>
 

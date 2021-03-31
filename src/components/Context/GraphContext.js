@@ -4,7 +4,7 @@ export const GraphContext = React.createContext({
   id: "id",
   stateDropdown: "1",
   getDataFromServer: () => { },
-  updateDropdownState: () => { }
+  updateDropdownState: () => { console.log("DEFAULT DROPDOWN UPDATE METHOD");}
 }
 );
 
