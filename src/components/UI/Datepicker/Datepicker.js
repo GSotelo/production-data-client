@@ -8,10 +8,10 @@ import { GraphContext } from "../../Context/GraphContext";
 const { RangePicker } = DatePicker;
 
 const Datepicker = () => {
-  const { id, requestData } = useContext(GraphContext);
+  const { id, getDataFromServer } = useContext(GraphContext);
   return (
     <RangePicker onChange={(a, b) => {
-      requestData(id, a);
+      getDataFromServer(id, a);
     }} className={styles.datepicker} />
   );
 };

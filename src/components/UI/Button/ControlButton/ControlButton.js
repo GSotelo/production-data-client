@@ -9,13 +9,13 @@ import { GraphContext } from "../../../Context/GraphContext";
 
 const ControlButton = ({ type }) => {
   const timeRange = type;
-  const { id, requestData } = useContext(GraphContext);
+  const { id, getDataFromServer } = useContext(GraphContext);
   return (
     <div
       className={styles.controlButton}
       onClick={() => {
         console.log(id, timeRange);
-        requestData(id, timeRange);
+        getDataFromServer(id, timeRange);
       }}
     >
       {type === "day" && <Day />}

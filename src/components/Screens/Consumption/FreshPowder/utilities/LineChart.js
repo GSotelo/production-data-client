@@ -72,8 +72,9 @@ const LineChart = ({ data, id }) => {
    *  If no default value, the line chart crashes because
    *  of the time scale defined for the x-axis
    */
-  const lineData = data[0].data.length > 0 ? data : defaultLineData;
-
+  
+  const useDefaultData = typeof data[0].data != "undefined" && data[0].data.length > 0;
+  const lineData = useDefaultData? data : defaultLineData;
 
   return (
     <Line {...layout} data={lineData} />

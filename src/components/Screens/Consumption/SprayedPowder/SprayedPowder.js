@@ -32,7 +32,7 @@ class SprayedPowder extends Component {
   /**
    * Send "GET" and "POST" request to "express" server
    */
-  requestData = async (id, timeRange) => {
+   getDataFromServer = async (id, timeRange) => {
 
     // Check if "timeRange" is an array or a string
     const requestByDatepicker = timeRange instanceof Array;
@@ -117,13 +117,13 @@ class SprayedPowder extends Component {
      */
     const contextValueSPCT = {
       id: "SPCT", 
-      requestData: this.requestData
+      getDataFromServer: this.getDataFromServer
     };
 
     const contextValueSPCR = {
       id: "SPCR",
       stateDropdown: this.state.dropdown.currentValue,
-      requestData: this.requestData,
+      getDataFromServer: this.getDataFromServer,
       updateDropdownSelection: this.updateDropdownSelection
     };
 
