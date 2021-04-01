@@ -122,9 +122,9 @@ class SprayedPowder extends Component {
 
     const contextValueSPCR = {
       id: "SPCR",
-      stateDropdown: this.state.dropdown.currentValue,
+      currentValueDropdown: this.state.dropdown.currentValue,
       getDataFromServer: this.getDataFromServer,
-      updateDropdownSelection: this.updateDropdownSelection
+      updateDropdownState: this.updateDropdownSelection
     };
 
     return (

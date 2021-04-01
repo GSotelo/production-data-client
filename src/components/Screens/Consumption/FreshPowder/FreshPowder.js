@@ -89,7 +89,7 @@ const graphBBD = <Deck orientation="vertical" deck={dataDeckBB} />;
 class FreshPowder extends Component {
 
   /**
-   * Initialize context values from graph containers
+   * Initialize context values for graph containers
    */
   constructor(props) {
     super(props);

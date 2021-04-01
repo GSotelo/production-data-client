@@ -1,19 +1,21 @@
 import React, { useContext } from "react";
-import styles from "./Dropdown.module.css";
 import { Dropdown } from 'semantic-ui-react';
-
 import { GraphContext } from "../../Context/GraphContext";
 
+import styles from "./Dropdown.module.css";
+
 const ControlledDropdown = ({ options }) => {
-  const { stateDropdown, updateDropdownSelection } = useContext(GraphContext);
+
+  const { id, currentValueDropdown, updateDropdownState } = useContext(GraphContext);
+
   return (
     <Dropdown
       className={styles.dropdown}
       options={options}
       placeholder="Select"
       selection
-      onChange={updateDropdownSelection}
-      value={stateDropdown}
+      onChange={(e, { value }) => updateDropdownState(e, { value }, id)}
+      value={currentValueDropdown}
     />
   );
 };

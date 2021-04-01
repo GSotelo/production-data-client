@@ -11,54 +11,36 @@ import Line from "../../../../UI/Graph/Line/Line";
  */
 
 /**
- * [layoutTFP]: Layout for total fresh powder trend
+ * [layoutTFP]: Layout for consumption per powder type (location: top)
  */
-const layoutTFP = {
+const layoutTopCPT = {
   colors: "#86a315",
   enableArea: false,
   translateX: -30,
   xtitle: "Date",
-  ytitle: "Powder (kg)"
+  ytitle: "Consumption (kg)"
 };
 
 /**
- * [layoutTFP]: Layout for Spectrum HD trend
+ * [layoutTFP]: Layout for consumption per powder type (location: bottom)
  */
-const layoutSHD = {
+const layoutBottomCPT = {
   colors: "#e37222",
   enableArea: false,
   translateX: -30,
   xtitle: "Date",
-  ytitle: "Powder (kg)"
+  ytitle: "Consumption (kg)"
 };
 
-/**
- * [layoutTFP]: Layout for bigbag trend
- */
-const layoutBB = {
-  colors: "#6f1c75",
-  enableArea: false,
-  translateX: -30,
-  xtitle: "Date",
-  ytitle: "Powder (kg)"
-};
-
-/**
- * [CustomChart]: Creates a line chart using different layouts (see above)
- * [data]: Data for line chart
- * [id]: It's used to switch between layouts
- */
 const LineChart = ({ data, id }) => {
   let layout;
 
   /**
-   * TFPT: Total fresh powder trend
-   * SHDT: Spectrum HD trend 
-   * BBT: Bigbag feeder trend
+   * topCPT: Consumption per powder type (location: top)
+   * bottomCPT: Consumption per powder type (location: bottom)
    */
-  if (id === "TFPT") layout = layoutTFP;
-  if (id === "SHDT") layout = layoutSHD;
-  if (id === "BBT") layout = layoutBB;
+  if (id === "TopCPT") layout = layoutTopCPT;
+  if (id === "BottomCPT") layout = layoutBottomCPT;
 
   const defaultLineData = [
     {

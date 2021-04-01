@@ -1,57 +1,16 @@
 import React, { Component } from "react";
+import Dropdown from "../../../UI/Dropdown/Dropdown";
+import GraphContainer from "../../../Container/GraphContainer";
+import LineChart from "./utilities/LineChart";
+import Table from "../../../UI/Table/MaterialUI/Table";
+import { GraphContext } from "../../../Context/GraphContext";
 import { Row, Col } from "antd";
 
 import styles from "./PowderType.module.css";
-
-// TEST
-import GraphContainer from "../../../Container/GraphContainer";
-import { propsCPT, propsCPTT } from "./utilities/props";
-import CustomChart from "./utilities/CustomChart";
-import Dropdown from "../../../UI/Dropdown/Dropdown";
-import Table from "../../../UI/Table/MaterialUI/Table";
-
-
-
-
-import { GraphContext } from "../../../Context/GraphContext";
 import { connectServer } from "./utilities/connectServer";
+import { propsTitleBarCPT, propsTableCPT } from "./utilities/props";
 
-
-
-/**
- * dataCPT1: Data for powder consumption per type - 1 (CPT1)
- * graphCPT1: Graph for powder consumption per type - 1 (CPT1)
- */
-const dataCPT1 = [
-  {
-    id: "Powder",
-    data: [
-      { x: '2021-03-13T23:59:00.000Z', y: 7 },
-      { x: '2021-04-13T23:59:00.000Z', y: 3 },
-      { x: '2021-05-13T23:59:00.000Z', y: 7 },
-      { x: '2021-06-13T23:59:00.000Z', y: 9 },
-    ]
-  }
-];
-const graphCPT1 = <CustomChart id="CPT1" data={dataCPT1} />
-
-/**
- * dataCPT2: Data for powder consumption per type - 2 (CPT2)
- * graphCPT2: Graph for powder consumption per type - 2 (CPT2)
- */
-const dataCPT2 = [
-  {
-    id: "Powder",
-    data: [
-      { x: '2021-03-13T23:59:00.000Z', y: 17 },
-      { x: '2021-04-13T23:59:00.000Z', y: 23 },
-      { x: '2021-05-13T23:59:00.000Z', y: 17 },
-      { x: '2021-06-13T23:59:00.000Z', y: 19 },
-    ]
-  }
-];
-const graphCPT2 = <CustomChart id="CPT2" data={dataCPT2} />
-
+// TO BE MODIFIED LATER
 // Dropdown options: Sprayed powder calculated recipe
 const optionsCPT1 = [
   { key: 1, text: "RAL1", value: 1 },
@@ -111,39 +70,55 @@ const rows = [
 ];
 
 class PowderType extends Component {
-  constructor(props) {
-    super(props);
-    //  this.contextValueCPTT =
-
-  }
 
   /**
    * [api]: Contains received data from express server
-   * [dataTFPT]: Holds "powder_total_fresh.csv" data for trend element
+   * [dataTopCPT, dataBottomCPT]: Holds "consumption_powder_type_x.csv"
+   * data for trend elements (top and bottom). The "x" represents the
+   * recipe number
    */
   state = {
     api: {
-      dataCPT1: [],
-      dataCPT2: []
+      dataTopCPT: [],
+      dataBottomCPT: []
     },
     currentTimeRange: {
-      timeRangeCPT1: "week",
-      timeRangeCPT2: "week"
+      timeRangeTopCPT: "week",
+      timeRangeBottomCPT: "week"
     },
-    currentDropdownValue: {
-      dropdownCPT1: 1,
-      dropdownCPT2: 2
+    currentValueDropdown: {
+      dropdownBottomCPT: 1,
+      dropdownTopCPT: 1
     }
+  }
+
+  /**
+   * 1. Fetch data when component mounts for the first time
+   * 2. Triggers automatic updates every "x" milliseconds
+   */
+  async componentDidMount() {
+    this.updateDataOnScreen();
+    this.timerID = setInterval(() => this.updateDataOnScreen(), 60000);
+  }
+
+  async updateDataOnScreen() {
+    const { dropdownBottomCPT, dropdownTopCPT } = this.state.currentValueDropdown;
+    const { timeRangeBottomCPT, timeRangeTopCPT } = this.state.currentTimeRange;
+    
+    const dataTopCPT = await connectServer(dropdownTopCPT, timeRangeTopCPT);
+    const dataBottomCPT = await connectServer(dropdownBottomCPT, timeRangeBottomCPT);
+    this.setState({ api: { dataTopCPT, dataBottomCPT } });
   }
 
   /**
    * Dropdown value property points to one specific recipe file
    */
-  updateDropdownSelection = (e, { value }) => this.setState(prevState => {
-    console.log("The value is: ", value);
-    //const dataSelector = ` dropdownCPT${value}`;
+  updateDropdownSelection = (e, { value }, id) => this.setState(prevState => {
+    const dropdownSelector = `dropdown${id}`;
+    console.log(dropdownSelector);
+
     const nextUpdate = { ...prevState };
-    nextUpdate.currentDropdownValue["dropdownCPT1"] = value;
+    nextUpdate.currentValueDropdown[dropdownSelector] = value;
     return { nextUpdate };
   })
 
@@ -152,15 +127,27 @@ class PowderType extends Component {
    * [id]: Helps to determine the correct endpoint, filename and axios instance
    * [timeRange]: It can be a string ("day", "week", "month") or an array of two "moment" objects
    */
-   getDataFromServer = async (id, timeRange) => {
+  getDataFromServer = async (id, timeRange) => {
+    let currentValueDropdown;
+    const { dropdownBottomCPT, dropdownTopCPT } = this.state.currentValueDropdown;
+
     /**
-     * Contains response data from API. The data is formatted based on nivo library
+     * When users click any of the control buttons (day, week, month), the current value of the dropdown,
+     * helps to target the correct recipe file (i.e. "consumption_powder_type_2.csv" ). Here we need
+     * to be careful of using the correct dropdown value as there are two on the screen. Do not swap the  values
+     * (top instead of bottom value and viceversa) 
      */
-    const filteredData = await connectServer(id, timeRange);
+    if (id === "TopCPT") currentValueDropdown = dropdownTopCPT;
+    if (id === "BottomCPT") currentValueDropdown = dropdownBottomCPT;
+
+    /**
+    * Contains response data from API. The data is formatted based on nivo library
+    */
+    const filteredData = await connectServer(currentValueDropdown, timeRange);
 
     this.setState(prevState => {
-      const dataSelector = `data${id}`; // dataTFPT, dataSHDT, etc...
-      const currentTimeRange = `timeRange${id}`; // timeRangeTFPT, timeRangeSHDT, etc...
+      const dataSelector = `data${id}`; // dataBottomCPT, dataTopCPT
+      const currentTimeRange = `timeRange${id}`; // timeRangeBottomCPT, timeRangeTopCPT
 
       const nextUpdate = { ...prevState };
       nextUpdate.currentTimeRange[currentTimeRange] = timeRange;
@@ -170,36 +157,51 @@ class PowderType extends Component {
   }
 
   render() {
-    console.log("dropdown", this.state.currentDropdownValue);
-    const graphCPT1 = <CustomChart id="CPT1" data={dataCPT1} />
-    const contextValueCPT1 = { 
-      id: "CPT1", 
-      stateDropdown:this.state.currentDropdownValue.dropdownCPT1,
-      getDataFromServer:this.getDataFromServer,
-      updateDropdownSelection:this.updateDropdownSelection,
-     }
+    /**
+     * Initialize context values for graph containers
+     */
+    const contextValueCPT1 = {
+      id: "TopCPT",
+      currentValueDropdown: this.state.currentValueDropdown.dropdownTopCPT,
+      getDataFromServer: this.getDataFromServer,
+      updateDropdownState: this.updateDropdownSelection
+    };
+    const contextValueCPT2 = {
+      id: "BottomCPT",
+      currentValueDropdown: this.state.currentValueDropdown.dropdownBottomCPT,
+      getDataFromServer: this.getDataFromServer,
+      updateDropdownState: this.updateDropdownSelection
+    };
 
-  
+    /**
+    * Data from express server
+    */
+    const { dataTopCPT, dataBottomCPT } = this.state.api;
+
+    /**
+     * When a LineChart component is created, the "id" must match the ones required
+     * by the "LineChart" component. Refer to the component definition for more details
+     */
+    const graphCPT1 = <LineChart id="TopCPT" data={[{ id: "Powder type top", data: dataTopCPT }]} />
+    const graphCPT2 = <LineChart id="BottomCPT" data={[{ id: "Powder type bottom", data: dataBottomCPT }]} />
+
     return (
       <Row className={styles.powderType}>
         <Col className={styles.left}>
-
           <div className={styles.top}>
             <GraphContext.Provider value={contextValueCPT1}>
-              <GraphContainer {...propsCPT} dropdown={dropdownCPT1} graph={graphCPT1} />
+              <GraphContainer {...propsTitleBarCPT} dropdown={dropdownCPT1} graph={graphCPT1} />
             </GraphContext.Provider>
           </div>
 
           <div className={styles.bottom}>
-            {/* <GraphContext.Provider>
-              <GraphContainer {...propsCPT} dropdown={dropdownCPT2} graph={graphCPT2} />
-            </GraphContext.Provider> */}
-            <GraphContainer {...propsCPT} dropdown={dropdownCPT2} graph={graphCPT2} />
+            <GraphContext.Provider value={contextValueCPT2}>
+              <GraphContainer {...propsTitleBarCPT} dropdown={dropdownCPT2} graph={graphCPT2} />
+            </GraphContext.Provider>
           </div>
         </Col>
-
         <Col className={styles.right}>
-          <Table rows={rows} {...propsCPTT} />
+          <Table rows={rows} {...propsTableCPT} />
         </Col>
       </Row>
     );
