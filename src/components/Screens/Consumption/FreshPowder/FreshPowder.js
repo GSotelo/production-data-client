@@ -127,6 +127,10 @@ class FreshPowder extends Component {
     this.timerID = setInterval(() => this.updateDataOnScreen(), 60000);
   }
 
+  componentWillUnmount() {
+    clearInterval(this.timerID);
+  }
+
   async updateDataOnScreen() {
     const { timeRangeBBT, timeRangeSHDT, timeRangeTFPD, timeRangeTFPT } = this.state.currentTimeRange;
     const dataBBT = await connectServer("BBT", timeRangeBBT);

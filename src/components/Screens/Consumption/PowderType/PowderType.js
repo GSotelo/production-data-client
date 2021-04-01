@@ -101,6 +101,10 @@ class PowderType extends Component {
     this.timerID = setInterval(() => this.updateDataOnScreen(), 60000);
   }
 
+  componentWillUnmount() {
+    clearInterval(this.timerID);
+  }
+
   async updateDataOnScreen() {
     const { dropdownBottomCPT, dropdownTopCPT } = this.state.currentValueDropdown;
     const { timeRangeBottomCPT, timeRangeTopCPT } = this.state.currentTimeRange;
@@ -115,8 +119,6 @@ class PowderType extends Component {
    */
   updateDropdownSelection = (e, { value }, id) => this.setState(prevState => {
     const dropdownSelector = `dropdown${id}`;
-    console.log(dropdownSelector);
-
     const nextUpdate = { ...prevState };
     nextUpdate.currentValueDropdown[dropdownSelector] = value;
     return { nextUpdate };

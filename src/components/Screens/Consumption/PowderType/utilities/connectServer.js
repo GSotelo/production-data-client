@@ -27,7 +27,6 @@ export const connectServer = async (currentValueDropdown, timeRange) => {
   * If date picker, then triggers HTTP POST requests
   */
   if (timeRangeIsArray) {
-    //const filename = getFilename(id);
     const filename = `consumption_powder_type_${currentValueDropdown}.csv`;
    const filteredData = await connectAPI.post(axiosPowderType, "/", { filename, timeRange })
    return filteredData;

@@ -15,7 +15,7 @@ import { ReactComponent as FreshPowder } from "../../../../../assets/svg/freshPo
 
 /**
  * [propsTitleBarCPT]: Title bar in "consumption per powder type" (trends)
- * Title bar: Dropdpwn, icon and description text (type 3)
+ * Title bar: Dropdown, icon and description text (type 3)
  */
 export const propsTitleBarCPT = {
   icon: <FreshPowder />,

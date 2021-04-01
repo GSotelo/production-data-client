@@ -8,7 +8,7 @@ export const colorChangeAPI = axios.create({
   baseURL: "/production/color-change"
 });
 
-export const electricityAirAPI = axios.create({
+export const axiosElectricityAir = axios.create({
   baseURL: "/consumption/electricity-air"
 });
 

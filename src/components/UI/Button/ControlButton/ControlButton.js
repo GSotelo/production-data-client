@@ -14,7 +14,7 @@ const ControlButton = ({ type }) => {
     <div
       className={styles.controlButton}
       onClick={() => {
-        console.log(id, timeRange);
+      
         getDataFromServer(id, timeRange);
       }}
     >
