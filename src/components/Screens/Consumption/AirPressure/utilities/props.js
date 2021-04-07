@@ -1,15 +1,20 @@
 import { ReactComponent as PressureSensor } from "../../../../../assets/svg/pressureSensor.svg";
 
-
-// Properties: Air pressure sensor
-export const propsAPS = {
+/**
+ * [propsTitleBarAPT]: Title bar in "Air pressure sensor" (trend)
+ * Title bar: Dropdown, icon and description text (type 3)
+ */
+export const propsTitleBarAPT = {
   icon: <PressureSensor />,
   title: "Air pressure sensor",
   type: 3
 };
 
-// Properties: Air pressure sensor card
-export const propsAPSC = {
+/**
+ * [propsTitleBarAPD]: Title bar in "Air pressure sensor" (deck)
+ * Title bar: Dropdown, icon and description text (type 3)
+ */
+export const propsTitleBarAPD = {
   icon: <PressureSensor />,
   title: "Air pressure sensor",
   type: 3

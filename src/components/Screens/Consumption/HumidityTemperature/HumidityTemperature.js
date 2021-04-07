@@ -118,7 +118,7 @@ class HumidityTemperature extends Component {
    */
    async componentDidMount() {
     this.updateDataOnScreen();
-    this.timerID = setInterval(() => this.updateDataOnScreen(), 5000);
+    this.timerID = setInterval(() => this.updateDataOnScreen(), 60000);
   }
 
   componentWillUnmount() {

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const airPressureAPI = axios.create({
+export const axiosAirPressure = axios.create({
   baseURL: "/consumption/air-pressure"
 });
 
