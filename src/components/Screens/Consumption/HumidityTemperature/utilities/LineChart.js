@@ -10,38 +10,37 @@ import Line from "../../../../UI/Graph/Line/Line";
  * based on nivo library ;)
  */
 
-
 /**
- * [layoutECT]: Layout for electricity consumption trend (location: top)
+ * [layoutTST]: Layout for temperature sensor trend (location: top)
  */
-const layoutECT = {
+const layoutTST = {
   colors: "#86a315",
   enableArea: false,
   translateX: -30,
   xtitle: "Date",
-  ytitle: "Consumption (kW)"
+  ytitle: "Temperature (°C)"
 };
 
 /**
- * [layoutACT]: Layout for air consumption trend (location: bottom)
+ * [layoutTST]: Layout for humidity sensor trend (location: bottom)
  */
-const layoutACT = {
+const layoutHST = {
   colors: "#e37222",
   enableArea: false,
   translateX: -30,
   xtitle: "Date",
-  ytitle: "Consumption (m3/h)"
+  ytitle: "Humidity (%)"
 };
 
 const LineChart = ({ data, id }) => {
   let layout;
 
   /**
-   * ECT: Electricity consumption (location: top)
-   * ACT: Air consumption (location: bottom)
+   * TST: Temperature sensor trend (location: top)
+   * HST: Humidity sensor trend (location: bottom)
    */
-  if (id === "ECT") layout = layoutECT;
-  if (id === "ACT") layout = layoutACT;
+  if (id === "TST") layout = layoutTST;
+  if (id === "HST") layout = layoutHST;
 
   const defaultLineData = [
     {
@@ -50,11 +49,11 @@ const LineChart = ({ data, id }) => {
     }
   ];
 
- /**
-   *  If express server provides no data, then use the default one.
-   */
+  /**
+  *  If express server provides no data, then use the default one.
+  */
   const useDefaultData = typeof data[0].data != "undefined" && data[0].data.length > 0;
-  const lineData = useDefaultData? data : defaultLineData;
+  const lineData = useDefaultData ? data : defaultLineData;
 
   return (
     <Line {...layout} data={lineData} />

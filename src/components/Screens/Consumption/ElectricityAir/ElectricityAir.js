@@ -116,7 +116,7 @@ class ElectricityAir extends Component {
       timeRangeECT: "week"
     },
     currentValueDropdown: {
-      currentValuecurrentValueDropdownACD: 1,
+      dropdownACD: 1,
       dropdownACT: 1,
       dropdownECD: 1,
       dropdownECT: 1,
@@ -137,10 +137,10 @@ class ElectricityAir extends Component {
   }
 
   async updateDataOnScreen() {
-    const { currentValueDropdownACD, dropdownACT, dropdownECD, dropdownECT } = this.state.currentValueDropdown;
+    const { dropdownACD, dropdownACT, dropdownECD, dropdownECT } = this.state.currentValueDropdown;
     const { timeRangeACD, timeRangeACT, timeRangeECD, timeRangeECT } = this.state.currentTimeRange;
 
-    const dataACD = await connectServer(currentValueDropdownACD, "ACD", timeRangeACD);
+    const dataACD = await connectServer(dropdownACD, "ACD", timeRangeACD);
     const dataACT = await connectServer(dropdownACT, "ACT", timeRangeACT);
     const dataECD = await connectServer(dropdownECD, "ECD", timeRangeECD);
     const dataECT = await connectServer(dropdownECT, "ECT", timeRangeECT);
@@ -167,7 +167,7 @@ class ElectricityAir extends Component {
    */
   getDataFromServer = async (id, timeRange) => {
     let currentValueDropdown;
-    const { currentValueDropdownACD, dropdownACT, dropdownECD, dropdownECT } = this.state.currentValueDropdown;
+    const { dropdownACD, dropdownACT, dropdownECD, dropdownECT } = this.state.currentValueDropdown;
 
     /**
      * When users click any of the control buttons (day, week, month), the current value of the dropdown,
@@ -175,7 +175,7 @@ class ElectricityAir extends Component {
      * to be careful of using the correct dropdown value as there are two on the screen. Do not swap the  values
      * (top instead of bottom value and viceversa) 
      */
-    if (id === "ACD") currentValueDropdown = currentValueDropdownACD;
+    if (id === "ACD") currentValueDropdown = dropdownACD;
     if (id === "ACT") currentValueDropdown = dropdownACT;
     if (id === "ECD") currentValueDropdown = dropdownECD;
     if (id === "ECT") currentValueDropdown = dropdownECT;
@@ -196,12 +196,12 @@ class ElectricityAir extends Component {
 
   render() {
     // Dropdown: Current selected options
-    const { currentValueDropdownACD, dropdownACT, dropdownECD, dropdownECT } = this.state.currentValueDropdown;
+    const { dropdownACD, dropdownACT, dropdownECD, dropdownECT } = this.state.currentValueDropdown;
 
     // Initialize context values for graph containers
     const contextValueACD = {
       id: "ACD",
-      currentValueDropdown: currentValueDropdownACD,
+      currentValueDropdown: dropdownACD,
       getDataFromServer: this.getDataFromServer,
       updateDropdownState: this.updateDropdownState
     };

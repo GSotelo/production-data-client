@@ -16,7 +16,7 @@ export const axiosFreshPowder = axios.create({
   baseURL: "/consumption/fresh-powder"
 });
 
-export const humidityTemperatureAPI = axios.create({
+export const axiosHumidityTemperature = axios.create({
   baseURL: "/consumption/humidity-temperature"
 });
 

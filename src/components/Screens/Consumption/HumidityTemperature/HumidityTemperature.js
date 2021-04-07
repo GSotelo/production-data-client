@@ -1,13 +1,15 @@
 import React, { Component } from 'react';
+import Dropdown from "../../../UI/Dropdown/Dropdown";
+import GraphContainer from "../../../Container/GraphContainer";
+import LineChart from "./utilities/LineChart";
+import { GraphContext } from "../../../Context/GraphContext";
 import { Row, Col } from "antd";
 
 import styles from "./HumidityTemperature.module.css";
+import { connectServer } from "./utilities/connectServer";
+import { propsTitleBarHSD, propsTitleBarHST, propsTitleBarTSD, propsTitleBarTST } from "./utilities/props";
 
 // TEST
-import GraphContainer from "../../../Container/GraphContainer";
-import { propsHS, propsHSC, propsTS, propsTSC } from "./utilities/props";
-import Dropdown from "../../../UI/Dropdown/Dropdown";
-import CustomChart from "./utilities/CustomChart";
 import CustomCard from "../../../UI/Card/CustomCard/CustomCard";
 import HorizontalCards from "../../../UI/Cards/HorizontalCards/HorizontalCards";
 
@@ -37,40 +39,6 @@ const dropdownTS = <Dropdown options={optionsTS} />
 //Dropdown: Air consumption card
 const dropdownTSC = <Dropdown options={optionsTS} />
 
-/**
- * dataTS: Data for temperature sensor
- * graphTS: Graph for temperature sensor
- */
-const dataTS = [
-  {
-    id: 'Temperature',
-    data: [
-      { x: '2021-03-13T23:59:00.000Z', y: 17 },
-      { x: '2021-04-13T23:59:00.000Z', y: 23 },
-      { x: '2021-05-13T23:59:00.000Z', y: 17 },
-      { x: '2021-06-13T23:59:00.000Z', y: 19 },
-    ]
-  }
-];
-const graphTS = <CustomChart id="TS" data={dataTS}/>
-
-/**
- * dataHS: Data for humidity sensor
- * graphHS: Graph for humidity sensor
- */
-const dataHS = [
-  {
-    id: 'Humidity',
-    data: [
-      { x: '2021-03-13T23:59:00.000Z', y: 17 },
-      { x: '2021-04-13T23:59:00.000Z', y: 13 },
-      { x: '2021-05-13T23:59:00.000Z', y: 17 },
-      { x: '2021-06-13T23:59:00.000Z', y: 1 },
-    ]
-  }
-];
-const graphHS = <CustomChart id="HS" data={dataHS}/>
-
 // Horizontal cards: Temperature sensor
 const dataTSC = [
   {
@@ -92,7 +60,7 @@ const dataTSC = [
   }
 ];
 const cardsTS = dataTSC.map(el => <CustomCard {...el} />);
-const deckTS = <HorizontalCards cards ={cardsTS}/>
+const deckTS = <HorizontalCards cards={cardsTS} />
 
 // Horizontal cards: Humidity sensor
 const dataHSC = [
@@ -115,46 +83,195 @@ const dataHSC = [
   }
 ];
 const cardsHS = dataHSC.map(el => <CustomCard {...el} />);
-const deckHS = <HorizontalCards cards ={cardsHS}/>
+const deckHS = <HorizontalCards cards={cardsHS} />
 
 class HumidityTemperature extends Component {
+  /**
+  * [api]: Contains received data from express server
+  * [dataHSD, dataHST, dataTSD, dataTST]: Holds "sensor_humidity_x.csv", "sensor_temperature_x.csv" data.
+  * The "x" represents the sensor location
+  */
+  state = {
+    api: {
+      dataHSD: [],
+      dataHST: [],
+      dataTSD: [],
+      dataTST: []
+    },
+    currentTimeRange: {
+      currentTimeRangeHSD: "week",
+      currentTimeRangeHST: "week",
+      currentTimeRangeTST: "week",
+      currentTimeRangeTSD: "week"
+    },
+    currentValueDropdown: {
+      currentValueDropdownHSD: 1,
+      currentValueDropdownHST: 1,
+      currentValueDropdownTSD: 1,
+      currentValueDropdownTST: 1,
+    }
+  }
+
+  /**
+   * 1. Fetch data when component mounts for the first time
+   * 2. Triggers automatic updates every "x" milliseconds
+   */
+   async componentDidMount() {
+    this.updateDataOnScreen();
+    this.timerID = setInterval(() => this.updateDataOnScreen(), 5000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timerID);
+  }
+
+  async updateDataOnScreen() {
+    const {
+      currentValueDropdownHSD,
+      currentValueDropdownHST,
+      currentValueDropdownTSD,
+      currentValueDropdownTST
+    } = this.state.currentValueDropdown;
+
+    const {
+      currentTimeRangeHSD,
+      currentTimeRangeHST,
+      currentTimeRangeTSD,
+      currentTimeRangeTST
+    } = this.state.currentTimeRange;
+
+    const dataHSD = await connectServer(currentValueDropdownHSD, "HSD", currentTimeRangeHSD);
+    const dataHST = await connectServer(currentValueDropdownHST, "HST", currentTimeRangeHST);
+    const dataTSD = await connectServer(currentValueDropdownTSD, "TSD", currentTimeRangeTSD);
+    const dataTST = await connectServer(currentValueDropdownTST, "TST", currentTimeRangeTST);
+
+    this.setState({ api: { dataHSD, dataHST, dataTSD, dataTST } });
+  }
+
+  /**
+  * Each sensor stores its data in one specific file, which
+  * is targeted by the dropdown (current selected option)
+  */
+  updateDropdownState = (e, { value }, id) => this.setState(prevState => {
+    const dropdownSelector = `currentValueDropdown${id}`;
+    const nextUpdate = { ...prevState };
+    nextUpdate.currentValueDropdown[dropdownSelector] = value;
+    return { nextUpdate };
+  })
+
+  /**
+   * [getDataFromServer]: Establish connection to express server via HTTP requests (GET, POST)
+   * [id]: Helps to determine the correct endpoint, filename and axios instance
+   * [timeRange]: It can be a string ("day", "week", "month") or an array of two "moment" objects
+   */
+  getDataFromServer = async (id, timeRange) => {
+    let currentValueDropdown;
+
+    const {
+      currentValueDropdownHSD,
+      currentValueDropdownHST,
+      currentValueDropdownTSD,
+      currentValueDropdownTST
+    } = this.state.currentValueDropdown;
+
+    /**
+     * When users click any of the control buttons (day, week, month), the current value of the dropdown,
+     * helps to target the correct recipe file (i.e. "temperature_sensor_2.csv" )
+     */
+    if (id === "HSD") currentValueDropdown = currentValueDropdownHSD;
+    if (id === "HST") currentValueDropdown = currentValueDropdownHST;
+    if (id === "TSD") currentValueDropdown = currentValueDropdownTSD;
+    if (id === "TST") currentValueDropdown = currentValueDropdownTST;
+
+    // Contains response data from API. The data is formatted based on nivo library
+    const filteredData = await connectServer(currentValueDropdown, id, timeRange);
+
+    this.setState(prevState => {
+      const dataSelector = `data${id}`; // dataHSD, dataHST, dataTSD, dataTST
+      const currentTimeRange = `currentTimeRange${id}`; // timeRangeHSD, timeRangeHST, timeRangeTSD, timeRangeTST
+
+      const nextUpdate = { ...prevState };
+      nextUpdate.currentTimeRange[currentTimeRange] = timeRange;
+      nextUpdate.api[dataSelector] = filteredData;
+      return { nextUpdate };
+    });
+  }
 
   render() {
+    // Dropdown: Current selected options
+    const {
+      currentValueDropdownHSD,
+      currentValueDropdownHST,
+      currentValueDropdownTSD,
+      currentValueDropdownTST
+    } = this.state.currentValueDropdown;
+
+    // Initialize context values for graph containers
+    const contextValueHSD = {
+      id: "HSD",
+      currentValueDropdown: currentValueDropdownHSD,
+      getDataFromServer: this.getDataFromServer,
+      updateDropdownState: this.updateDropdownState
+    };
+
+    const contextValueHST = {
+      id: "HST",
+      currentValueDropdown: currentValueDropdownHST,
+      getDataFromServer: this.getDataFromServer,
+      updateDropdownState: this.updateDropdownState
+    };
+
+    const contextValueTSD = {
+      id: "TSD",
+      currentValueDropdown: currentValueDropdownTSD,
+      getDataFromServer: this.getDataFromServer,
+      updateDropdownState: this.updateDropdownState
+    };
+
+    const contextValueTST = {
+      id: "TST",
+      currentValueDropdown: currentValueDropdownTST,
+      getDataFromServer: this.getDataFromServer,
+      updateDropdownState: this.updateDropdownState
+    };
+
+    // Data from express server
+    const { dataHST, dataTST } = this.state.api;
+
+    /**
+     * When a LineChart component is created, the "id" must match the ones required
+     * by the "LineChart" component. Refer to the component definition for more details
+     */
+    const graphHST = <LineChart id="HST" data={[{ id: "Humidity", data: dataHST }]} />
+    const graphTST = <LineChart id="TST" data={[{ id: "Temperature", data: dataTST }]} />
+
     return (
       <Row className={styles.humidityTemperature}>
         <Col className={styles.left}>
           <div className={styles.top}>
-            <GraphContainer 
-              {...propsTS} 
-              graph={graphTS}
-              dropdown={dropdownTS}               
-            />
+            <GraphContext.Provider value={contextValueTST}>
+              <GraphContainer {...propsTitleBarTST} graph={graphTST} dropdown={dropdownTS} />
+            </GraphContext.Provider>
           </div>
 
           <div className={styles.bottom}>
-            <GraphContainer 
-              {...propsHS} 
-              graph={graphHS}
-              dropdown={dropdownHS} 
-            />
+            <GraphContext.Provider value={contextValueHST}>
+              <GraphContainer {...propsTitleBarHST} graph={graphHST} dropdown={dropdownHS} />
+            </GraphContext.Provider>
           </div>
         </Col>
 
         <Col className={styles.right}>
           <div className={styles.top}>
-            <GraphContainer 
-              {...propsTSC} 
-              dropdown={dropdownTSC}
-              graph={deckTS} 
-            />
+            <GraphContext.Provider value={contextValueTSD}>
+              <GraphContainer {...propsTitleBarTSD} dropdown={dropdownTSC} graph={deckTS} />
+            </GraphContext.Provider>
           </div>
 
           <div className={styles.bottom}>
-            <GraphContainer 
-              {...propsHSC}
-              dropdown={dropdownHSC}
-              graph={deckHS} 
-            />
+            <GraphContext.Provider value={contextValueHSD}>
+              <GraphContainer {...propsTitleBarHSD} dropdown={dropdownHSC} graph={deckHS} />
+            </GraphContext.Provider>
           </div>
         </Col>
       </Row>
