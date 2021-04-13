@@ -1,5 +1,4 @@
 import React from "react";
-
 import "./HorizontalCards.css"
 
 const HorizontalCards = ({ cards }) => {

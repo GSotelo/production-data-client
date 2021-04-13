@@ -5,7 +5,7 @@ import { ReactComponent as Average } from "../../../../assets/svg/average.svg";
 import { ReactComponent as PeakHigh } from "../../../../assets/svg/peakHigh.svg";
 import { ReactComponent as PeakLow } from "../../../../assets/svg/peakLow.svg";
 
-const CustomCard = (props) => {
+const Card = (props) => {
   if (props.type === 1) {
     return (
       <CardWithFooter
@@ -34,4 +34,4 @@ const CustomCard = (props) => {
   }
 };
 
-export default CustomCard;
+export default Card;
