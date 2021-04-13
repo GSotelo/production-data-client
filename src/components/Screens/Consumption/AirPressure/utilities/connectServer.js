@@ -12,19 +12,31 @@ import { axiosAirPressure } from "../../../../../api/axios";
 
 const getEndpoint = (currentValueDropdown, id, timeRange) => {
   let endpoint;
-  const isDayRequesFromDeck = (id === "BottomAPD" || id === "TopAPD") && timeRange === "day" ? true : false;
+  
+  // ORIGINAL
+  //const isDayRequesFromDeck = (id === "BottomAPD" || id === "TopAPD") && timeRange === "day" ? true : false;
 
-  // New try for blue card
-  //const isDayRequesFromDeck = (id === "BottomAPD" || id === "TopAPD");
+  // if (isDayRequesFromDeck) {
+  //   endpoint = `/${currentValueDropdown}/custom`;
+  //   return endpoint;
+  // }
 
+  // endpoint = `/${currentValueDropdown}/${timeRange}`;
+  // return endpoint;
+
+  // NEW TRY 
+  const isDayRequesFromDeck = (id === "BottomAPD" || id === "TopAPD");
 
   if (isDayRequesFromDeck) {
-    endpoint = `/${currentValueDropdown}/custom`;
+    endpoint = `/${currentValueDropdown}/deck-${timeRange}`;
     return endpoint;
   }
 
   endpoint = `/${currentValueDropdown}/${timeRange}`;
   return endpoint;
+
+
+ 
 };
 
 

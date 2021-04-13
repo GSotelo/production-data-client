@@ -59,6 +59,8 @@ const getDataForAverage = (arr, groupBySameDate, groupByAfterDate, createDayjsOb
     return false;
   }
 
+  console.log("THE array from express:", arr);
+
   // Timestamp is a "Dayjs" object
   const timestamp = createDayjsObj(arr[0].x);
 
@@ -101,6 +103,17 @@ const getDataForAverage = (arr, groupBySameDate, groupByAfterDate, createDayjsOb
  */
 const groupBySameDate = (arr, date, func, timeRange) => _.filter(arr, ({ x }) => func(x).isSame(date, timeRange) === true);
 
+
+
+
+const groupByIsSameorBefore = (arr, date, createDatejsObj, timeRange) => {
+  _.filter(arr, ({x}) => createDatejsObj(x))
+};
+
+
+
+
+
 /**
  * 
  * @param {*} arr Array should contain objets, which MUST have "x"(timestamp) as property
@@ -109,6 +122,9 @@ const groupBySameDate = (arr, date, func, timeRange) => _.filter(arr, ({ x }) =>
  * @returns Array holding elements, which have timestamps after the "date" parameter provided
  */
 const groupByAfterDate = (arr, date, func, timeRange) => _.filter(arr, ({ x }) => func(x).isAfter(date, timeRange) === true);
+
+
+
 
 const getHighPeak = (arr) => {
   return (_.max(_.map(arr, "y")));
