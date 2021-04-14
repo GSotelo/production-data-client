@@ -7,23 +7,9 @@ import { axiosAirPressure } from "../../../../../api/axios";
  * @param {*} timeRange String with value of either "day", "week", "month"
  * @returns A string containing the API endpoint
  */
-
-
-
 const getEndpoint = (currentValueDropdown, id, timeRange) => {
   let endpoint;
   
-  // ORIGINAL
-  //const isDayRequesFromDeck = (id === "BottomAPD" || id === "TopAPD") && timeRange === "day" ? true : false;
-
-  // if (isDayRequesFromDeck) {
-  //   endpoint = `/${currentValueDropdown}/custom`;
-  //   return endpoint;
-  // }
-
-  // endpoint = `/${currentValueDropdown}/${timeRange}`;
-  // return endpoint;
-
   // NEW TRY 
   const isDayRequesFromDeck = (id === "BottomAPD" || id === "TopAPD");
 
@@ -34,13 +20,7 @@ const getEndpoint = (currentValueDropdown, id, timeRange) => {
 
   endpoint = `/${currentValueDropdown}/${timeRange}`;
   return endpoint;
-
-
- 
 };
-
-
-
 
 /**
  * 

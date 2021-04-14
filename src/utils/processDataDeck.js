@@ -1,118 +1,74 @@
 import _ from "lodash";
 import { createDateObject } from "./time";
 
-const getAverage = (arr, timeRange) => {
-
-  /**
-   * If API provides no data, the server responses with empty array
-   * If so, then "exit" function
-   */
+/**
+ * 
+ * @param {*} arr Array as data source
+ * @returns Number holding the average value in the array
+ */
+const getAverage = (arr) => {
   if (_.isEmpty(arr)) {
-    return false;
-  };
-
-  // const date = createDateObject(arr[0].x);
-  // const arrPreviousDay = groupBySameDate(arr, date, createDateObject);
-  // const arrToday = groupByAfterDate(arr, date, createDateObject);
-
-  const {
-    currentTimeRangeData,
-    previousTimeRangeData
-  } = getDataForAverage(arr, groupBySameDate, groupByAfterDate, createDateObject, timeRange);
-
-  // console.log("same date", arrPreviousDay);
-  // console.log("after date", arrToday);
-  console.log("FROM GET AVERAGE OUTER - same date", currentTimeRangeData);
-  console.log("FROM GET AVERAGE OUTER - after date", previousTimeRangeData);
-
-  // const meanToday = _.round(_.mean(_.map(arrToday, "y")), 2);
-  // const meanPreviousDay = _.round(_.mean(_.map(arrPreviousDay, "y")), 2);
-  const meanToday = _.round(_.mean(_.map(currentTimeRangeData, "y")), 2);
-  const meanPreviousDay = _.round(_.mean(_.map(previousTimeRangeData, "y")), 2);
-
-  return { meanToday, meanPreviousDay }
+    return 0;
+  }
+  return _.round(_.mean(arr), 2);
 };
 
 /**
  * 
- * @param {*} arr Data from API
- * @param {*} groupBySameDate Group by same date function
- * @param {*} groupByAfterDate Group by after date function
- * @param {*} createDayjsObj Convert string to Dayjs object
- * @param {*} timeRange String. It can be "day", "week", "month", "custom"
- * @returns 
+ * @param {*} arr Array as data source
+ * @returns Number holding the maximum value in the array
  */
-const getDataForAverage = (arr, groupBySameDate, groupByAfterDate, createDayjsObj, timeRange) => {
-  /**
-   * This is an extra guard, the calling / context function checks 
-   * also if "arr" is empty before calling this function
-   */
+const getMaxValueFromArray = (arr) => {
   if (_.isEmpty(arr)) {
-    return false;
+    return 0;
   }
-
-  /**
-   * The array contains objects like similar this: {x: "2021-04-13T03:58:00.000Z", y:51.4}
-   * This shape is a MUST when using graphic "nivo" library
-   */
-  if (!arr[0] || !arr[0].x) {
-    return false;
-  }
-
-  console.log("THE array from express:", arr);
-
-  // Timestamp is a "Dayjs" object
-  const timestamp = createDayjsObj(arr[0].x);
-
-  const sameDateData = groupBySameDate(arr, timestamp, createDayjsObj, timeRange);
-  const afterDateData = groupByAfterDate(arr, timestamp, createDayjsObj, timeRange);
-
-  /**
-   * There is always data held in "sameDateData".
-   * In case of any unexpected behaviour, the function exits
-   */
-  if (_.isEmpty(sameDateData)) {
-    return false;
-  }
-
-  /**
-   * If "afterDateData" is empty, it means that 
-   * there is no previous data for the selected 
-   * timeframe. For example, if we click on the
-   * control bar of any deck element, and the date
-   * is 13.04.2021. To get information for the
-   * average card, I would need data of 12.04.2021 as well.
-   * In case there is not, then the card should
-   * show only data regarding 13.04.2021. For the
-   * previous day, let's show only --.--
-   */
-  if (_.isEmpty(afterDateData)) {
-    return { currentTimeRangeData: sameDateData, previousTimeRangeData: "--.--" };
-  }
-
-  // Normal behaviour
-  return { currentTimeRangeData: afterDateData, previousTimeRangeData: sameDateData };
+  return _.round(_.max(arr), 2);;
 };
 
 /**
  * 
- * @param {*} arr Array should contain objets, which MUST have "x"(timestamp) as property
- * @param {*} date String format (i.e. "2021-04-08T23:59:00.000Z")
- * @param {*} func Function used to convert date (string) into a "dayjs" object
- * @returns Array holding elements, which have timestamps equal as the "date" parameter provided
+ * @param {*} arr Array as data source
+ * @returns Number holding the minimum value in the array
  */
-const groupBySameDate = (arr, date, func, timeRange) => _.filter(arr, ({ x }) => func(x).isSame(date, timeRange) === true);
-
-
-
-
-const groupByIsSameorBefore = (arr, date, createDatejsObj, timeRange) => {
-  _.filter(arr, ({x}) => createDatejsObj(x))
+const getMinValueFromArray = (arr) => {
+  if (_.isEmpty(arr)) {
+    return 0;
+  }
+  return _.round(_.min(arr), 2);
 };
 
+/**
+ * 
+ * @param {*} arr Array as data source
+ * @param {*} property Object property
+ * @returns Generates an array containing the values of the extracted property
+ */
+const filterArrayByObjectProperty = (arr, property) => {
+  if (_.isEmpty(arr)) {
+    return false;
+  }
+  return _.map(arr, property);
+};
 
+/**
+ * 
+ * @param {*} arr Array as data source
+ * @param {*} date Date as string (i.e. "2021-04-08T23:59:00.000Z")
+ * @param {*} func Function to create a "Dayjs" object from "date"
+ * @param {*} timeRange String value as "day", "week", "month"
+ * @returns Array with filtered data
+ */
+const groupByIsSameorBeforeDate = (arr, date, func, timeRange) => {
+  if (_.isEmpty(arr)) {
+    return false;
+  }
 
+  if (!("x" in arr[0])) {
+    return false;
+  }
 
+  return _.filter(arr, ({ x }) => func(x).isSameOrBefore(date, timeRange));
+};
 
 /**
  * 
@@ -121,19 +77,44 @@ const groupByIsSameorBefore = (arr, date, createDatejsObj, timeRange) => {
  * @param {*} func Function used to convert date (string) into a "dayjs" object
  * @returns Array holding elements, which have timestamps after the "date" parameter provided
  */
-const groupByAfterDate = (arr, date, func, timeRange) => _.filter(arr, ({ x }) => func(x).isAfter(date, timeRange) === true);
+const groupByAfterDate = (arr, date, func, timeRange) => {
+  if (_.isEmpty(arr)) {
+    return false;
+  }
 
+  if (!("x" in arr[0])) {
+    return false;
+  }
 
-
-
-const getHighPeak = (arr) => {
-  return (_.max(_.map(arr, "y")));
+  return _.filter(arr, ({ x }) => func(x).isAfter(date, timeRange) === true);
 };
 
-const getLowPeak = (arr) => {
-  return (_.min(_.map(arr, "y")));
+/**
+ * 
+ * @param {*} arr Array as data source
+ * @param {*} breakpoint Date used to split the "arr" in two parts (before and after date)
+ * @param {*} func1 Create "Dayjs" object
+ * @param {*} func2 Group data if element in "arr" is same or before "breakpoint"
+ * @param {*} func3 Group data if element in "arr" is after "breakpoint"
+ * @param {*} timeRange String with value of either "day", "week", "month"
+ * @returns Object holding splitted data based on "breakpoint"
+ */
+const groupDataByDate = (arr, breakpoint, func1, func2, func3, timeRange) => {
+  if (_.isEmpty(arr)) {
+    return false;
+  }
+  const prevData = func2(arr, breakpoint, func1, timeRange);
+  const currentData = func3(arr, breakpoint, func1, timeRange);
+  return { prevData, currentData };
 };
 
+/**
+ * 
+ * @param {*} timeRange String value as "day", "week", "month"
+ * @param {*} value Number
+ * @param {*} previousValue Number
+ * @returns String
+ */
 const setFooterLabel = (timeRange, value, previousValue) => {
   let msg; // Previous day, previous week, previous month
   let indicator; // ▲, ▼, ▬
@@ -177,6 +158,13 @@ const setFooterLabel = (timeRange, value, previousValue) => {
   return msg;
 };
 
+/**
+ * 
+ * @param {*} timeRange String value as "day", "week", "month", array
+ * @param {*} prevValue Number
+ * @param {*} unit Number
+ * @returns String
+ */
 const setFooterValue = (timeRange, prevValue, unit) => {
   if (timeRange instanceof Array) {
     return "--.--";
@@ -189,10 +177,87 @@ const setFooterValue = (timeRange, prevValue, unit) => {
   return `${prevValue} ${unit}`;
 };
 
+const run = (arr, timeRange) => {
+
+  //let isRequestFromDatePicker = false;
+
+  console.log("Data from express server: ", arr);
+  // If no data from API, do not update the state
+  if (typeof arr === "undefined") {
+    console.log("No data from express server");
+    return false;
+  }
+
+  // /**
+  //  * If "timeRange" is sent by datepicker,
+  //  * there is no need to divide the data into
+  //  * two groups
+  //  */
+  //  if (typeof timeRange === 'object' && arr !== null ){
+  //   isRequestFromDatePicker = true;
+  // }
+
+  // Separate "arr" data in two parts: before and after date
+  const breakpoint = createDateObject(new Date()).subtract(1, timeRange);
+  const argsGroupDataByDate = [
+    arr,
+    breakpoint,
+    createDateObject,
+    groupByIsSameorBeforeDate,
+    groupByAfterDate,
+    timeRange
+  ];
+
+  const groupedData = groupDataByDate(...argsGroupDataByDate);
+
+  // If group data fails, the result is "false"
+  if (typeof groupedData == "boolean") {
+    return false;
+  }
+
+  // Destructuring grouped data
+  if (!("prevData" in groupedData) || !("currentData" in groupedData)) {
+    return false;
+  }
+
+  const { prevData, currentData } = groupedData;
+
+  /**
+   * Each object in the array has the shape simlar to {x:"2021-04-14T23:58:00.000Z", y: 11 }
+   * x: time stamp
+   * y: process variable value
+   */
+  // Filter "y" values from grouped data
+  const yValueCurrentData = filterArrayByObjectProperty(currentData, "y")
+  const yValuePrevData = filterArrayByObjectProperty(prevData, "y")
+
+  // Get highest peak value from grouped data
+  const yMaxValueCurrentData = getMaxValueFromArray(yValueCurrentData)
+
+  // Get lowest peak value from grouped data
+  const yMinValueCurrentData = getMinValueFromArray(yValueCurrentData)
+
+  // Get average value from grouped data
+  const averagePrevData = getAverage(yValuePrevData);
+  const averageCurrentData = getAverage(yValueCurrentData);
+
+  console.log("Before break point, ", prevData);
+  console.log("After breakpoint, ", currentData);
+  console.log("Maximum current value", yMaxValueCurrentData);
+  console.log("Minimum current value", yMinValueCurrentData);
+  console.log("Average current value", averageCurrentData);
+  console.log("Average previous value", averagePrevData);
+
+  return {
+    averagePrevData,
+    averageCurrentData,
+    yMaxValueCurrentData,
+    yMinValueCurrentData
+  };
+}
+
 const processDataDeck = {
-  getAverage,
-  getHighPeak,
-  getLowPeak,
+  run,
   setFooterLabel,
   setFooterValue
 };

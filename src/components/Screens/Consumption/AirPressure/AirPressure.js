@@ -68,7 +68,8 @@ class AirPressure extends Component {
       currentValueDropdownBottomAPT: 1,
       currentValueDropdownTopAPD: 1,
       currentValueDropdownTopAPT: 1,
-    }
+    },
+    error: false
   }
 
   /**
@@ -103,7 +104,6 @@ class AirPressure extends Component {
     const dataBottomAPT = await connectServer(currentValueDropdownBottomAPT, currentTimeRangeBottomAPT);
     const dataTopAPD = await connectServer(currentValueDropdownTopAPD, currentTimeRangeTopAPD);
     const dataTopAPT = await connectServer(currentValueDropdownTopAPT, currentTimeRangeTopAPT);
-
     this.setState({ api: { dataBottomAPD, dataBottomAPT, dataTopAPD, dataTopAPT } });
   }
 
@@ -146,19 +146,42 @@ class AirPressure extends Component {
     if (id === "TopAPD") currentValueDropdown = currentValueDropdownTopAPD;
     if (id === "TopAPT") currentValueDropdown = currentValueDropdownTopAPT;
 
-    // Contains response data from API. The data is formatted based on nivo library
-    const filteredData = await connectServer(currentValueDropdown, id, timeRange);
+    /**
+     * Contains response data from API. The data is formatted based on nivo library.
+     * If promise rejects, set 
+     */
+    //const filteredData = await connectServer(currentValueDropdown, id, timeRange);
+    let filteredData;
+    try {
+      filteredData = await connectServer(currentValueDropdown, id, timeRange);
+    } catch (error) {
+      // Implement to trigger notification...
+      console.log("Request to API failed");
+      this.setState({ api: { error: true } });
+    }
 
     // Prepare data for deck (Average, high peak, low peak)
     if (id === "BottomAPD" || id === "TopAPD") {
-      averageCard = processDataDeck.getAverage(filteredData, timeRange);
-      highPeakCard = processDataDeck.getHighPeak(filteredData);
-      lowPeakCard = processDataDeck.getLowPeak(filteredData);
+      // Get data for deck element
+      const dataForDeck = processDataDeck.run(filteredData, timeRange);
 
-      // Event: Datepicker - clear field
-      if(!averageCard || !highPeakCard || !lowPeakCard ){
+      // If no data for deck, the function exits with "false"
+      if (!dataForDeck) {
         return;
       }
+
+      // If there is data, then object destructuring
+      const {
+        averagePrevData,
+        averageCurrentData,
+        yMaxValueCurrentData,
+        yMinValueCurrentData
+      } = dataForDeck;
+
+      // Prepare object to update state
+      averageCard = { meanToday: averageCurrentData, meanPreviousDay: averagePrevData };
+      highPeakCard = yMaxValueCurrentData;
+      lowPeakCard = yMinValueCurrentData;
     }
 
     // Update state for all elements
@@ -169,11 +192,13 @@ class AirPressure extends Component {
       const nextUpdate = { ...prevState };
       nextUpdate.currentTimeRange[currentTimeRange] = timeRange;
 
+      // Update data for trend elements
       if (dataSelector === "dataBottomAPT" || dataSelector === "dataTopAPT") {
         nextUpdate.api[dataSelector] = filteredData;
         return { nextUpdate };
       }
 
+      // Update data for deck elements
       if (dataSelector === "dataBottomAPD" || dataSelector === "dataTopAPD") {
         nextUpdate.api[dataSelector].average = averageCard;
         nextUpdate.api[dataSelector].highPeak = highPeakCard;
@@ -184,6 +209,8 @@ class AirPressure extends Component {
   }
 
   render() {
+
+    const { error } = this.state.api;
     // Data from API
     const {
       dataBottomAPD,
@@ -199,14 +226,14 @@ class AirPressure extends Component {
     } = this.state.currentTimeRange;
 
     // Data for bottom deck - air pressure (APD)
-    const averageTodayDataBottomAPD = dataBottomAPD.average.meanToday;
-    const averagePrevDataBottomAPD = dataBottomAPD.average.meanPreviousDay;
-    const valueFooterBottomAPD = processDataDeck.setFooterValue(currentTimeRangeBottomAPD,averagePrevDataBottomAPD, "bar");
+    const averageTodayDataBottomAPD = !error && dataBottomAPD.average.meanToday;
+    const averagePrevDataBottomAPD = !error && dataBottomAPD.average.meanPreviousDay;
+    const valueFooterBottomAPD = processDataDeck.setFooterValue(currentTimeRangeBottomAPD, averagePrevDataBottomAPD, "bar");
     const labelFooterBottomAPD = processDataDeck.setFooterLabel(currentTimeRangeBottomAPD, averageTodayDataBottomAPD, averagePrevDataBottomAPD);
-     
+
     // Data for top deck - air pressure (APD)
-    const averageTodayDataTopAPD = dataTopAPD.average.meanToday;
-    const averagePrevDataTopAPD = dataTopAPD.average.meanPreviousDay;
+    const averageTodayDataTopAPD = !error && dataTopAPD.average.meanToday;
+    const averagePrevDataTopAPD = !error && dataTopAPD.average.meanPreviousDay;
     const valueFooterTopAPD = processDataDeck.setFooterValue(currentTimeRangeTopAPD, averagePrevDataTopAPD, "bar");
     const labelTopAPD = processDataDeck.setFooterLabel(currentTimeRangeTopAPD, averageTodayDataTopAPD, averagePrevDataTopAPD);
 
@@ -221,12 +248,12 @@ class AirPressure extends Component {
       },
       {
         type: 2,
-        value: this.state.api.dataTopAPD.highPeak,
+        value: !error ? this.state.api.dataTopAPD.highPeak : 0,
         units: "bar"
       },
       {
         type: 3,
-        value: this.state.api.dataTopAPD.lowPeak,
+        value: !error ? this.state.api.dataTopAPD.lowPeak : 0,
         units: "bar"
       }
     ];
@@ -244,12 +271,12 @@ class AirPressure extends Component {
       },
       {
         type: 2,
-        value: this.state.api.dataBottomAPD.highPeak,
+        value: !error ? this.state.api.dataBottomAPD.highPeak : 0,
         units: "bar"
       },
       {
         type: 3,
-        value: this.state.api.dataBottomAPD.lowPeak,
+        value: !error ? this.state.api.dataBottomAPD.lowPeak : 0,
         units: "bar"
       }
     ];

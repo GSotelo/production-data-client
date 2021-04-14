@@ -7,6 +7,13 @@ const filterDataFromAPI = (arr) => {
 const get = async (axios, endpoint) => {
   const response = await axios.get(endpoint);
   return filterDataFromAPI(response.data);
+  // try {
+  //   const response = await axios.get(endpoint);
+  //   return filterDataFromAPI(response.data);
+  // } catch (err) {
+  //   console.log(err);
+  //   return false;
+  // }
 };
 
 const postAPI = async (serverAPI, endpoint, { timeRange, filename }) => {
