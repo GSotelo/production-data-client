@@ -10,9 +10,14 @@ const { RangePicker } = DatePicker;
 const Datepicker = () => {
   const { id, getDataFromServer } = useContext(GraphContext);
   return (
-    <RangePicker onChange={(a, b) => {
-      getDataFromServer(id, a);
-    }} className={styles.datepicker} />
+    <RangePicker
+      // onChange={(a, b) => {
+      //   getDataFromServer(id, a);
+      // }} 
+      allowClear={false}
+      onChange={a => getDataFromServer(id, a)}
+      className={styles.datepicker}
+    />
   );
 };
 

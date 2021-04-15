@@ -178,24 +178,23 @@ const setFooterValue = (timeRange, prevValue, unit) => {
 };
 
 const run = (arr, timeRange) => {
-
-  //let isRequestFromDatePicker = false;
-
+  
+  // The "fallbackData" structure matches the state object
   const fallbackData = {
     average: {
-      avgToday: -1,
-      avgPrevDay: -1
+      avgTimeRange: -1,
+      avgPrevTimeRange: -1
     },
     maxValue: -1,
     minValue: -1
   };
 
   console.log("Data from express server: ", arr);
-  
-  // If no data from API, do not update the state
+  console.log("Time range: ", timeRange);
+
+  // If API request fails, then "arr" holds "undefined"
   if (typeof arr === "undefined") {
-    console.log("No data from express server");
-    return false;
+    return fallbackData;
   }
 
   // /**
@@ -218,12 +217,12 @@ const run = (arr, timeRange) => {
 
   // If group data fails, the result is "false"
   if (typeof groupedData == "boolean") {
-    return false;
+    return fallbackData;
   }
 
   // Destructuring grouped data
   if (!("prevData" in groupedData) || !("currentData" in groupedData)) {
-    return false;
+    return fallbackData;
   }
 
   const { prevData, currentData } = groupedData;
@@ -244,84 +243,30 @@ const run = (arr, timeRange) => {
   const yMinValueCurrentData = getMinValueFromArray(yValueCurrentData)
 
   // Get average value from grouped data
-  const averagePrevData = getAverage(yValuePrevData);
-  const averageCurrentData = getAverage(yValueCurrentData);
+  const avgPrevData = getAverage(yValuePrevData);
+  const avgCurrentData = getAverage(yValueCurrentData);
 
   console.log("Before break point, ", prevData);
   console.log("After breakpoint, ", currentData);
   console.log("Maximum current value", yMaxValueCurrentData);
   console.log("Minimum current value", yMinValueCurrentData);
-  console.log("Average current value", averageCurrentData);
-  console.log("Average previous value", averagePrevData);
-
-  return {
-    averagePrevData,
-    averageCurrentData,
-    yMaxValueCurrentData,
-    yMinValueCurrentData
-  };
-}
-
-// // Get data for deck element
-// const dataForDeck = processDataDeck.run(filteredData, timeRange);
-
-// // If no data for deck, the function exits with "false"
-// if (!dataForDeck) {
-//   return;
-// }
-
-// // If there is data, then object destructuring
-// const {
-//   averagePrevData,
-//   averageCurrentData,
-//   yMaxValueCurrentData,
-//   yMinValueCurrentData
-// } = dataForDeck;
-
-// // Prepare object to update state
-// averageCard = { meanToday: averageCurrentData, meanPreviousDay: averagePrevData };
-// highPeakCard = yMaxValueCurrentData;
-// lowPeakCard = yMinValueCurrentData;
-// }
-
-const validateData = (data) => {
-  // If no data for deck, then function exits with default value
-  if (!data) {
-    console.log("[validateDate]: Data array is empty");
-    return {
-      average: {
-        avgToday: -1,
-        avgPrevDay: -1
-      },
-      maxValue: -1,
-      minValue: -1
-    };
-  }
-
-  const {
-    averagePrevData,
-    averageCurrentData,
-    yMaxValueCurrentData,
-    yMinValueCurrentData
-  } = data;
+  console.log("Average current value", avgCurrentData);
+  console.log("Average previous value", avgPrevData);
 
   return {
     average: {
-      avgToday: averageCurrentData,
-      avgPrevDay: averagePrevData
+      avgTimeRange: avgCurrentData,
+      avgPrevTimeRange: avgPrevData
     },
     maxValue: yMaxValueCurrentData,
     minValue: yMinValueCurrentData
   };
-};
-
-
+}
 
 const processDataDeck = {
   run,
   setFooterLabel,
-  setFooterValue,
-  validateData
+  setFooterValue
 };
 
 export default processDataDeck;

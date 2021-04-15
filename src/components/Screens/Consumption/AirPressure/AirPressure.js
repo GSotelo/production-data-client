@@ -1,8 +1,7 @@
 import React, { Component } from "react";
-import Card from "../../../UI/Card/CustomCard/CustomCard";
+import Deck from "../../../UI/Deck/CustomDeck/CustomDeck";
 import Dropdown from "../../../UI/Dropdown/Dropdown";
 import GraphContainer from "../../../Container/GraphContainer";
-import HorizontalCards from "../../../UI/Cards/HorizontalCards/HorizontalCards";
 import LineChart from "./utilities/LineChart";
 import { GraphContext } from "../../../Context/GraphContext";
 import { Row, Col } from "antd";
@@ -34,6 +33,9 @@ const dropdownAPC2 = <Dropdown options={optionsAP} />
 class AirPressure extends Component {
   /**
   * [api]: Contains received data from express server
+  * [currentTimeRange]: Contains selected time frame for trend and deck elements
+  * [currentValueDropdown]: Contains current value of dropdown for trend and deck elements
+  * [error]: If API request fails, error is "true"
   * [dataBottomAPD, dataBottomAPT, dataTopAPD, dataTopAPT]: Holds "sensor_air_pressure_x.csv"
   * The "x" represents the sensor location
   */
@@ -41,19 +43,19 @@ class AirPressure extends Component {
     api: {
       dataBottomAPD: {
         average: {
-          meanToday: 0,
-          meanPreviousDay: 0
+          avgTimeRange: 0,
+          avgPrevTimeRange: 0
         },
-        highPeak: 0,
-        lowPeak: 0
+        maxValue: 0,
+        minValue: 0
       },
       dataTopAPD: {
         average: {
-          meanToday: 0,
-          meanPreviousDay: 0
+          avgTimeRange: 0,
+          avgPrevTimeRange: 0
         },
-        highPeak: 0,
-        lowPeak: 0
+        maxValue: 0,
+        minValue: 0
       },
       dataBottomAPT: [],
       dataTopAPT: []
@@ -82,10 +84,14 @@ class AirPressure extends Component {
     this.timerID = setInterval(() => this.updateDataOnScreen(), 5000);
   }
 
+  // If component unmounts, then free memory resources
   componentWillUnmount() {
     clearInterval(this.timerID);
   }
 
+  /**
+   * [updateDataOnScreen]: Trigger screen updates every "x" millisenconds
+   */
   async updateDataOnScreen() {
     const {
       currentValueDropdownBottomAPD,
@@ -116,9 +122,11 @@ class AirPressure extends Component {
   }
 
   /**
-  * Each sensor stores its data in one specific file, which
-  * is targeted by the dropdown value (current selected option)
-  */
+   * [updateDropdownState]: Update value of dropdown element
+   * [id]: Helps to determine the correct dropdown element
+   * [value]: Value of dropdown element
+   * [e]: Synthetic event. The event is used internally by UI library 
+   */
   updateDropdownState = (e, { value }, id) => this.setState(prevState => {
     const dropdownSelector = `currentValueDropdown${id}`;
     const nextUpdate = { ...prevState };
@@ -132,17 +140,16 @@ class AirPressure extends Component {
    * [timeRange]: It can be a string ("day", "week", "month") or an array of two "moment" objects
    */
   getDataFromServer = async (id, timeRange) => {
-    let averageCard;
-    let highPeakCard;
-    let lowPeakCard;
-
-    // Target dropdown element by id and set its value based on selected option
+    // Update value of selected dropdown
     const currentValueDropdown = this.state.currentValueDropdown[setCurrentValueDropdown(id)];
 
     /**
-     * Contains response data from API. The data is formatted 
-     * based on nivo library.If promise is rejected, the error
-     * flag held in the state object is activated  
+     * Response data from server API. The data is formatted 
+     * based on nivo library. If promise is rejected, the error 
+     * flag in the state object is activated. If an error comes up, 
+     * then "filteredData" is undefined. Though I can exit the 
+     * function at this point, I'll let it continue. Trends and 
+     * deck elements handle the event of no-data using fallback data 
      */
     let filteredData;
     try {
@@ -152,136 +159,46 @@ class AirPressure extends Component {
       this.setState({ error: true });
     }
 
-    /**
-     * If request to API failed, then filtered data is undefined.
-     * Though I can exit the function at this point, I'll let it
-     * continue. Trends and deck elements, will handle the event
-     * of no data from API
-     */
-
-    // Prepare data for deck (Average, high peak, low peak)
-    if (id === "BottomAPD" || id === "TopAPD") {
-
-      const dataForDeck = processDataDeck.run(filteredData, timeRange);
-      const validatedDate = processDataDeck.validateData(dataForDeck);
-
-      // Prepare object to update state
-      averageCard = { meanToday: validatedDate.average.avgToday, meanPreviousDay: validatedDate.average.avgPrevDay };
-      highPeakCard = validatedDate.maxValue;
-      lowPeakCard = validatedDate.minValue;
-
-      /**
-       * Update state for deck elements (dataBottomAPD, dataTopAPD)
-       * Update timeRange for deck elements (timeRangeBottomAPD, timeRangeTopAPD)
-       */
-      return this.setState(prevState => {
-        const nextUpdate = { ...prevState };
-        const dataSelector = `data${id}`;
-        const currentTimeRange = `currentTimeRange${id}`;
-        nextUpdate.currentTimeRange[currentTimeRange] = timeRange;
-        nextUpdate.api[dataSelector].average = averageCard;
-        nextUpdate.api[dataSelector].highPeak = highPeakCard;
-        nextUpdate.api[dataSelector].lowPeak = lowPeakCard;
-        return { nextUpdate };
-      });
-
+    // Data for either trend or deck elements
+    let data;
+    if ((id === "BottomAPD") || (id === "TopAPD")) {
+      data = processDataDeck.run(filteredData, timeRange);
+      console.log("DATA ;", data);
+    }
+    if ((id === "BottomAPT") || (id === "TopAPT")) {
+      data = filteredData;
     }
 
-    /**
-     * Update state for trend elements (dataBottomAPT, dataTopAPT)
-     * Update timeRange for trend elements (timeRangeBottomAPT, timeRangeTopAPT)
-     */
+    // Update state of all elements
     this.setState(prevState => {
       const nextUpdate = { ...prevState };
       const dataSelector = `data${id}`;
       const currentTimeRange = `currentTimeRange${id}`;
       nextUpdate.currentTimeRange[currentTimeRange] = timeRange;
-      nextUpdate.api[dataSelector] = filteredData;
+      nextUpdate.api[dataSelector] = data;
       return { nextUpdate };
     });
   }
 
   render() {
+    // Error status of API request
     const { error } = this.state.api;
-    // Data from API
-    const {
-      dataBottomAPD,
-      dataBottomAPT,
-      dataTopAPD,
-      dataTopAPT
-    } = this.state.api;
 
-    // Current time range
-    const {
-      currentTimeRangeBottomAPD,
-      currentTimeRangeTopAPD
-    } = this.state.currentTimeRange;
-
-    // Data for bottom deck - air pressure (APD)
-    const averageTodayDataBottomAPD = !error && dataBottomAPD.average.meanToday;
-    const averagePrevDataBottomAPD = !error && dataBottomAPD.average.meanPreviousDay;
-    const valueFooterBottomAPD = processDataDeck.setFooterValue(currentTimeRangeBottomAPD, averagePrevDataBottomAPD, "bar");
-    const labelFooterBottomAPD = processDataDeck.setFooterLabel(currentTimeRangeBottomAPD, averageTodayDataBottomAPD, averagePrevDataBottomAPD);
-
-    // Data for top deck - air pressure (APD)
-    const averageTodayDataTopAPD = !error && dataTopAPD.average.meanToday;
-    const averagePrevDataTopAPD = !error && dataTopAPD.average.meanPreviousDay;
-    const valueFooterTopAPD = processDataDeck.setFooterValue(currentTimeRangeTopAPD, averagePrevDataTopAPD, "bar");
-    const labelTopAPD = processDataDeck.setFooterLabel(currentTimeRangeTopAPD, averageTodayDataTopAPD, averagePrevDataTopAPD);
-
-    // Horizontal cards: Air pressure 1
-    const configTopAPD = [
-      {
-        label: labelTopAPD,
-        previousValue: valueFooterTopAPD,
-        type: 1,
-        value: averageTodayDataTopAPD,
-        units: "bar"
-      },
-      {
-        type: 2,
-        value: !error ? this.state.api.dataTopAPD.highPeak : 0,
-        units: "bar"
-      },
-      {
-        type: 3,
-        value: !error ? this.state.api.dataTopAPD.lowPeak : 0,
-        units: "bar"
-      }
-    ];
-    const arrCardTopAPD = configTopAPD.map(el => <Card {...el} />);
-    const graphTopAPD = <HorizontalCards cards={arrCardTopAPD} />
-
-    // Horizontal cards: Air pressure 2
-    const configBottomAPD = [
-      {
-        label: labelFooterBottomAPD,
-        previousValue: valueFooterBottomAPD,
-        type: 1,
-        value: averageTodayDataBottomAPD,
-        units: "bar"
-      },
-      {
-        type: 2,
-        value: !error ? this.state.api.dataBottomAPD.highPeak : 0,
-        units: "bar"
-      },
-      {
-        type: 3,
-        value: !error ? this.state.api.dataBottomAPD.lowPeak : 0,
-        units: "bar"
-      }
-    ];
-    const arrCardBottomAPD = configBottomAPD.map(el => <Card {...el} />);
-    const graphBottomAPD = <HorizontalCards cards={arrCardBottomAPD} />
-
-    // Dropdown: Current selected options
+    // Dropdowns: Current selected option
     const {
       currentValueDropdownBottomAPD,
       currentValueDropdownBottomAPT,
       currentValueDropdownTopAPD,
       currentValueDropdownTopAPT
     } = this.state.currentValueDropdown;
+
+    // Data from API
+    const { dataBottomAPD, dataBottomAPT, dataTopAPD, dataTopAPT } = this.state.api;
+
+    // Deck components
+    const { currentTimeRangeBottomAPD, currentTimeRangeTopAPD } = this.state.currentTimeRange;
+    const graphTopAPD = <Deck data={dataTopAPD} timeRange={currentTimeRangeTopAPD} units="bar" />
+    const graphBottomAPD = <Deck data={dataBottomAPD} timeRange={currentTimeRangeBottomAPD} units="bar" />
 
     // Initialize context values for graph containers
     const contextValueBottomAPD = {

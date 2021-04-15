@@ -5,6 +5,10 @@ import { ReactComponent as Average } from "../../../../assets/svg/average.svg";
 import { ReactComponent as PeakHigh } from "../../../../assets/svg/peakHigh.svg";
 import { ReactComponent as PeakLow } from "../../../../assets/svg/peakLow.svg";
 
+/**
+ * This component was designed to work
+ * in conjuntion with "CustomDeck" component
+ */
 const Card = (props) => {
   if (props.type === 1) {
     return (
