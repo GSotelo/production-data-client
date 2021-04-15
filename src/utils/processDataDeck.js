@@ -181,7 +181,17 @@ const run = (arr, timeRange) => {
 
   //let isRequestFromDatePicker = false;
 
+  const fallbackData = {
+    average: {
+      avgToday: -1,
+      avgPrevDay: -1
+    },
+    maxValue: -1,
+    minValue: -1
+  };
+
   console.log("Data from express server: ", arr);
+  
   // If no data from API, do not update the state
   if (typeof arr === "undefined") {
     console.log("No data from express server");
@@ -193,10 +203,6 @@ const run = (arr, timeRange) => {
   //  * there is no need to divide the data into
   //  * two groups
   //  */
-  //  if (typeof timeRange === 'object' && arr !== null ){
-  //   isRequestFromDatePicker = true;
-  // }
-
   // Separate "arr" data in two parts: before and after date
   const breakpoint = createDateObject(new Date()).subtract(1, timeRange);
   const argsGroupDataByDate = [
@@ -256,10 +262,66 @@ const run = (arr, timeRange) => {
   };
 }
 
+// // Get data for deck element
+// const dataForDeck = processDataDeck.run(filteredData, timeRange);
+
+// // If no data for deck, the function exits with "false"
+// if (!dataForDeck) {
+//   return;
+// }
+
+// // If there is data, then object destructuring
+// const {
+//   averagePrevData,
+//   averageCurrentData,
+//   yMaxValueCurrentData,
+//   yMinValueCurrentData
+// } = dataForDeck;
+
+// // Prepare object to update state
+// averageCard = { meanToday: averageCurrentData, meanPreviousDay: averagePrevData };
+// highPeakCard = yMaxValueCurrentData;
+// lowPeakCard = yMinValueCurrentData;
+// }
+
+const validateData = (data) => {
+  // If no data for deck, then function exits with default value
+  if (!data) {
+    console.log("[validateDate]: Data array is empty");
+    return {
+      average: {
+        avgToday: -1,
+        avgPrevDay: -1
+      },
+      maxValue: -1,
+      minValue: -1
+    };
+  }
+
+  const {
+    averagePrevData,
+    averageCurrentData,
+    yMaxValueCurrentData,
+    yMinValueCurrentData
+  } = data;
+
+  return {
+    average: {
+      avgToday: averageCurrentData,
+      avgPrevDay: averagePrevData
+    },
+    maxValue: yMaxValueCurrentData,
+    minValue: yMinValueCurrentData
+  };
+};
+
+
+
 const processDataDeck = {
   run,
   setFooterLabel,
-  setFooterValue
+  setFooterValue,
+  validateData
 };
 
 export default processDataDeck;

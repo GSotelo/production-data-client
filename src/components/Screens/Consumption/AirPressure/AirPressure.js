@@ -8,6 +8,7 @@ import { GraphContext } from "../../../Context/GraphContext";
 import { Row, Col } from "antd";
 
 import styles from "./AirPressure.module.css";
+import { setCurrentValueDropdown } from "./utilities/miscellaneous";
 import processDataDeck from "../../../../utils/processDataDeck";
 import { connectServer } from "./utilities/connectServer";
 import { propsTitleBarAPT, propsTitleBarAPD } from "./utilities/props";
@@ -77,12 +78,12 @@ class AirPressure extends Component {
    * 2. Triggers automatic updates every "x" milliseconds
    */
   async componentDidMount() {
-    //this.updateDataOnScreen();
-    //this.timerID = setInterval(() => this.updateDataOnScreen(), 5000);
+    this.updateDataOnScreen();
+    this.timerID = setInterval(() => this.updateDataOnScreen(), 5000);
   }
 
   componentWillUnmount() {
-    //clearInterval(this.timerID);
+    clearInterval(this.timerID);
   }
 
   async updateDataOnScreen() {
@@ -100,16 +101,23 @@ class AirPressure extends Component {
       currentTimeRangeTopAPT,
     } = this.state.currentTimeRange;
 
-    const dataBottomAPD = await connectServer(currentValueDropdownBottomAPD, currentTimeRangeBottomAPD);
-    const dataBottomAPT = await connectServer(currentValueDropdownBottomAPT, currentTimeRangeBottomAPT);
-    const dataTopAPD = await connectServer(currentValueDropdownTopAPD, currentTimeRangeTopAPD);
-    const dataTopAPT = await connectServer(currentValueDropdownTopAPT, currentTimeRangeTopAPT);
-    this.setState({ api: { dataBottomAPD, dataBottomAPT, dataTopAPD, dataTopAPT } });
+    //filteredData = await connectServer(currentValueDropdown, id, timeRange);
+
+
+    //const dataBottomAPD = await connectServer(currentValueDropdownBottomAPD, "BottomAPD", currentTimeRangeBottomAPD);
+    //const dataBottomAPT = await connectServer(currentValueDropdownBottomAPT, "BottomAPT", currentTimeRangeBottomAPT);
+    //const dataTopAPD = await connectServer(currentValueDropdownTopAPD, "TopAPD", currentTimeRangeTopAPD);
+    //const dataTopAPT = await connectServer(currentValueDropdownTopAPT, "TopAPT", currentTimeRangeTopAPT);
+
+    //const dataForDeck = processDataDeck.run(filteredData, timeRange);
+
+
+    // this.setState({ api: { dataBottomAPD, dataBottomAPT, dataTopAPD, dataTopAPT } });
   }
 
   /**
   * Each sensor stores its data in one specific file, which
-  * is targeted by the dropdown (current selected option)
+  * is targeted by the dropdown value (current selected option)
   */
   updateDropdownState = (e, { value }, id) => this.setState(prevState => {
     const dropdownSelector = `currentValueDropdown${id}`;
@@ -124,92 +132,76 @@ class AirPressure extends Component {
    * [timeRange]: It can be a string ("day", "week", "month") or an array of two "moment" objects
    */
   getDataFromServer = async (id, timeRange) => {
-    let currentValueDropdown;
     let averageCard;
     let highPeakCard;
     let lowPeakCard;
 
-    // Current option selected in dropdown
-    const {
-      currentValueDropdownBottomAPD,
-      currentValueDropdownBottomAPT,
-      currentValueDropdownTopAPD,
-      currentValueDropdownTopAPT
-    } = this.state.currentValueDropdown;
+    // Target dropdown element by id and set its value based on selected option
+    const currentValueDropdown = this.state.currentValueDropdown[setCurrentValueDropdown(id)];
 
     /**
-     * When users click any of the control buttons (day, week, month), the current value of the dropdown,
-     * helps to target the correct recipe file (i.e. "sensor_air_pressure_2.csv" )
+     * Contains response data from API. The data is formatted 
+     * based on nivo library.If promise is rejected, the error
+     * flag held in the state object is activated  
      */
-    if (id === "BottomAPD") currentValueDropdown = currentValueDropdownBottomAPD;
-    if (id === "BottomAPT") currentValueDropdown = currentValueDropdownBottomAPT;
-    if (id === "TopAPD") currentValueDropdown = currentValueDropdownTopAPD;
-    if (id === "TopAPT") currentValueDropdown = currentValueDropdownTopAPT;
-
-    /**
-     * Contains response data from API. The data is formatted based on nivo library.
-     * If promise rejects, set 
-     */
-    //const filteredData = await connectServer(currentValueDropdown, id, timeRange);
     let filteredData;
     try {
       filteredData = await connectServer(currentValueDropdown, id, timeRange);
     } catch (error) {
-      // Implement to trigger notification...
-      console.log("Request to API failed");
-      this.setState({ api: { error: true } });
+      console.error("[getDataFromServer]: Request to server API failed");
+      this.setState({ error: true });
     }
+
+    /**
+     * If request to API failed, then filtered data is undefined.
+     * Though I can exit the function at this point, I'll let it
+     * continue. Trends and deck elements, will handle the event
+     * of no data from API
+     */
 
     // Prepare data for deck (Average, high peak, low peak)
     if (id === "BottomAPD" || id === "TopAPD") {
-      // Get data for deck element
+
       const dataForDeck = processDataDeck.run(filteredData, timeRange);
-
-      // If no data for deck, the function exits with "false"
-      if (!dataForDeck) {
-        return;
-      }
-
-      // If there is data, then object destructuring
-      const {
-        averagePrevData,
-        averageCurrentData,
-        yMaxValueCurrentData,
-        yMinValueCurrentData
-      } = dataForDeck;
+      const validatedDate = processDataDeck.validateData(dataForDeck);
 
       // Prepare object to update state
-      averageCard = { meanToday: averageCurrentData, meanPreviousDay: averagePrevData };
-      highPeakCard = yMaxValueCurrentData;
-      lowPeakCard = yMinValueCurrentData;
-    }
+      averageCard = { meanToday: validatedDate.average.avgToday, meanPreviousDay: validatedDate.average.avgPrevDay };
+      highPeakCard = validatedDate.maxValue;
+      lowPeakCard = validatedDate.minValue;
 
-    // Update state for all elements
-    this.setState(prevState => {
-      const dataSelector = `data${id}`; // dataBottomAPD, dataBottomAPT, dataTopAPD, dataTopAPT
-      const currentTimeRange = `currentTimeRange${id}`; // timeRangeBottomAPD, timeRangeBottomAPT, timeRangeTopAPD, timeRangeTopAPT
-
-      const nextUpdate = { ...prevState };
-      nextUpdate.currentTimeRange[currentTimeRange] = timeRange;
-
-      // Update data for trend elements
-      if (dataSelector === "dataBottomAPT" || dataSelector === "dataTopAPT") {
-        nextUpdate.api[dataSelector] = filteredData;
-        return { nextUpdate };
-      }
-
-      // Update data for deck elements
-      if (dataSelector === "dataBottomAPD" || dataSelector === "dataTopAPD") {
+      /**
+       * Update state for deck elements (dataBottomAPD, dataTopAPD)
+       * Update timeRange for deck elements (timeRangeBottomAPD, timeRangeTopAPD)
+       */
+      return this.setState(prevState => {
+        const nextUpdate = { ...prevState };
+        const dataSelector = `data${id}`;
+        const currentTimeRange = `currentTimeRange${id}`;
+        nextUpdate.currentTimeRange[currentTimeRange] = timeRange;
         nextUpdate.api[dataSelector].average = averageCard;
         nextUpdate.api[dataSelector].highPeak = highPeakCard;
         nextUpdate.api[dataSelector].lowPeak = lowPeakCard;
         return { nextUpdate };
-      }
+      });
+
+    }
+
+    /**
+     * Update state for trend elements (dataBottomAPT, dataTopAPT)
+     * Update timeRange for trend elements (timeRangeBottomAPT, timeRangeTopAPT)
+     */
+    this.setState(prevState => {
+      const nextUpdate = { ...prevState };
+      const dataSelector = `data${id}`;
+      const currentTimeRange = `currentTimeRange${id}`;
+      nextUpdate.currentTimeRange[currentTimeRange] = timeRange;
+      nextUpdate.api[dataSelector] = filteredData;
+      return { nextUpdate };
     });
   }
 
   render() {
-
     const { error } = this.state.api;
     // Data from API
     const {
