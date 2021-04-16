@@ -11,13 +11,16 @@ const { setFooterLabel, setFooterValue } = processDataDeck;
  * in conjuntion with "CustomCard" component.
  * This component renders deck elements to
  * describe average, max value, min value cards,
- * which can be found on screens such as
- * A
+ * which can be found on screens as:
+ * "Air pressure"
+ * "Humidity and temperature"
+ * "Electricity and air"
  */
 const Deck = ({ data, timeRange, units }) => {
-
+  // "data" structure is defined by the state object for deck elements
   const { avgTimeRange, avgPrevTimeRange } = data.average;
 
+  // Helps to configure each "Card" element
   const configDeck = [
     {
       label: setFooterLabel(timeRange, avgTimeRange, avgPrevTimeRange),
@@ -37,8 +40,8 @@ const Deck = ({ data, timeRange, units }) => {
       units
     }
   ];
-
   const Cards = configDeck.map(el => <Card {...el} />);
+
   return (
     <>
       <HorizontalCards cards={Cards} />

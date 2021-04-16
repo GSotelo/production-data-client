@@ -10,25 +10,8 @@ import styles from "./AirPressure.module.css";
 import { setCurrentValueDropdown } from "./utilities/miscellaneous";
 import processDataDeck from "../../../../utils/processDataDeck";
 import { connectServer } from "./utilities/connectServer";
-import { propsTitleBarAPT, propsTitleBarAPD } from "./utilities/props";
-
-// Dropdown options: Air pressure
-const optionsAP = [
-  { key: 1, text: "AP1", value: 1 },
-  { key: 2, text: "AP2", value: 2 },
-  { key: 3, text: "AP3", value: 3 },
-  { key: 4, text: "AP4", value: 4 },
-  { key: 5, text: "AP5", value: 5 }
-];
-
-//Dropdown: Air pressure (1)
-const dropdownAP1 = <Dropdown options={optionsAP} />
-//Dropdown: Air pressure (2)
-const dropdownAP2 = <Dropdown options={optionsAP} />
-//Dropdown: Air pressure (1) card
-const dropdownAPC1 = <Dropdown options={optionsAP} />
-//Dropdown: Air pressure (2) card
-const dropdownAPC2 = <Dropdown options={optionsAP} />
+import { propsTitleBarAPT, propsTitleBarAPD, propsDropdownAP, propsToasterDanger } from "./utilities/props";
+import { toaster } from "evergreen-ui";
 
 class AirPressure extends Component {
   /**
@@ -71,8 +54,7 @@ class AirPressure extends Component {
       currentValueDropdownBottomAPT: 1,
       currentValueDropdownTopAPD: 1,
       currentValueDropdownTopAPT: 1,
-    },
-    error: false
+    }
   }
 
   /**
@@ -81,7 +63,7 @@ class AirPressure extends Component {
    */
   async componentDidMount() {
     this.updateDataOnScreen();
-    this.timerID = setInterval(() => this.updateDataOnScreen(), 5000);
+    this.timerID = setInterval(() => this.updateDataOnScreen(), 3600000);
   }
 
   // If component unmounts, then free memory resources
@@ -107,18 +89,18 @@ class AirPressure extends Component {
       currentTimeRangeTopAPT,
     } = this.state.currentTimeRange;
 
-    //filteredData = await connectServer(currentValueDropdown, id, timeRange);
+    // API request: Data for trend elements
+    const dataBottomAPT = await connectServer(currentValueDropdownBottomAPT, "BottomAPT", currentTimeRangeBottomAPT);
+    const dataTopAPT = await connectServer(currentValueDropdownTopAPT, "TopAPT", currentTimeRangeTopAPT);
 
+    // API request: Data for deck elements
+    const dataTopAPD = await connectServer(currentValueDropdownTopAPD, "TopAPD", currentTimeRangeTopAPD);
+    const dataBottomAPD = await connectServer(currentValueDropdownBottomAPD, "BottomAPD", currentTimeRangeBottomAPD);
+    const dataDeckBottomAPD = processDataDeck.run(dataBottomAPD, currentTimeRangeBottomAPD);
+    const dataDeckTopAPD = processDataDeck.run(dataTopAPD, currentTimeRangeTopAPD);
 
-    //const dataBottomAPD = await connectServer(currentValueDropdownBottomAPD, "BottomAPD", currentTimeRangeBottomAPD);
-    //const dataBottomAPT = await connectServer(currentValueDropdownBottomAPT, "BottomAPT", currentTimeRangeBottomAPT);
-    //const dataTopAPD = await connectServer(currentValueDropdownTopAPD, "TopAPD", currentTimeRangeTopAPD);
-    //const dataTopAPT = await connectServer(currentValueDropdownTopAPT, "TopAPT", currentTimeRangeTopAPT);
-
-    //const dataForDeck = processDataDeck.run(filteredData, timeRange);
-
-
-    // this.setState({ api: { dataBottomAPD, dataBottomAPT, dataTopAPD, dataTopAPT } });
+    // Update state
+    this.setState({ api: { dataBottomAPD: dataDeckBottomAPD, dataBottomAPT, dataTopAPD: dataDeckTopAPD, dataTopAPT } });
   }
 
   /**
@@ -156,7 +138,7 @@ class AirPressure extends Component {
       filteredData = await connectServer(currentValueDropdown, id, timeRange);
     } catch (error) {
       console.error("[getDataFromServer]: Request to server API failed");
-      this.setState({ error: true });
+      toaster.danger(...propsToasterDanger);
     }
 
     // Data for either trend or deck elements
@@ -180,9 +162,30 @@ class AirPressure extends Component {
     });
   }
 
+  /**
+   * [generateContextValues]: Create context objects for graphs
+   * [id]: Target trend and deck elements
+   * [currentValueDropdown]: Value of dropdown element
+   */
+  createContextValues = (id, currentValueDropdown) => {
+    const { getDataFromServer, updateDropdownState } = this;
+    return {
+      id,
+      currentValueDropdown,
+      getDataFromServer,
+      updateDropdownState
+    };
+  }
+
   render() {
-    // Error status of API request
-    const { error } = this.state.api;
+    // Extract some class methods
+    const { createContextValues } = this;
+
+    // Data from API
+    const { dataBottomAPD, dataBottomAPT, dataTopAPD, dataTopAPT } = this.state.api;
+
+    // Current time range for elements
+    const { currentTimeRangeBottomAPD, currentTimeRangeTopAPD } = this.state.currentTimeRange;
 
     // Dropdowns: Current selected option
     const {
@@ -192,62 +195,35 @@ class AirPressure extends Component {
       currentValueDropdownTopAPT
     } = this.state.currentValueDropdown;
 
-    // Data from API
-    const { dataBottomAPD, dataBottomAPT, dataTopAPD, dataTopAPT } = this.state.api;
-
-    // Deck components
-    const { currentTimeRangeBottomAPD, currentTimeRangeTopAPD } = this.state.currentTimeRange;
-    const graphTopAPD = <Deck data={dataTopAPD} timeRange={currentTimeRangeTopAPD} units="bar" />
-    const graphBottomAPD = <Deck data={dataBottomAPD} timeRange={currentTimeRangeBottomAPD} units="bar" />
-
     // Initialize context values for graph containers
-    const contextValueBottomAPD = {
-      id: "BottomAPD",
-      currentValueDropdown: currentValueDropdownBottomAPD,
-      getDataFromServer: this.getDataFromServer,
-      updateDropdownState: this.updateDropdownState
-    };
+    const contextValueBottomAPD = createContextValues("BottomAPD", currentValueDropdownBottomAPD);
+    const contextValueBottomAPT = createContextValues("BottomAPT", currentValueDropdownBottomAPT);
+    const contextValueTopAPD = createContextValues("TopAPD", currentValueDropdownTopAPD);
+    const contextValueTopAPT = createContextValues("TopAPT", currentValueDropdownTopAPT);
 
-    const contextValueBottomAPT = {
-      id: "BottomAPT",
-      currentValueDropdown: currentValueDropdownBottomAPT,
-      getDataFromServer: this.getDataFromServer,
-      updateDropdownState: this.updateDropdownState
-    };
+    // Deck UI components
+    const DeckTopAPD = <Deck data={dataTopAPD} timeRange={currentTimeRangeTopAPD} units="bar" />
+    const DeckBottomAPD = <Deck data={dataBottomAPD} timeRange={currentTimeRangeBottomAPD} units="bar" />
 
-    const contextValueTopAPD = {
-      id: "TopAPD",
-      currentValueDropdown: currentValueDropdownTopAPD,
-      getDataFromServer: this.getDataFromServer,
-      updateDropdownState: this.updateDropdownState
-    };
+    // Dropdown UI components
+    const DropdownAP = <Dropdown {...propsDropdownAP} />
 
-    const contextValueTopAPT = {
-      id: "TopAPT",
-      currentValueDropdown: currentValueDropdownTopAPT,
-      getDataFromServer: this.getDataFromServer,
-      updateDropdownState: this.updateDropdownState
-    };
-
-    /**
-     * When a LineChart component is created, the "id" must match the ones required
-     * by the "LineChart" component. Refer to the component definition for more details
-     */
-    const graphBottomAPT = <LineChart id="BottomAPT" data={[{ id: "Air pressure", data: dataBottomAPT }]} />
-    const graphTopAPT = <LineChart id="TopAPT" data={[{ id: "Air pressure", data: dataTopAPT }]} />
+    // Line chart UI components
+    const LineChartBottomAPT = <LineChart id="BottomAPT" data={[{ id: "Air pressure", data: dataBottomAPT }]} />
+    const LineChartTopAPT = <LineChart id="TopAPT" data={[{ id: "Air pressure", data: dataTopAPT }]} />
 
     return (
       <Row className={styles.airPressure}>
         <Col className={styles.left}>
           <div className={styles.top}>
             <GraphContext.Provider value={contextValueTopAPT}>
-              <GraphContainer {...propsTitleBarAPT} graph={graphTopAPT} dropdown={dropdownAP1} />
+              <GraphContainer {...propsTitleBarAPT} graph={LineChartTopAPT} dropdown={DropdownAP} />
             </GraphContext.Provider>
           </div>
 
           <div className={styles.bottom}>
             <GraphContext.Provider value={contextValueBottomAPT}>
-              <GraphContainer {...propsTitleBarAPT} graph={graphBottomAPT} dropdown={dropdownAP2} />
+              <GraphContainer {...propsTitleBarAPT} graph={LineChartBottomAPT} dropdown={DropdownAP} />
             </GraphContext.Provider>
           </div>
         </Col>
@@ -255,13 +231,13 @@ class AirPressure extends Component {
         <Col className={styles.right}>
           <div className={styles.top}>
             <GraphContext.Provider value={contextValueTopAPD}>
-              <GraphContainer {...propsTitleBarAPD} dropdown={dropdownAPC1} graph={graphTopAPD} />
+              <GraphContainer {...propsTitleBarAPD} graph={DeckTopAPD} dropdown={DropdownAP} />
             </GraphContext.Provider>
           </div>
 
           <div className={styles.bottom}>
             <GraphContext.Provider value={contextValueBottomAPD}>
-              <GraphContainer {...propsTitleBarAPD} dropdown={dropdownAPC2} graph={graphBottomAPD} />
+              <GraphContainer {...propsTitleBarAPD} graph={DeckBottomAPD} dropdown={DropdownAP} />
             </GraphContext.Provider>
           </div>
         </Col>

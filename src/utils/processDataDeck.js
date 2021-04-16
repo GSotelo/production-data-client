@@ -190,7 +190,6 @@ const run = (arr, timeRange) => {
   };
 
   console.log("Data from express server: ", arr);
-  console.log("Time range: ", timeRange);
 
   // If API request fails, then "arr" holds "undefined"
   if (typeof arr === "undefined") {
