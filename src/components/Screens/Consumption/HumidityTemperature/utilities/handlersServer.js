@@ -1,5 +1,9 @@
 import connectAPI from "../../../../../api/connectAPI";
+import processDataDeck from "../../../../../utils/processDataDeck";
 import { axiosHumidityTemperature } from "../../../../../api/axios";
+import { propsToasterDanger } from "./props";
+import { toaster } from "evergreen-ui";
+
 
 /**
  * This function works in conjuction with HTTP GET requests
@@ -67,18 +71,15 @@ const connectServer = async (currentValueDropdown, id, timeRange) => {
    * If control button, then trigger HTTP GET requests
    */
   if (timeRangeIsString) {
-    // const endpoint = getEndpoint(currentValueDropdown, id, timeRange);
-    // const filteredData = await connectAPI.get(axiosHumidityTemperature, endpoint);
-    // return filteredData;
     const endpoint = getEndpoint(currentValueDropdown, id, timeRange);
-
+    let filteredData = false;
     try {
-      const filteredData = await connectAPI.get(axiosHumidityTemperature, endpoint);
-      return filteredData;
+      filteredData = await connectAPI.get(axiosHumidityTemperature, endpoint);
     } catch (err) {
-      console.error("[connectServer]: Request to server failed (GET)");
-      return false;
+      toaster.danger(...propsToasterDanger);
+      console.error("[connectServer]: Request to server API failed (GET)");
     }
+    return filteredData;
   }
 
   /**
@@ -86,9 +87,39 @@ const connectServer = async (currentValueDropdown, id, timeRange) => {
   */
   if (timeRangeIsArray) {
     const filename = getFilename(currentValueDropdown, id);
-    const filteredData = await connectAPI.post(axiosHumidityTemperature, "/", { filename, timeRange })
+    let filteredData = false;
+    try {
+      filteredData = await connectAPI.post(axiosHumidityTemperature, "/", { filename, timeRange })
+    } catch (error) {
+      toaster.danger(...propsToasterDanger);
+      console.error("[connectServer]: Request to server API failed (POST)");
+    }
     return filteredData;
   }
 };
 
-export default connectServer
+/**
+ * Data from server is either for "trend" or "deck" elements
+ * If data is for a "deck" element, then further processing is needed
+ * If data is for a "trend" element, then it goes straight forward
+ */
+const processDataFromServer = async (currentValueDropdown, id, timeRange) => {
+  let data;
+  const dataFromServer = await connectServer(currentValueDropdown, id, timeRange);
+
+  switch (id) {
+    case "HSD":
+    case "TSD":
+      data = processDataDeck.run(dataFromServer, timeRange);
+      break;
+    case "HST":
+    case "TST":
+      data = dataFromServer
+      break;
+    default:
+      break;
+  }
+  return data;
+};
+
+export default processDataFromServer;

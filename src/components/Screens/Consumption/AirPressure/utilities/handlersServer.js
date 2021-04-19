@@ -1,5 +1,8 @@
 import connectAPI from "../../../../../api/connectAPI";
+import processDataDeck from "../../../../../utils/processDataDeck";
 import { axiosAirPressure } from "../../../../../api/axios";
+import { propsToasterDanger } from "./props"
+import { toaster } from "evergreen-ui";
 
 /**
  * This function works in conjuction with HTTP GET requests
@@ -9,7 +12,7 @@ import { axiosAirPressure } from "../../../../../api/axios";
  */
 const getEndpoint = (currentValueDropdown, id, timeRange) => {
   let endpoint;
-  
+
   const isDayRequesFromDeck = (id === "BottomAPD" || id === "TopAPD");
 
   if (isDayRequesFromDeck) {
@@ -39,7 +42,13 @@ const connectServer = async (currentValueDropdown, id, timeRange) => {
    */
   if (timeRangeIsString) {
     const endpoint = getEndpoint(currentValueDropdown, id, timeRange);
-    const filteredData = await connectAPI.get(axiosAirPressure, endpoint);
+    let filteredData = false;
+    try {
+      filteredData = await connectAPI.get(axiosAirPressure, endpoint);
+    } catch (error) {
+      toaster.danger(...propsToasterDanger);
+      console.error("[connectServer]: Request to server API failed (GET)");
+    }
     return filteredData;
   }
 
@@ -48,10 +57,40 @@ const connectServer = async (currentValueDropdown, id, timeRange) => {
   */
   if (timeRangeIsArray) {
     const filename = `sensor_air_pressure_${currentValueDropdown}.csv`;
-    const filteredData = await connectAPI.post(axiosAirPressure, "/", { filename, timeRange })
+    let filteredData = false;
+    try {
+      filteredData = await connectAPI.post(axiosAirPressure, "/", { filename, timeRange })
+
+    } catch (error) {
+      toaster.danger(...propsToasterDanger);
+      console.error("[connectServer]: Request to server API failed (POST)");
+    }
     return filteredData;
   }
 };
 
-export default connectServer;
+/**
+ * Data from server is either for "trend" or "deck" elements
+ * If data is for a "deck" element, then further processing is needed
+ * If data is for a "trend" element, then it goes straight forward
+ */
+const processDataFromServer = async (currentValueDropdown, id, timeRange) => {
+  let data;
+  const dataFromServer = await connectServer(currentValueDropdown, id, timeRange);
 
+  switch (id) {
+    case "BottomAPD":
+    case "TopAPD":
+      data = processDataDeck.run(dataFromServer, timeRange);
+      break;
+    case "BottomAPT":
+    case "TopAPT":
+      data = dataFromServer
+      break;
+    default:
+      break;
+  }
+  return data;
+};
+
+export default processDataFromServer;

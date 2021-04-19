@@ -7,11 +7,9 @@ import LineChart from "./utilities/LineChart";
 import { Row, Col } from "antd";
 
 import styles from "./AirPressure.module.css";
-import connectServer from "./utilities/connectServer";
-import processDataDeck from "../../../../utils/processDataDeck";
+import processDataFromServer from "./utilities/handlersServer";
 import { setCurrentValueDropdown } from "./utilities/miscellaneous";
-import { propsTitleBarAPT, propsTitleBarAPD, propsDropdownAP, propsToasterDanger } from "./utilities/props";
-import { toaster } from "evergreen-ui";
+import { propsTitleBarAPT, propsTitleBarAPD, propsDropdownAP } from "./utilities/props";
 
 class AirPressure extends Component {
   /**
@@ -74,32 +72,29 @@ class AirPressure extends Component {
    * [updateDataOnScreen]: Trigger screen updates every "x" millisenconds
    */
   async updateDataOnScreen() {
-    const {
-      currentValueDropdownBottomAPD,
-      currentValueDropdownBottomAPT,
-      currentValueDropdownTopAPD,
-      currentValueDropdownTopAPT
-    } = this.state.currentValueDropdown;
+    // Define id's to target all UI elements
+    const { currentTimeRange, currentValueDropdown } = this.state;
+    const ids = ["BottomAPD", "BottomAPT", "TopAPD", "TopAPT"];
 
-    const {
-      currentTimeRangeBottomAPD,
-      currentTimeRangeBottomAPT,
-      currentTimeRangeTopAPD,
-      currentTimeRangeTopAPT,
-    } = this.state.currentTimeRange;
+    // Get data for all elements
+    const data = await Promise.all(ids.map(async (id) => {
+      const valueDropdown = currentValueDropdown[`currentValueDropdown${id}`];
+      const timeRange = currentTimeRange[`currentTimeRange${id}`];
+      return await processDataFromServer(valueDropdown, id, timeRange);
+    }));
 
-    // API request: Data for trend elements
-    const dataBottomAPT = await connectServer(currentValueDropdownBottomAPT, "BottomAPT", currentTimeRangeBottomAPT);
-    const dataTopAPT = await connectServer(currentValueDropdownTopAPT, "TopAPT", currentTimeRangeTopAPT);
-
-    // API request: Data for deck elements
-    const dataTopAPD = await connectServer(currentValueDropdownTopAPD, "TopAPD", currentTimeRangeTopAPD);
-    const dataBottomAPD = await connectServer(currentValueDropdownBottomAPD, "BottomAPD", currentTimeRangeBottomAPD);
-    const dataDeckBottomAPD = processDataDeck.run(dataBottomAPD, currentTimeRangeBottomAPD);
-    const dataDeckTopAPD = processDataDeck.run(dataTopAPD, currentTimeRangeTopAPD);
-
-    // Update state
-    this.setState({ api: { dataBottomAPD: dataDeckBottomAPD, dataBottomAPT, dataTopAPD: dataDeckTopAPD, dataTopAPT } });
+    // Update state for all components
+    this.setState(
+      {
+        api:
+        {
+          dataBottomAPD: data[0],
+          dataBottomAPT: data[1],
+          dataTopAPD: data[2],
+          dataTopAPT: data[3]
+        }
+      }
+    );
   }
 
   /**
@@ -126,28 +121,12 @@ class AirPressure extends Component {
 
     /**
      * Response data from server API. The data is formatted 
-     * based on nivo library. If promise is rejected, the error 
-     * flag in the state object is activated. If an error comes up, 
-     * then "dataFromServer" is undefined. Though I can exit the 
-     * function at this point, I'll let it continue. Trends and 
-     * deck elements handle the event of no-data using fallback data 
+     * based on nivo library. If an error comes up, then 
+     * "data" is "false". Though I can exit the function at 
+     * this point, I'll let it continue. Trends and deck 
+     * elements handle the event of no-data using fallback data 
      */
-    let dataFromServer;
-    try {
-      dataFromServer = await connectServer(currentValueDropdown, id, timeRange);
-    } catch (error) {
-      console.error("[getDataFromServer]: Request to server API failed");
-      toaster.danger(...propsToasterDanger);
-    }
-
-    // Data for either trend or deck elements
-    let data;
-    if ((id === "BottomAPD") || (id === "TopAPD")) {
-      data = processDataDeck.run(dataFromServer, timeRange);
-    }
-    if ((id === "BottomAPT") || (id === "TopAPT")) {
-      data = dataFromServer;
-    }
+    const data = await processDataFromServer(currentValueDropdown, id, timeRange);
 
     // Update state of all elements
     this.setState(prevState => {
@@ -161,18 +140,22 @@ class AirPressure extends Component {
   }
 
   /**
-   * [generateContextValues]: Create context objects for graphs
-   * [id]: Target trend and deck elements
-   * [currentValueDropdown]: Value of dropdown element
+   * 
+   * @param {*} ids Arrays of ids (i.e "BottomAPD", "BottomAPT", "TopAPD", "TopAPT")
+   * @returns Array of context values for graphs
    */
-  createContextValues = (id, currentValueDropdown) => {
+  createContextValues = (ids) => {
+    const { currentValueDropdown } = this.state;
     const { getDataFromServer, updateDropdownState } = this;
-    return {
-      id,
-      currentValueDropdown,
-      getDataFromServer,
-      updateDropdownState
-    };
+    const baseContextValue = { getDataFromServer, updateDropdownState };
+
+    return ids.map(id => (
+      {
+        ...baseContextValue,
+        id,
+        currentValueDropdown: currentValueDropdown[`currentValueDropdown${id}`]
+      }
+    ));
   }
 
   render() {
@@ -185,19 +168,9 @@ class AirPressure extends Component {
     // Current time range for elements
     const { currentTimeRangeBottomAPD, currentTimeRangeTopAPD } = this.state.currentTimeRange;
 
-    // Dropdowns: Current selected option
-    const {
-      currentValueDropdownBottomAPD,
-      currentValueDropdownBottomAPT,
-      currentValueDropdownTopAPD,
-      currentValueDropdownTopAPT
-    } = this.state.currentValueDropdown;
-
-    // Initialize context values for graph containers
-    const contextValueBottomAPD = createContextValues("BottomAPD", currentValueDropdownBottomAPD);
-    const contextValueBottomAPT = createContextValues("BottomAPT", currentValueDropdownBottomAPT);
-    const contextValueTopAPD = createContextValues("TopAPD", currentValueDropdownTopAPD);
-    const contextValueTopAPT = createContextValues("TopAPT", currentValueDropdownTopAPT);
+    // Create context values
+    const ids = ["TopAPT", "BottomAPT", "TopAPD", "BottomAPD"];
+    const contextValue = createContextValues(ids);
 
     // Deck UI components
     const DeckTopAPD = <Deck data={dataTopAPD} timeRange={currentTimeRangeTopAPD} units="bar" />;
@@ -214,13 +187,13 @@ class AirPressure extends Component {
       <Row className={styles.airPressure}>
         <Col className={styles.left}>
           <div className={styles.top}>
-            <GraphContext.Provider value={contextValueTopAPT}>
+            <GraphContext.Provider value={contextValue[0]}>
               <GraphContainer {...propsTitleBarAPT} graph={LineChartTopAPT} dropdown={DropdownAP} />
             </GraphContext.Provider>
           </div>
 
           <div className={styles.bottom}>
-            <GraphContext.Provider value={contextValueBottomAPT}>
+            <GraphContext.Provider value={contextValue[1]}>
               <GraphContainer {...propsTitleBarAPT} graph={LineChartBottomAPT} dropdown={DropdownAP} />
             </GraphContext.Provider>
           </div>
@@ -228,13 +201,13 @@ class AirPressure extends Component {
 
         <Col className={styles.right}>
           <div className={styles.top}>
-            <GraphContext.Provider value={contextValueTopAPD}>
+            <GraphContext.Provider value={contextValue[2]}>
               <GraphContainer {...propsTitleBarAPD} graph={DeckTopAPD} dropdown={DropdownAP} />
             </GraphContext.Provider>
           </div>
 
           <div className={styles.bottom}>
-            <GraphContext.Provider value={contextValueBottomAPD}>
+            <GraphContext.Provider value={contextValue[3]}>
               <GraphContainer {...propsTitleBarAPD} graph={DeckBottomAPD} dropdown={DropdownAP} />
             </GraphContext.Provider>
           </div>

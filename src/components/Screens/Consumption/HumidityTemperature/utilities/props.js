@@ -52,28 +52,28 @@ export const propsToasterDanger = [
 ];
 
 /**
- * [propsDropdownAP]: Temperature sensor - dropdown options
+ * [propsDropdownTS]: Temperature sensor - dropdown options
  */
 export const propsDropdownTS = {
   options: [
-    { key: 1, text: "TS1", value: 1 },
-    { key: 2, text: "TS2", value: 2 },
-    { key: 3, text: "TS3", value: 3 },
-    { key: 4, text: "TS4", value: 4 },
-    { key: 5, text: "TS5", value: 5 }
+    { key: 1, text: "TS-1", value: 1 },
+    { key: 2, text: "TS-2", value: 2 },
+    { key: 3, text: "TS-3", value: 3 },
+    { key: 4, text: "TS-4", value: 4 },
+    { key: 5, text: "TS-5", value: 5 }
   ]
 };
 
 /**
- * [propsDropdownAP]: Humidity sensor - dropdown options
+ * [propsDropdownHS]: Humidity sensor - dropdown options
  */
 export const propsDropdownHS = {
   options: [
-    { key: 1, text: "HS1", value: 1 },
-    { key: 2, text: "HS2", value: 2 },
-    { key: 3, text: "HS3", value: 3 },
-    { key: 4, text: "HS4", value: 4 },
-    { key: 5, text: "HS5", value: 5 }
+    { key: 1, text: "HS-1", value: 1 },
+    { key: 2, text: "HS-2", value: 2 },
+    { key: 3, text: "HS-3", value: 3 },
+    { key: 4, text: "HS-4", value: 4 },
+    { key: 5, text: "HS-5", value: 5 }
   ]
 };
 
