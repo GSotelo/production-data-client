@@ -1,125 +1,63 @@
 import React, { Component } from "react";
+import Deck from "../../../UI/Deck/CustomDeck/CustomDeck";
 import Dropdown from "../../../UI/Dropdown/Dropdown";
 import GraphContainer from "../../../Container/GraphContainer";
 import LineChart from "./utilities/LineChart";
-import  GraphContext from "../../../Context/GraphContext";
+import GraphContext from "../../../Context/GraphContext";
 import { Row, Col } from "antd";
 
 import styles from "./ElectricityAir.module.css";
-import { connectServer } from "./utilities/connectServer";
+import { setCurrentValueDropdown } from "./utilities/miscellaneous";
+import processDataFromServer from "./utilities/handlersServer";
 import {
+  propsDropdownEC,
+  propsDropdownAC,
   propsTitleBarACD,
   propsTitleBarACT,
   propsTitleBarECD,
   propsTitleBarECT
 } from "./utilities/props";
 
-//TEST MODE
-import HorizontalCards from "../../../UI/Cards/HorizontalCards/HorizontalCards";
-import CustomCard from "../../../UI/Card/CustomCard/CustomCard";
-
-/************************************************************************* */
-// TO BE MODIFIED AT THE END...
-
-// Dropdown options: Electricity consumption
-const optionsEC = [
-  { key: 1, text: "EC1", value: 1 },
-  { key: 2, text: "EC2", value: 2 },
-  { key: 3, text: "EC3", value: 3 },
-  { key: 4, text: "EC4", value: 4 },
-  { key: 5, text: "EC5", value: 5 }
-];
-//Dropdown: Electricity consumption
-const dropdownEC = <Dropdown options={optionsEC} />
-//Dropdown: Electricity consumption card
-const dropdownECC = <Dropdown options={optionsEC} />
-
-// Dropdown options: Air consumption
-const optionsAC = [
-  { key: 1, text: "AC1", value: 1 },
-  { key: 2, text: "AC2", value: 2 },
-  { key: 3, text: "AC3", value: 3 },
-  { key: 4, text: "AC4", value: 4 },
-  { key: 5, text: "AC5", value: 5 }
-];
-//Dropdown: Air consumption
-const dropdownAC = <Dropdown options={optionsAC} />
-//Dropdown: Air consumption card
-const dropdownACC = <Dropdown options={optionsAC} />
-
-/************************************************************************* */
-
-// Horizontal cards: Electricity consumption
-const dataECC = [
-  {
-    label: "▲ Previous day:",
-    previousValue: "390 kW",
-    type: 1,
-    value: 437,
-    units: "kg"
-  },
-  {
-    type: 2,
-    value: 440,
-    units: "kW"
-  },
-  {
-    type: 2,
-    value: 410,
-    units: "kW"
-  }
-];
-const cardsEC = dataECC.map(el => <CustomCard {...el} />);
-const deckEC = <HorizontalCards cards={cardsEC} />
-
-// Horizontal cards: Electricity consumption
-const dataACC = [
-  {
-    label: "▬ Previous day:",
-    previousValue: "129 m3/h",
-    type: 1,
-    value: 129,
-    units: "m3/h"
-  },
-  {
-    type: 2,
-    value: 170,
-    units: "m3/h"
-  },
-  {
-    type: 2,
-    value: 110,
-    units: "m3/h"
-  }
-];
-const cardsAC = dataACC.map(el => <CustomCard {...el} />);
-const deckAC = <HorizontalCards cards={cardsAC} />
-
 class ElectricityAir extends Component {
-
   /**
-   * [api]: Contains received data from express server
-   * [dataACT, dataECT]: Holds "consumption_electricity_x.csv", "consumption_air_x.csv" data.
-   * The "x" represents the sensor location
-   */
+  * [api]: Contains received data from express server
+  * [currentTimeRange]: Contains selected time frame for trend and deck elements
+  * [currentValueDropdown]: Contains current value of dropdown for trend and deck elements
+  * [dataACD, dataECD, dataACT, dataECT]: Holds "consumption_electricity_x.csv"; "consumption_air_x.csv"
+  * The "x" represents the sensor location
+  */
   state = {
     api: {
-      dataACD: [],
+      dataACD: {
+        average: {
+          avgTimeRange: 0,
+          avgPrevTimeRange: 0
+        },
+        maxValue: 0,
+        minValue: 0
+      },
+      dataECD: {
+        average: {
+          avgTimeRange: 0,
+          avgPrevTimeRange: 0
+        },
+        maxValue: 0,
+        minValue: 0
+      },
       dataACT: [],
-      dataECD: [],
-      dataECT: []
+      dataECT: [],
     },
     currentTimeRange: {
-      timeRangeACD: "week",
-      timeRangeACT: "week",
-      timeRangeECD: "week",
-      timeRangeECT: "week"
+      currentTimeRangeACD: "week",
+      currentTimeRangeACT: "week",
+      currentTimeRangeECD: "week",
+      currentTimeRangeECT: "week"
     },
     currentValueDropdown: {
-      dropdownACD: 1,
-      dropdownACT: 1,
-      dropdownECD: 1,
-      dropdownECT: 1,
+      currentValueDropdownACD: 1,
+      currentValueDropdownACT: 1,
+      currentValueDropdownECD: 1,
+      currentValueDropdownECT: 1,
     }
   }
 
@@ -129,32 +67,48 @@ class ElectricityAir extends Component {
    */
   async componentDidMount() {
     this.updateDataOnScreen();
-    this.timerID = setInterval(() => this.updateDataOnScreen(), 60000);
+    this.timerID = setInterval(() => this.updateDataOnScreen(), 5000);
   }
 
+  // If component unmounts, then free memory resources
   componentWillUnmount() {
     clearInterval(this.timerID);
   }
 
   async updateDataOnScreen() {
-    const { dropdownACD, dropdownACT, dropdownECD, dropdownECT } = this.state.currentValueDropdown;
-    const { timeRangeACD, timeRangeACT, timeRangeECD, timeRangeECT } = this.state.currentTimeRange;
+    // Define id's to target all UI elements
+    const { currentTimeRange, currentValueDropdown } = this.state;
+    const ids = ["ACD", "ACT", "ECD", "ECT"];
 
-    const dataACD = await connectServer(dropdownACD, "ACD", timeRangeACD);
-    const dataACT = await connectServer(dropdownACT, "ACT", timeRangeACT);
-    const dataECD = await connectServer(dropdownECD, "ECD", timeRangeECD);
-    const dataECT = await connectServer(dropdownECT, "ECT", timeRangeECT);
+    // Get data for all elements
+    const data = await Promise.all(ids.map(async (id) => {
+      const valueDropdown = currentValueDropdown[`currentValueDropdown${id}`];
+      const timeRange = currentTimeRange[`currentTimeRange${id}`];
+      return await processDataFromServer(valueDropdown, id, timeRange);
+    }));
 
-    this.setState({ api: { dataACD, dataACT, dataECD, dataECT } });
+    // Update state for all components
+    this.setState(
+      {
+        api:
+        {
+          dataACD: data[0],
+          dataACT: data[1],
+          dataECD: data[2],
+          dataECT: data[3]
+        }
+      }
+    );
   }
 
   /**
-  * Each sensor stores its data in one specific file, which
-  * is targeted by the dropdown (current selected option)
-  * 
-  */
+   * [updateDropdownState]: Update value of dropdown element
+   * [id]: Helps to determine the correct dropdown element
+   * [value]: Value of dropdown element
+   * [e]: Synthetic event. The event is used internally by UI library 
+   */
   updateDropdownState = (e, { value }, id) => this.setState(prevState => {
-    const dropdownSelector = `dropdown${id}`;
+    const dropdownSelector = `currentValueDropdown${id}`;
     const nextUpdate = { ...prevState };
     nextUpdate.currentValueDropdown[dropdownSelector] = value;
     return { nextUpdate };
@@ -166,103 +120,100 @@ class ElectricityAir extends Component {
    * [timeRange]: It can be a string ("day", "week", "month") or an array of two "moment" objects
    */
   getDataFromServer = async (id, timeRange) => {
-    let currentValueDropdown;
-    const { dropdownACD, dropdownACT, dropdownECD, dropdownECT } = this.state.currentValueDropdown;
+    // Update value of selected dropdown
+    const currentValueDropdown = this.state.currentValueDropdown[setCurrentValueDropdown(id)];
 
     /**
-     * When users click any of the control buttons (day, week, month), the current value of the dropdown,
-     * helps to target the correct recipe file (i.e. "consumption_powder_type_2.csv" ). Here we need
-     * to be careful of using the correct dropdown value as there are two on the screen. Do not swap the  values
-     * (top instead of bottom value and viceversa) 
+     * Response data from server API. The data is formatted 
+     * based on nivo library. If an error comes up, then 
+     * "data" is "false". Though I can exit the function at 
+     * this point, I'll let it continue. Trends and deck 
+     * elements handle the event of no-data using fallback data 
      */
-    if (id === "ACD") currentValueDropdown = dropdownACD;
-    if (id === "ACT") currentValueDropdown = dropdownACT;
-    if (id === "ECD") currentValueDropdown = dropdownECD;
-    if (id === "ECT") currentValueDropdown = dropdownECT;
+    const filteredData = await processDataFromServer(currentValueDropdown, id, timeRange);
 
-    // Contains response data from API. The data is formatted based on nivo library
-    const filteredData = await connectServer(currentValueDropdown, id, timeRange);
-
+    // Update state of all elements
     this.setState(prevState => {
-      const dataSelector = `data${id}`; // dataACD, dataACT, dataECD, dataECT
-      const currentTimeRange = `timeRange${id}`; // timeRangeACD, timeRangeACT, timeRangeECD, timeRangeECT
-
       const nextUpdate = { ...prevState };
+      const dataSelector = `data${id}`;
+      const currentTimeRange = `currentTimeRange${id}`;
       nextUpdate.currentTimeRange[currentTimeRange] = timeRange;
       nextUpdate.api[dataSelector] = filteredData;
       return { nextUpdate };
     });
   }
 
+  /**
+   * 
+   * @param {*} ids Arrays of ids (i.e "ACD", "ACT", "ECD", "ECT")
+   * @returns Array of context values for graphs
+   */
+  createContextValues = (ids) => {
+    const { currentValueDropdown } = this.state;
+    const { getDataFromServer, updateDropdownState } = this;
+    const baseContextValue = { getDataFromServer, updateDropdownState };
+
+    return ids.map(id => (
+      {
+        ...baseContextValue,
+        id,
+        currentValueDropdown: currentValueDropdown[`currentValueDropdown${id}`]
+      }
+    ));
+  }
+
   render() {
-    // Dropdown: Current selected options
-    const { dropdownACD, dropdownACT, dropdownECD, dropdownECT } = this.state.currentValueDropdown;
+    // Extract some class methods
+    const { createContextValues } = this;
 
-    // Initialize context values for graph containers
-    const contextValueACD = {
-      id: "ACD",
-      currentValueDropdown: dropdownACD,
-      getDataFromServer: this.getDataFromServer,
-      updateDropdownState: this.updateDropdownState
-    };
+    // Data from API
+    const { dataACT, dataACD, dataECT, dataECD, } = this.state.api;
 
-    const contextValueACT = {
-      id: "ACT",
-      currentValueDropdown: dropdownACT,
-      getDataFromServer: this.getDataFromServer,
-      updateDropdownState: this.updateDropdownState
-    };
+    // Current time range for elements
+    const { currentTimeRangeACD, currentTimeRangeECD } = this.state.currentTimeRange;
 
-    const contextValueECD = {
-      id: "ECD",
-      currentValueDropdown: dropdownECD,
-      getDataFromServer: this.getDataFromServer,
-      updateDropdownState: this.updateDropdownState
-    };
+    // Create context values
+    const ids = ["ECT", "ACT", "ECD", "ACD"];
+    const contextValue = createContextValues(ids);
 
-    const contextValueECT = {
-      id: "ECT",
-      currentValueDropdown: dropdownECT,
-      getDataFromServer: this.getDataFromServer,
-      updateDropdownState: this.updateDropdownState
-    };
+    // Deck UI components
+    const DeckACD = <Deck data={dataACD} timeRange={currentTimeRangeACD} units="m3/h" />;
+    const DeckECD = <Deck data={dataECD} timeRange={currentTimeRangeECD} units="kW" />;
 
-    // Data from express server
-    const { dataACT, dataECT } = this.state.api;
+    // Dropdown UI components
+    const DropdownEC = <Dropdown {...propsDropdownEC} />;
+    const DropdownAC = <Dropdown {...propsDropdownAC} />;
 
-    /**
-     * When a LineChart component is created, the "id" must match the ones required
-     * by the "LineChart" component. Refer to the component definition for more details
-     */
-    const graphACT = <LineChart id="ACT" data={[{ id: "Airflow", data: dataACT }]} />
-    const graphECT = <LineChart id="ECT" data={[{ id: "Electricity", data: dataECT }]} />
+    // Line chart UI components
+    const LineChartACT = <LineChart id="ACT" data={[{ id: "Airflow", data: dataACT }]} />;
+    const LineChartECT = <LineChart id="ECT" data={[{ id: "Electricity", data: dataECT }]} />;
 
     return (
       <Row className={styles.electricityAir}>
         <Col className={styles.left}>
           <div className={styles.top}>
-            <GraphContext.Provider value={contextValueECT}>
-              <GraphContainer {...propsTitleBarECT} graph={graphECT} dropdown={dropdownEC} />
+            <GraphContext.Provider value={contextValue[0]}>
+              <GraphContainer {...propsTitleBarECT} graph={LineChartECT} dropdown={DropdownEC} />
             </GraphContext.Provider>
           </div>
 
           <div className={styles.bottom}>
-            <GraphContext.Provider value={contextValueACT}>
-              <GraphContainer {...propsTitleBarACT} graph={graphACT} dropdown={dropdownAC} />
+            <GraphContext.Provider value={contextValue[1]}>
+              <GraphContainer {...propsTitleBarACT} graph={LineChartACT} dropdown={DropdownAC} />
             </GraphContext.Provider>
           </div>
         </Col>
 
         <Col className={styles.right}>
           <div className={styles.top}>
-            <GraphContext.Provider value={contextValueECD}>
-              <GraphContainer {...propsTitleBarECD} graph={deckEC} dropdown={dropdownECC} />
+            <GraphContext.Provider value={contextValue[2]}>
+              <GraphContainer {...propsTitleBarECD} graph={DeckECD} dropdown={DropdownEC} />
             </GraphContext.Provider>
           </div>
 
           <div className={styles.bottom} >
-            <GraphContext.Provider value={contextValueACD}>
-              <GraphContainer {...propsTitleBarACD} graph={deckAC} dropdown={dropdownACC} />
+            <GraphContext.Provider value={contextValue[3]}>
+              <GraphContainer {...propsTitleBarACD} graph={DeckACD} dropdown={DropdownAC} />
             </GraphContext.Provider>
           </div>
         </Col>

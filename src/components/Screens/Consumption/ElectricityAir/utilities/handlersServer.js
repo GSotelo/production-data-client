@@ -1,6 +1,6 @@
 import connectAPI from "../../../../../api/connectAPI";
 import processDataDeck from "../../../../../utils/processDataDeck";
-import { axiosAirPressure } from "../../../../../api/axios";
+import { axiosElectricityAir } from "../../../../../api/axios";
 import { propsToasterDanger } from "./props";
 import { toaster } from "evergreen-ui";
 
@@ -8,29 +8,58 @@ import { toaster } from "evergreen-ui";
  * This function works in conjuction with HTTP GET requests
  * @param {*} id Helps to determine the endpoint for API requests
  * @param {*} timeRange String with value of either "day", "week", "month"
- * @returns String containing the API endpoint
+ * @returns A string containing the API endpoint
  */
 const getEndpoint = (currentValueDropdown, id, timeRange) => {
   let endpoint;
-
-  const isDayRequesFromDeck = (id === "BottomAPD" || id === "TopAPD");
-
-  if (isDayRequesFromDeck) {
-    endpoint = `/${currentValueDropdown}/deck-${timeRange}`;
-    return endpoint;
+  switch (id) {
+    case "ACD":
+      endpoint = `/air/${currentValueDropdown}/deck-${timeRange}`;
+      break;
+    case "ECD":
+      endpoint = `/electricity/${currentValueDropdown}/deck-${timeRange}`;
+      break;
+    case "ACT":
+      endpoint = `/air/${currentValueDropdown}/${timeRange}`;
+      break;
+    case "ECT":
+      endpoint = `/electricity/${currentValueDropdown}/${timeRange}`;
+      break;
+    default:
+      break;
   }
-
-  endpoint = `/${currentValueDropdown}/${timeRange}`;
   return endpoint;
 };
 
 /**
+ * This function works in conjuction with HTTP POST requests
+ * @param {*} id Helps to determine the filename for API requests
+ * @returns 
+ */
+const getFilename = (currentValueDropdown, id) => {
+  let filename;
+  switch (id) {
+    case "ACD":
+    case "ACT":
+      filename = `consumption_air_${currentValueDropdown}.csv`;
+      break;
+    case "ECD":
+    case "ECT":
+      filename = `consumption_electricity_${currentValueDropdown}.csv`;
+      break;
+    default:
+      break;
+  }
+  return filename;
+}
+
+/**
  * 
  * @param {*} id Helps to determine either the endpoint or filename for API requests
- * @param {*} timeRange String or array of two "moment" objects
+ * @param {*} timeRange A string or array of two "moment" objects
  * @returns Data to feed line chart according to "nivo" library
  */
-const connectServer = async (currentValueDropdown, id, timeRange) => {
+export const connectServer = async (currentValueDropdown, id, timeRange) => {
   /**
    * Check is request comes from a control button or date picker
    */
@@ -38,13 +67,13 @@ const connectServer = async (currentValueDropdown, id, timeRange) => {
   const timeRangeIsString = typeof timeRange === "string";
 
   /**
-   * If control button, then trigger HTTP GET requests
+   * If control button, then triggers HTTP GET requests
    */
   if (timeRangeIsString) {
     const endpoint = getEndpoint(currentValueDropdown, id, timeRange);
     let filteredData = false;
     try {
-      filteredData = await connectAPI.get(axiosAirPressure, endpoint);
+      filteredData = await connectAPI.get(axiosElectricityAir, endpoint);
     } catch (error) {
       toaster.danger(...propsToasterDanger);
       console.error("[connectServer]: Request to server API failed (GET)");
@@ -53,14 +82,13 @@ const connectServer = async (currentValueDropdown, id, timeRange) => {
   }
 
   /**
-  * If date picker, then trigger HTTP POST requests
+  * If date picker, then triggers HTTP POST requests
   */
   if (timeRangeIsArray) {
-    const filename = `sensor_air_pressure_${currentValueDropdown}.csv`;
+    const filename = getFilename(currentValueDropdown, id);
     let filteredData = false;
     try {
-      filteredData = await connectAPI.post(axiosAirPressure, "/", { filename, timeRange })
-
+      filteredData = await connectAPI.post(axiosElectricityAir, "/", { filename, timeRange })
     } catch (error) {
       toaster.danger(...propsToasterDanger);
       console.error("[connectServer]: Request to server API failed (POST)");
@@ -79,12 +107,12 @@ const processDataFromServer = async (currentValueDropdown, id, timeRange) => {
   const dataFromServer = await connectServer(currentValueDropdown, id, timeRange);
 
   switch (id) {
-    case "BottomAPD":
-    case "TopAPD":
+    case "ACD":
+    case "ECD":
       data = processDataDeck.run(dataFromServer, timeRange);
       break;
-    case "BottomAPT":
-    case "TopAPT":
+    case "ACT":
+    case "ECT":
       data = dataFromServer;
       break;
     default:
@@ -94,3 +122,5 @@ const processDataFromServer = async (currentValueDropdown, id, timeRange) => {
 };
 
 export default processDataFromServer;
+
+

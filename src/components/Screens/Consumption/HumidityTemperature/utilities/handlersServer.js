@@ -114,7 +114,7 @@ const processDataFromServer = async (currentValueDropdown, id, timeRange) => {
       break;
     case "HST":
     case "TST":
-      data = dataFromServer
+      data = dataFromServer;
       break;
     default:
       break;

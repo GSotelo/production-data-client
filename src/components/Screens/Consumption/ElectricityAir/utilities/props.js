@@ -53,3 +53,39 @@ export const propsTitleBarACD = {
   title: "Air consumption",
   type: 3
 };
+
+/**
+ * [propsToasterDanger]: Alert configuration if API request fails
+ */
+ export const propsToasterDanger = [
+  "Error",
+  {
+    description:"Sensor device not found."
+  }
+];
+
+/**
+ * [propsDropdownEC]: Electricity comsumption - dropdown options
+ */
+ export const propsDropdownEC = {
+  options : [
+    { key: 1, text: "EC-1", value: 1 },
+    { key: 2, text: "EC-2", value: 2 },
+    { key: 3, text: "EC-3", value: 3 },
+    { key: 4, text: "EC-4", value: 4 },
+    { key: 5, text: "EC-5", value: 5 }
+  ]
+};
+
+/**
+ * [propsDropdownAC]: Air comsumption - dropdown options
+ */
+ export const propsDropdownAC = {
+  options : [
+    { key: 1, text: "AC-1", value: 1 },
+    { key: 2, text: "AC-2", value: 2 },
+    { key: 3, text: "AC-3", value: 3 },
+    { key: 4, text: "AC-4", value: 4 },
+    { key: 5, text: "AC-5", value: 5 }
+  ]
+};
