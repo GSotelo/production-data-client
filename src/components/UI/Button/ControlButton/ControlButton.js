@@ -5,7 +5,7 @@ import { ReactComponent as Month } from "../../../../assets/svg/month.svg";
 
 import styles from "./ControlButton.module.css";
 
-import { GraphContext } from "../../../Context/GraphContext";
+import  GraphContext  from "../../../Context/GraphContext";
 
 const ControlButton = ({ type }) => {
   const timeRange = type;

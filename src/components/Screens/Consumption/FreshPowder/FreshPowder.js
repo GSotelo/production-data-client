@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Deck from "./utilities/CustomDeck";
 import GraphContainer from "../../../Container/GraphContainer";
 import LineChart from "./utilities/LineChart";
-import { GraphContext } from "../../../Context/GraphContext";
+import  GraphContext  from "../../../Context/GraphContext";
 import { Row, Col } from "antd";
 
 import styles from "./FreshPowder.module.css";

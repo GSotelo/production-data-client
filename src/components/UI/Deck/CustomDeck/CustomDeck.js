@@ -4,23 +4,28 @@ import HorizontalCards from "../../Cards/HorizontalCards/HorizontalCards";
 
 import processDataDeck from "../../../../utils/processDataDeck";
 
+
 const { setFooterLabel, setFooterValue } = processDataDeck;
 
 /**
- * This component was designed to work
- * in conjuntion with "CustomCard" component.
- * This component renders deck elements to
- * describe average, max value, min value cards,
- * which can be found on screens as:
+ * This component was designed to work in conjuntion with 
+ * the "CustomCard" component. It renders card elements for
+ * showing average, maximum and minimum values. It can be
+ * be found on the folloiwinng screens:
  * "Air pressure"
  * "Humidity and temperature"
  * "Electricity and air"
  */
 const Deck = ({ data, timeRange, units }) => {
-  // "data" structure is defined by the state object for deck elements
+  // The structure "data" is defined by the "state" object of each "Screen" component
   const { avgTimeRange, avgPrevTimeRange } = data.average;
 
-  // Helps to configure each "Card" element
+  /**
+   *  Configuration for each "Card" element.
+   *  1st element: Blue card showing current and previous values
+   *  2nd element: Maximum value based on provided data
+   *  3rd element: Minimum value based on provided data
+   */
   const configDeck = [
     {
       label: setFooterLabel(timeRange, avgTimeRange, avgPrevTimeRange),
@@ -40,12 +45,14 @@ const Deck = ({ data, timeRange, units }) => {
       units
     }
   ];
+
   const Cards = configDeck.map(el => <Card {...el} />);
 
+  // Custom deck UI component
   return (
-    <>
+    <Fragment>
       <HorizontalCards cards={Cards} />
-    </>
+    </Fragment>
   );
 
 };

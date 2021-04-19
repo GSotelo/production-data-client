@@ -5,12 +5,11 @@ import { axiosAirPressure } from "../../../../../api/axios";
  * This function works in conjuction with HTTP GET requests
  * @param {*} id Helps to determine the endpoint for API requests
  * @param {*} timeRange String with value of either "day", "week", "month"
- * @returns A string containing the API endpoint
+ * @returns String containing the API endpoint
  */
 const getEndpoint = (currentValueDropdown, id, timeRange) => {
   let endpoint;
   
-  // NEW TRY 
   const isDayRequesFromDeck = (id === "BottomAPD" || id === "TopAPD");
 
   if (isDayRequesFromDeck) {
@@ -25,10 +24,10 @@ const getEndpoint = (currentValueDropdown, id, timeRange) => {
 /**
  * 
  * @param {*} id Helps to determine either the endpoint or filename for API requests
- * @param {*} timeRange A string or array of two "moment" objects
+ * @param {*} timeRange String or array of two "moment" objects
  * @returns Data to feed line chart according to "nivo" library
  */
-export const connectServer = async (currentValueDropdown, id, timeRange) => {
+const connectServer = async (currentValueDropdown, id, timeRange) => {
   /**
    * Check is request comes from a control button or date picker
    */
@@ -36,7 +35,7 @@ export const connectServer = async (currentValueDropdown, id, timeRange) => {
   const timeRangeIsString = typeof timeRange === "string";
 
   /**
-   * If control button, then triggers HTTP GET requests
+   * If control button, then trigger HTTP GET requests
    */
   if (timeRangeIsString) {
     const endpoint = getEndpoint(currentValueDropdown, id, timeRange);
@@ -45,7 +44,7 @@ export const connectServer = async (currentValueDropdown, id, timeRange) => {
   }
 
   /**
-  * If date picker, then triggers HTTP POST requests
+  * If date picker, then trigger HTTP POST requests
   */
   if (timeRangeIsArray) {
     const filename = `sensor_air_pressure_${currentValueDropdown}.csv`;
@@ -53,4 +52,6 @@ export const connectServer = async (currentValueDropdown, id, timeRange) => {
     return filteredData;
   }
 };
+
+export default connectServer;
 

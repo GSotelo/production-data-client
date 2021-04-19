@@ -20,6 +20,9 @@ export const propsTitleBarAPD = {
   type: 3
 };
 
+/**
+ * [propsToasterDanger]: Alert configuration if API request fails
+ */
 export const propsToasterDanger = [
   "Error",
   {
@@ -27,6 +30,9 @@ export const propsToasterDanger = [
   }
 ];
 
+/**
+ * [propsDropdownAP]: Dropdown options
+ */
 export const propsDropdownAP = {
   options : [
     { key: 1, text: "AP-1", value: 1 },

@@ -52,8 +52,8 @@ const LineChart = ({ data, id }) => {
   /**
   *  If express server provides no data, then use the default one.
   */
-  const useDefaultData = typeof data[0].data != "undefined" && data[0].data.length > 0;
-  const lineData = useDefaultData ? data : defaultLineData;
+  const useServerData = typeof data[0].data != "undefined" && data[0].data.length > 0;
+  const lineData = useServerData ? data : defaultLineData;
 
   return (
     <Line {...layout} data={lineData} />

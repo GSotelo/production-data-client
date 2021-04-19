@@ -2,14 +2,14 @@ import React, { Component } from "react";
 import Deck from "../../../UI/Deck/CustomDeck/CustomDeck";
 import Dropdown from "../../../UI/Dropdown/Dropdown";
 import GraphContainer from "../../../Container/GraphContainer";
+import GraphContext from "../../../Context/GraphContext";
 import LineChart from "./utilities/LineChart";
-import { GraphContext } from "../../../Context/GraphContext";
 import { Row, Col } from "antd";
 
 import styles from "./AirPressure.module.css";
-import { setCurrentValueDropdown } from "./utilities/miscellaneous";
+import connectServer from "./utilities/connectServer";
 import processDataDeck from "../../../../utils/processDataDeck";
-import { connectServer } from "./utilities/connectServer";
+import { setCurrentValueDropdown } from "./utilities/miscellaneous";
 import { propsTitleBarAPT, propsTitleBarAPD, propsDropdownAP, propsToasterDanger } from "./utilities/props";
 import { toaster } from "evergreen-ui";
 
@@ -18,7 +18,6 @@ class AirPressure extends Component {
   * [api]: Contains received data from express server
   * [currentTimeRange]: Contains selected time frame for trend and deck elements
   * [currentValueDropdown]: Contains current value of dropdown for trend and deck elements
-  * [error]: If API request fails, error is "true"
   * [dataBottomAPD, dataBottomAPT, dataTopAPD, dataTopAPT]: Holds "sensor_air_pressure_x.csv"
   * The "x" represents the sensor location
   */
@@ -129,13 +128,13 @@ class AirPressure extends Component {
      * Response data from server API. The data is formatted 
      * based on nivo library. If promise is rejected, the error 
      * flag in the state object is activated. If an error comes up, 
-     * then "filteredData" is undefined. Though I can exit the 
+     * then "dataFromServer" is undefined. Though I can exit the 
      * function at this point, I'll let it continue. Trends and 
      * deck elements handle the event of no-data using fallback data 
      */
-    let filteredData;
+    let dataFromServer;
     try {
-      filteredData = await connectServer(currentValueDropdown, id, timeRange);
+      dataFromServer = await connectServer(currentValueDropdown, id, timeRange);
     } catch (error) {
       console.error("[getDataFromServer]: Request to server API failed");
       toaster.danger(...propsToasterDanger);
@@ -144,11 +143,10 @@ class AirPressure extends Component {
     // Data for either trend or deck elements
     let data;
     if ((id === "BottomAPD") || (id === "TopAPD")) {
-      data = processDataDeck.run(filteredData, timeRange);
-      console.log("DATA ;", data);
+      data = processDataDeck.run(dataFromServer, timeRange);
     }
     if ((id === "BottomAPT") || (id === "TopAPT")) {
-      data = filteredData;
+      data = dataFromServer;
     }
 
     // Update state of all elements
@@ -202,15 +200,15 @@ class AirPressure extends Component {
     const contextValueTopAPT = createContextValues("TopAPT", currentValueDropdownTopAPT);
 
     // Deck UI components
-    const DeckTopAPD = <Deck data={dataTopAPD} timeRange={currentTimeRangeTopAPD} units="bar" />
-    const DeckBottomAPD = <Deck data={dataBottomAPD} timeRange={currentTimeRangeBottomAPD} units="bar" />
+    const DeckTopAPD = <Deck data={dataTopAPD} timeRange={currentTimeRangeTopAPD} units="bar" />;
+    const DeckBottomAPD = <Deck data={dataBottomAPD} timeRange={currentTimeRangeBottomAPD} units="bar" />;
 
     // Dropdown UI components
     const DropdownAP = <Dropdown {...propsDropdownAP} />
 
     // Line chart UI components
-    const LineChartBottomAPT = <LineChart id="BottomAPT" data={[{ id: "Air pressure", data: dataBottomAPT }]} />
-    const LineChartTopAPT = <LineChart id="TopAPT" data={[{ id: "Air pressure", data: dataTopAPT }]} />
+    const LineChartBottomAPT = <LineChart id="BottomAPT" data={[{ id: "Air pressure", data: dataBottomAPT }]} />;
+    const LineChartTopAPT = <LineChart id="TopAPT" data={[{ id: "Air pressure", data: dataTopAPT }]} />;
 
     return (
       <Row className={styles.airPressure}>

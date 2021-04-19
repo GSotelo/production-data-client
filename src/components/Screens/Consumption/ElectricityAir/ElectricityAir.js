@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import Dropdown from "../../../UI/Dropdown/Dropdown";
 import GraphContainer from "../../../Container/GraphContainer";
 import LineChart from "./utilities/LineChart";
-import { GraphContext } from "../../../Context/GraphContext";
+import  GraphContext from "../../../Context/GraphContext";
 import { Row, Col } from "antd";
 
 import styles from "./ElectricityAir.module.css";

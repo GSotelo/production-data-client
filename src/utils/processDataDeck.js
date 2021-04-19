@@ -103,6 +103,12 @@ const groupDataByDate = (arr, breakpoint, func1, func2, func3, timeRange) => {
   if (_.isEmpty(arr)) {
     return false;
   }
+
+  // If "timeRange" comes from datepicker, there is no need to group data
+  if (timeRange instanceof Array) {
+    return { prevData: false, currentData: arr };
+  }
+
   const prevData = func2(arr, breakpoint, func1, timeRange);
   const currentData = func3(arr, breakpoint, func1, timeRange);
   return { prevData, currentData };
@@ -178,7 +184,7 @@ const setFooterValue = (timeRange, prevValue, unit) => {
 };
 
 const run = (arr, timeRange) => {
-  
+
   // The "fallbackData" structure matches the state object
   const fallbackData = {
     average: {
@@ -196,11 +202,11 @@ const run = (arr, timeRange) => {
     return fallbackData;
   }
 
-  // /**
-  //  * If "timeRange" is sent by datepicker,
-  //  * there is no need to divide the data into
-  //  * two groups
-  //  */
+  /**
+   * If "timeRange" is sent by datepicker,
+   * there is no need to divide the data into
+   * two groups
+   */
   // Separate "arr" data in two parts: before and after date
   const breakpoint = createDateObject(new Date()).subtract(1, timeRange);
   const argsGroupDataByDate = [
@@ -245,6 +251,7 @@ const run = (arr, timeRange) => {
   const avgPrevData = getAverage(yValuePrevData);
   const avgCurrentData = getAverage(yValueCurrentData);
 
+  console.log("Breakpoint",breakpoint );
   console.log("Before break point, ", prevData);
   console.log("After breakpoint, ", currentData);
   console.log("Maximum current value", yMaxValueCurrentData);

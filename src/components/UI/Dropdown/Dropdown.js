@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { Dropdown } from 'semantic-ui-react';
-import { GraphContext } from "../../Context/GraphContext";
+import GraphContext  from "../../Context/GraphContext";
 
 import styles from "./Dropdown.module.css";
 

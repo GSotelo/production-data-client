@@ -3,9 +3,9 @@ import ControlBar from "../Bar/ControlBar/ControlBar";
 import DropdownTitleBar from "../Bar/TitleBar/DropdownTitleBar";
 import StandardTitleBar from "../Bar/TitleBar/StandardTitleBar";
 import TwoIconsTitleBar from "../Bar/TitleBar/TwoIconsTitleBar";
+import { Row, Col } from "antd";
 
 import "./GraphContainer.css";
-import { Row, Col } from "antd";
 
 /**
  * General notes:

@@ -3,7 +3,7 @@ import { DatePicker } from 'antd';
 
 import styles from "./Datepicker.module.css";
 
-import { GraphContext } from "../../Context/GraphContext";
+import  GraphContext  from "../../Context/GraphContext";
 
 const { RangePicker } = DatePicker;
 

@@ -3,7 +3,7 @@ import Dropdown from "../../../UI/Dropdown/Dropdown";
 import GraphContainer from "../../../Container/GraphContainer";
 import LineChart from "./utilities/LineChart";
 import Table from "../../../UI/Table/MaterialUI/Table";
-import { GraphContext } from "../../../Context/GraphContext";
+import  GraphContext  from "../../../Context/GraphContext";
 import { Row, Col } from "antd";
 
 import styles from "./PowderType.module.css";

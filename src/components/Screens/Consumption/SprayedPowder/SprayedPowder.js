@@ -4,7 +4,7 @@ import CustomCard from "../../../UI/Card/CustomCard/CustomCard";
 import Dropdown from "../../../UI/Dropdown/Dropdown";
 import HorizontalCards from "../../../UI/Cards/HorizontalCards/HorizontalCards";
 import GraphContainer from "../../../Container/GraphContainer";
-import { GraphContext } from "../../../Context/GraphContext";
+import  GraphContext  from "../../../Context/GraphContext";
 import { Row, Col } from "antd";
 import { propsSPCT, propsSPCTC, propsSPCR, propsSPCRC } from "./utilities/props";
 
