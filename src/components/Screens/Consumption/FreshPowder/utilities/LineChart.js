@@ -22,7 +22,7 @@ const layoutTFP = {
 };
 
 /**
- * [layoutTFP]: Layout for Spectrum HD trend
+ * [layoutSHD]: Layout for Spectrum HD trend
  */
 const layoutSHD = {
   colors: "#e37222",
@@ -33,7 +33,7 @@ const layoutSHD = {
 };
 
 /**
- * [layoutTFP]: Layout for bigbag trend
+ * [layoutBB]: Layout for bigbag trend
  */
 const layoutBB = {
   colors: "#6f1c75",
@@ -70,7 +70,6 @@ const LineChart = ({ data, id }) => {
  /**
    *  If express server provides no data, then use the default one.
    */
-  
   const useDefaultData = typeof data[0].data != "undefined" && data[0].data.length > 0;
   const lineData = useDefaultData? data : defaultLineData;
 

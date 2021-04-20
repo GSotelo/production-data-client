@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import Deck from "../../../UI/Deck/CustomDeck/CustomDeck";
+import Deck from "../../../UI/Deck/CustomDeck/CustomDeck_1";
 import Dropdown from "../../../UI/Dropdown/Dropdown";
 import GraphContainer from "../../../Container/GraphContainer";
 import GraphContext from "../../../Context/GraphContext";
@@ -16,7 +16,7 @@ class AirPressure extends Component {
   * [api]: Contains received data from express server
   * [currentTimeRange]: Contains selected time frame for trend and deck elements
   * [currentValueDropdown]: Contains current value of dropdown for trend and deck elements
-  * [dataBottomAPD, dataBottomAPT, dataTopAPD, dataTopAPT]: Holds "sensor_air_pressure_x.csv"
+  * [dataBottomAPD, dataBottomAPT, dataTopAPD, dataTopAPT]: Holds data for "sensor_air_pressure_x.csv"
   * The "x" represents the sensor location
   */
   state = {
@@ -140,7 +140,6 @@ class AirPressure extends Component {
   }
 
   /**
-   * 
    * @param {*} ids Arrays of ids (i.e "BottomAPD", "BottomAPT", "TopAPD", "TopAPT")
    * @returns Array of context values for graphs
    */

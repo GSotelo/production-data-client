@@ -15,7 +15,7 @@ import { ReactComponent as FreshPowder } from "../../../../../assets/svg/freshPo
  */
 
 /**
- * [propsTitleBarTFP]: Title bar in total fresh powder trend
+ * [propsTitleBarTFPT]: Title bar in total fresh powder trend
  * Title bar: Icon and description text (type 1)
  */
 export const propsTitleBarTFPT = {
@@ -32,17 +32,17 @@ export const propsTitleBarTFPD = {
   icon: <FreshPowder />,
   title: "Total fresh powder",
   type: 1
-}
+};
 
 /**
- * [propsTitleBarSHD]: Title bar in spectrum hd trend
+ * [propsTitleBarSHDT]: Title bar in spectrum hd trend
  * Title bar: Icon and description text (type 1)
  */
 export const propsTitleBarSHDT = {
   icon: <FeedPowder />,
   title: "Spectrum HD",
   type: 1
-}
+};
 
 /**
  * [propsTitleBarSHDD]: Title bar in spectrum hd deck
@@ -53,7 +53,7 @@ export const propsTitleBarSHDD = {
   title: "Spectrum HD",
   controlBarVisibility: false,
   type: 1
-}
+};
 
 /**
  * [propsTitleBarBBT]: Title bar in bigbag trend
@@ -63,7 +63,7 @@ export const propsTitleBarBBT = {
   icon: <BigBag />,
   title: "Big bag",
   type: 3
-}
+};
 
 /**
  * [propsTitleBarBBD]: Title bar in bigbag deck
@@ -74,4 +74,17 @@ export const propsTitleBarBBD = {
   title: "Big Bag",
   controlBarVisibility: false,
   type: 1
-}
+};
+
+/**
+ * [propsDropdownBB]: Bigbag - dropdown options
+ */
+ export const propsDropdownBB = {
+  options: [
+    { key: 1, text: "BB-1", value: 1 },
+    { key: 2, text: "BB-2", value: 2 },
+    { key: 3, text: "BB-3", value: 3 },
+    { key: 4, text: "BB-4", value: 4 },
+    { key: 5, text: "BB-5", value: 5 }
+  ]
+};

@@ -2,6 +2,19 @@ import { ReactComponent as Humidity } from "../../../../../assets/svg/humidity.s
 import { ReactComponent as Temperature } from "../../../../../assets/svg/temperature.svg";
 
 /**
+ * General notes:
+ * The following objects are used to give proper 
+ * customization to the title bar contained in the 
+ * "GraphContainer". Properties for card elements
+ * are provided here too. I do this in a separate file 
+ * because I don't want to populate the main flow 
+ * of the screen with configuration data for inner
+ * components. The title bar element can receive 
+ * icons, description text, and dropdown elements 
+ * based on the provided type
+ */
+
+/**
  * [propsTitleBarHST]: Title bar in "Humidity sensor" (trend)
  * Title bar: Dropdown, icon and description text (type 3)
  */

@@ -1,20 +1,23 @@
 import React, { Component } from 'react';
-import Deck from "./utilities/CustomDeck";
+//import Deck from "./utilities/CustomDeck";
+import Deck from "../../../UI/Deck/CustomDeck/CustomDeck_2/CustomDeck_2";
+import Dropdown from "../../../UI/Dropdown/Dropdown";
 import GraphContainer from "../../../Container/GraphContainer";
 import LineChart from "./utilities/LineChart";
-import  GraphContext  from "../../../Context/GraphContext";
+import GraphContext from "../../../Context/GraphContext";
 import { Row, Col } from "antd";
 
 import styles from "./FreshPowder.module.css";
 import { connectServer } from "./utilities/connectServer";
 import {
+  propsDropdownBB,
   propsTitleBarBBT,
   propsTitleBarBBD,
   propsTitleBarSHDT,
   propsTitleBarSHDD,
   propsTitleBarTFPT,
   propsTitleBarTFPD,
-} from "./utilities/propsTitleBar";
+} from "./utilities/props";
 
 /**
  * Data for deck: Total fresh powder
@@ -87,34 +90,29 @@ const graphBBD = <Deck orientation="vertical" deck={dataDeckBB} />;
 
 
 class FreshPowder extends Component {
-
   /**
-   * Initialize context values for graph containers
-   */
-  constructor(props) {
-    super(props);
-    this.contextValueBBT = { id: "BBT", getDataFromServer: this.getDataFromServer };
-    this.contextValueSHDT = { id: "SHDT", getDataFromServer: this.getDataFromServer };
-    this.contextValueTFPT = { id: "TFPT", getDataFromServer: this.getDataFromServer };
-    this.contextValueTFPD = { id: "TFPD", getDataFromServer: this.getDataFromServer };
-  }
-
-  /**
-   * [api]: Contains received data from express server
-   * [dataTFPT]: Holds "powder_total_fresh.csv" data for trend element
-   */
+ * [api]: Contains received data from express server
+ * [currentTimeRange]: Contains selected time frame for trend and deck elements
+ * [currentValueDropdown]: Contains current value of dropdown for trend and deck elements
+ * [dataBBT, dataSHDT, dataTFPD, dataTFPT]: Holds data for "powder_total_fresh.csv", 
+ * "powder_spectrum.csv", "powder_big_bag_x.csv"  
+ * The "x" represents the sensor location
+ */
   state = {
     api: {
+      dataTFPD: [],
       dataBBT: [],
       dataSHDT: [],
-      dataTFPD: [],
       dataTFPT: []
     },
     currentTimeRange: {
-      timeRangeBBT: "week",
-      timeRangeSHDT: "week",
-      timeRangeTFPD: "week",
-      timeRangeTFPT: "week"
+      currentTimeRangeTFPD: "week",
+      currentTimeRangeBBT: "week",
+      currentTimeRangeSHDT: "week",
+      currentTimeRangeTFPT: "week"
+    },
+    currentValueDropdown: {
+      currentValueDropdownBBT: 1
     }
   }
 
@@ -123,23 +121,37 @@ class FreshPowder extends Component {
    * 2. Triggers automatic updates every "x" milliseconds
    */
   async componentDidMount() {
-    this.updateDataOnScreen();
-    this.timerID = setInterval(() => this.updateDataOnScreen(), 60000);
+    //this.updateDataOnScreen();
+    //this.timerID = setInterval(() => this.updateDataOnScreen(), 60000);
   }
 
+  // If component unmounts, then free memory resources
   componentWillUnmount() {
     clearInterval(this.timerID);
   }
 
   async updateDataOnScreen() {
-    const { timeRangeBBT, timeRangeSHDT, timeRangeTFPD, timeRangeTFPT } = this.state.currentTimeRange;
-    const dataBBT = await connectServer("BBT", timeRangeBBT);
-    const dataSHDT = await connectServer("SHDT", timeRangeSHDT);
-    const dataTFPT = await connectServer("TFPT", timeRangeTFPT);
-    const dataTFPD = await connectServer("TFPD", timeRangeTFPD);
+    // const { currentTimeRangeBBT, currentTimeRangeSHDT, currentTimeRangeTFPD, currentTimeRangeTFPT } = this.state.currentTimeRange;
+    // const dataBBT = await connectServer("BBT", currentTimeRangeBBT);
+    // const dataSHDT = await connectServer("SHDT", currentTimeRangeSHDT);
+    // const dataTFPT = await connectServer("TFPT", currentTimeRangeTFPT);
+    // const dataTFPD = await connectServer("TFPD", currentTimeRangeTFPD);
 
-    this.setState({ api: { dataBBT, dataSHDT, dataTFPD, dataTFPT } });
+    // this.setState({ api: { dataBBT, dataSHDT, dataTFPD, dataTFPT } });
   }
+
+  /**
+   * [updateDropdownState]: Update value of dropdown element
+   * [id]: Helps to determine the correct dropdown element
+   * [value]: Value of dropdown element
+   * [e]: Synthetic event. The event is used internally by UI library 
+   */
+   updateDropdownState = (e, { value }, id) => this.setState(prevState => {
+    const dropdownSelector = `currentValueDropdown${id}`;
+    const nextUpdate = { ...prevState };
+    nextUpdate.currentValueDropdown[dropdownSelector] = value;
+    return { nextUpdate };
+  })
 
   /**
    * [getDataFromServer]: Establish connection to express server via HTTP requests (GET, POST)
@@ -154,7 +166,7 @@ class FreshPowder extends Component {
 
     this.setState(prevState => {
       const dataSelector = `data${id}`; // dataTFPT, dataSHDT, etc...
-      const currentTimeRange = `timeRange${id}`; // timeRangeTFPT, timeRangeSHDT, etc...
+      const currentTimeRange = `timeRange${id}`; // currentTimeRangeTFPT, currentTimeRangeSHDT, etc...
 
       const nextUpdate = { ...prevState };
       nextUpdate.currentTimeRange[currentTimeRange] = timeRange;
@@ -163,30 +175,56 @@ class FreshPowder extends Component {
     });
   }
 
+  /**
+  * @param {*} ids Arrays of ids (i.e "TFPT", "TFPD", "SHDT", "BBT")
+  * @returns Array of context values for graphs
+  */
+   createContextValues = (ids) => {
+    const { currentValueDropdown } = this.state;
+    const { getDataFromServer, updateDropdownState } = this;
+    const baseContextValue = { getDataFromServer, updateDropdownState };
+
+    return ids.map(id => (
+      {
+        ...baseContextValue,
+        id,
+        currentValueDropdown: currentValueDropdown[`currentValueDropdown${id}`]
+      }
+    ));
+  }
+
   render() {
-    /**
-     * Data from express server
-     */
+    // Extract some class methods
+    const { createContextValues } = this;
+
+    // Data from express server
     const { dataBBT, dataSHDT, dataTFPT } = this.state.api;
 
-    /**
-     * When a LineChart component is created, the "id" must match the ones required
-     * by the "LineChart" component. Refer to the component definition for more details
-     */
-    const graphBBT = <LineChart id="BBT" data={[{ id: "Bigbag powder", data: dataBBT }]} />
-    const graphSHDT = <LineChart id="SHDT" data={[{ id: "SHD powder", data: dataSHDT }]} />
-    const graphTFPT = <LineChart id="TFPT" data={[{ id: "Total powder", data: dataTFPT }]} />
+    // Create context values
+    const ids = ["TFPT", "TFPD", "SHDT", "BBT"];
+    const contextValue = createContextValues(ids);
+
+
+
+
+    // Dropdown UI components
+    const DropdownBB = <Dropdown {...propsDropdownBB} />;
+
+    // Line chart UI components
+    const LineChartBBT = <LineChart id="BBT" data={[{ id: "Bigbag powder", data: dataBBT }]} />
+    const LineChartSHDT = <LineChart id="SHDT" data={[{ id: "SHD powder", data: dataSHDT }]} />
+    const LineChartTFPT = <LineChart id="TFPT" data={[{ id: "Total powder", data: dataTFPT }]} />
 
     return (
       <div className={styles.freshPowder}>
         <Row className={styles.top}>
           <Col className={styles.trendBox}>
-            <GraphContext.Provider value={this.contextValueTFPT}>
-              <GraphContainer {...propsTitleBarTFPT} graph={graphTFPT} />
+            <GraphContext.Provider value={contextValue[0]}>
+              <GraphContainer {...propsTitleBarTFPT} graph={LineChartTFPT} />
             </GraphContext.Provider>
           </Col>
 
-          <GraphContext.Provider value={this.contextValueTFPD}>
+          <GraphContext.Provider value={contextValue[1]}>
             <Col className={styles.deckBox}>
               <GraphContainer {...propsTitleBarTFPD} graph={graphTFPD} />
             </Col>
@@ -195,8 +233,8 @@ class FreshPowder extends Component {
 
         <Row className={styles.bottom}>
           <Col className={styles.trendBox}>
-            <GraphContext.Provider value={this.contextValueSHDT}>
-              <GraphContainer {...propsTitleBarSHDT} graph={graphSHDT} />
+            <GraphContext.Provider value={contextValue[2]}>
+              <GraphContainer {...propsTitleBarSHDT} graph={LineChartSHDT} />
             </GraphContext.Provider>
           </Col>
 
@@ -205,8 +243,8 @@ class FreshPowder extends Component {
           </Col>
 
           <Col className={[styles.trendBox, styles.prx].join(" ")}>
-            <GraphContext.Provider value={this.contextValueBBT}>
-              <GraphContainer {...propsTitleBarBBT} graph={graphBBT} />
+            <GraphContext.Provider value={contextValue[3]}>
+              <GraphContainer {...propsTitleBarBBT} graph={LineChartBBT} dropdown={DropdownBB} />
             </GraphContext.Provider>
           </Col>
 

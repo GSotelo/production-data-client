@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import Deck from "../../../UI/Deck/CustomDeck/CustomDeck";
+import Deck from "../../../UI/Deck/CustomDeck/CustomDeck_1";
 import Dropdown from "../../../UI/Dropdown/Dropdown";
 import GraphContainer from "../../../Container/GraphContainer";
 import LineChart from "./utilities/LineChart";
@@ -23,7 +23,7 @@ class ElectricityAir extends Component {
   * [api]: Contains received data from express server
   * [currentTimeRange]: Contains selected time frame for trend and deck elements
   * [currentValueDropdown]: Contains current value of dropdown for trend and deck elements
-  * [dataACD, dataECD, dataACT, dataECT]: Holds "consumption_electricity_x.csv"; "consumption_air_x.csv"
+  * [dataACD, dataECD, dataACT, dataECT]: Holds data for "consumption_electricity_x.csv"; "consumption_air_x.csv"
   * The "x" represents the sensor location
   */
   state = {
@@ -67,7 +67,7 @@ class ElectricityAir extends Component {
    */
   async componentDidMount() {
     this.updateDataOnScreen();
-    this.timerID = setInterval(() => this.updateDataOnScreen(), 5000);
+    this.timerID = setInterval(() => this.updateDataOnScreen(), 3600000);
   }
 
   // If component unmounts, then free memory resources
@@ -144,7 +144,6 @@ class ElectricityAir extends Component {
   }
 
   /**
-   * 
    * @param {*} ids Arrays of ids (i.e "ACD", "ACT", "ECD", "ECT")
    * @returns Array of context values for graphs
    */

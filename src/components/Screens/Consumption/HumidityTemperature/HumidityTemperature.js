@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Deck from "../../../UI/Deck/CustomDeck/CustomDeck";
+import Deck from "../../../UI/Deck/CustomDeck/CustomDeck_1";
 import Dropdown from "../../../UI/Dropdown/Dropdown";
 import GraphContainer from "../../../Container/GraphContainer";
 import GraphContext from "../../../Context/GraphContext";
@@ -23,7 +23,7 @@ class HumidityTemperature extends Component {
   * [api]: Contains received data from express server
   * [currentTimeRange]: Contains selected time frame for trend and deck elements
   * [currentValueDropdown]: Contains current value of dropdown for trend and deck elements
-  * [dataHSD, dataHST, dataTSD, dataTST]: Holds "sensor_humidity_x.csv", "sensor_temperature_x.csv" 
+  * [dataHSD, dataHST, dataTSD, dataTST]: Holds data for "sensor_humidity_x.csv", "sensor_temperature_x.csv" 
   * The "x" represents the sensor location
   */
   state = {
@@ -147,7 +147,6 @@ class HumidityTemperature extends Component {
   }
 
   /**
-  * 
   * @param {*} ids Arrays of ids (i.e "TST", "HST", "TSD", "HSD")
   * @returns Array of context values for graphs
   */
