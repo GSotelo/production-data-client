@@ -52,7 +52,7 @@ const getFilename = (currentValueDropdown, id) => {
       break;
   }
   return filename;
-}
+};
 
 /**
  * 

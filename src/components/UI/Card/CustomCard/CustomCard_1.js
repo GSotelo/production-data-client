@@ -7,7 +7,7 @@ import { ReactComponent as PeakLow } from "../../../../assets/svg/peakLow.svg";
 
 /**
  * This component was designed to work in 
- * conjuntion with "CustomDeck" component
+ * conjuntion with "CustomDeck_1" component
  */
 const Card = (props) => {
   if (props.type === 1) {

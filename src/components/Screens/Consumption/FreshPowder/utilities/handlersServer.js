@@ -1,6 +1,5 @@
 import connectAPI from "../../../../../api/connectAPI";
-import processDataDeck from "../../../../../utils/processDataDeck";
-import { axiosElectricityAir } from "../../../../../api/axios";
+import { axiosFreshPowder } from "../../../../../api/axios";
 import { propsToasterDanger } from "./props";
 import { toaster } from "evergreen-ui";
 
@@ -8,22 +7,20 @@ import { toaster } from "evergreen-ui";
  * This function works in conjuction with HTTP GET requests
  * @param {*} id Helps to determine the endpoint for API requests
  * @param {*} timeRange String with value of either "day", "week", "month"
- * @returns A string containing the API endpoint
+ * @returns String containing the API endpoint
  */
 const getEndpoint = (currentValueDropdown, id, timeRange) => {
   let endpoint;
   switch (id) {
-    case "ACD":
-      endpoint = `/air/${currentValueDropdown}/deck-${timeRange}`;
+    case "TFPT":
+    case "TFPD":
+      endpoint = `/total/${timeRange}`;
       break;
-    case "ECD":
-      endpoint = `/electricity/${currentValueDropdown}/deck-${timeRange}`;
+    case "SHDT":
+      endpoint = `/spectrum/${timeRange}`;
       break;
-    case "ACT":
-      endpoint = `/air/${currentValueDropdown}/${timeRange}`;
-      break;
-    case "ECT":
-      endpoint = `/electricity/${currentValueDropdown}/${timeRange}`;
+    case "BBT":
+      endpoint = `/bigbag/${currentValueDropdown}/${timeRange}`;
       break;
     default:
       break;
@@ -39,13 +36,15 @@ const getEndpoint = (currentValueDropdown, id, timeRange) => {
 const getFilename = (currentValueDropdown, id) => {
   let filename;
   switch (id) {
-    case "ACD":
-    case "ACT":
-      filename = `consumption_air_${currentValueDropdown}.csv`;
+    case "TFPD":
+    case "TFPT":
+      filename = "powder_total_fresh.csv";
       break;
-    case "ECD":
-    case "ECT":
-      filename = `consumption_electricity_${currentValueDropdown}.csv`;
+    case "SHDT":
+      filename = "powder_spectrum.csv";
+      break;
+    case "BBT":
+      filename = `powder_big_bag_${currentValueDropdown}.csv`;
       break;
     default:
       break;
@@ -56,10 +55,10 @@ const getFilename = (currentValueDropdown, id) => {
 /**
  * 
  * @param {*} id Helps to determine either the endpoint or filename for API requests
- * @param {*} timeRange A string or array of two "moment" objects
+ * @param {*} timeRange String or array of two "moment" objects
  * @returns Data to feed line chart according to "nivo" library
  */
-export const connectServer = async (currentValueDropdown, id, timeRange) => {
+const connectServer = async (currentValueDropdown, id, timeRange) => {
   /**
    * Check is request comes from a control button or date picker
    */
@@ -70,11 +69,15 @@ export const connectServer = async (currentValueDropdown, id, timeRange) => {
    * If control button, then triggers HTTP GET requests
    */
   if (timeRangeIsString) {
+    // const endpoint = getEndpoint(id, timeRange);
+    // const filteredData = await connectAPI.get(axiosFreshPowder, endpoint);
+    // return filteredData;
+
     const endpoint = getEndpoint(currentValueDropdown, id, timeRange);
     let filteredData = false;
     try {
-      filteredData = await connectAPI.get(axiosElectricityAir, endpoint);
-    } catch (error) {
+      filteredData = await connectAPI.get(axiosFreshPowder, endpoint);
+    } catch (err) {
       toaster.danger(...propsToasterDanger);
       console.error("[connectServer]: Request to server API failed (GET)");
     }
@@ -85,10 +88,14 @@ export const connectServer = async (currentValueDropdown, id, timeRange) => {
   * If date picker, then triggers HTTP POST requests
   */
   if (timeRangeIsArray) {
+    // const filename = getFilename(id);
+    // const filteredData = await connectAPI.post(axiosFreshPowder, "/", { filename, timeRange })
+    // return filteredData;
+
     const filename = getFilename(currentValueDropdown, id);
     let filteredData = false;
     try {
-      filteredData = await connectAPI.post(axiosElectricityAir, "/", { filename, timeRange })
+      filteredData = await connectAPI.post(axiosFreshPowder, "/", { filename, timeRange })
     } catch (error) {
       toaster.danger(...propsToasterDanger);
       console.error("[connectServer]: Request to server API failed (POST)");
@@ -97,30 +104,34 @@ export const connectServer = async (currentValueDropdown, id, timeRange) => {
   }
 };
 
+
+// WORKING HERE....
+//const ids = ["TFPT", "TFPD", "SHDT", "BBT"];
+
 /**
  * Data from server is either for "trend" or "deck" elements
  * If data is for a "deck" element, then further processing is needed
  * If data is for a "trend" element, then it goes straight forward
  */
-const processDataFromServer = async (currentValueDropdown, id, timeRange) => {
+ const processDataFromServer = async (currentValueDropdown, id, timeRange) => {
   let data;
   const dataFromServer = await connectServer(currentValueDropdown, id, timeRange);
 
   switch (id) {
-    case "ACD":
-    case "ECD":
-      data = processDataDeck.run(dataFromServer, timeRange);
+    case "TFPD":
+      //data = processDataDeck.run(dataFromServer, timeRange);
+      data = "data for deck";
       break;
-    case "ACT":
-    case "ECT":
+    case "BBT":
+    case "SHDT":
+    case "TFPT":
       data = dataFromServer;
       break;
     default:
       break;
   }
+  console.log("FROM PROCESS DATA FROM SERVER:", data);
   return data;
 };
 
 export default processDataFromServer;
-
-

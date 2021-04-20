@@ -77,6 +77,16 @@ export const propsTitleBarBBD = {
 };
 
 /**
+ * [propsToasterDanger]: Alert configuration if API request fails
+ */
+ export const propsToasterDanger = [
+  "Error",
+  {
+    description: "Sensor device not found."
+  }
+];
+
+/**
  * [propsDropdownBB]: Bigbag - dropdown options
  */
  export const propsDropdownBB = {

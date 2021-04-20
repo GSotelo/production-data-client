@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Chart from "./utilities/CustomChart";
-import CustomCard from "../../../UI/Card/CustomCard/CustomCard";
+import CustomCard from "../../../UI/Card/CustomCard/CustomCard_1";
 import Dropdown from "../../../UI/Dropdown/Dropdown";
 import HorizontalCards from "../../../UI/Cards/HorizontalCards/HorizontalCards";
 import GraphContainer from "../../../Container/GraphContainer";

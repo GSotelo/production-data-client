@@ -1,5 +1,5 @@
 import React, { Fragment } from "react";
-import Card from "../../Card/CustomCard/CustomCard";
+import Card from "../../Card/CustomCard/CustomCard_1";
 import HorizontalCards from "../../Cards/HorizontalCards/HorizontalCards";
 
 import processDataDeck from "../../../../utils/processDataDeck";
@@ -9,7 +9,7 @@ const { setFooterLabel, setFooterValue } = processDataDeck;
 
 /**
  * This component was designed to work in conjuntion with 
- * the "CustomCard" component. It renders card elements for
+ * the "CustomCard_1" component. It renders card elements for
  * showing average, maximum and minimum values. It can be
  * be found on the folloiwinng screens:
  * "Air pressure"

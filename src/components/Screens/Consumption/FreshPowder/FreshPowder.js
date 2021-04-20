@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-//import Deck from "./utilities/CustomDeck";
 import Deck from "../../../UI/Deck/CustomDeck/CustomDeck_2/CustomDeck_2";
 import Dropdown from "../../../UI/Dropdown/Dropdown";
 import GraphContainer from "../../../Container/GraphContainer";
@@ -8,7 +7,6 @@ import GraphContext from "../../../Context/GraphContext";
 import { Row, Col } from "antd";
 
 import styles from "./FreshPowder.module.css";
-import { connectServer } from "./utilities/connectServer";
 import {
   propsDropdownBB,
   propsTitleBarBBT,
@@ -18,6 +16,9 @@ import {
   propsTitleBarTFPT,
   propsTitleBarTFPD,
 } from "./utilities/props";
+
+import processDataFromServer from "./utilities/handlersServer";
+import { NewDeck } from "../../../UI/Deck/CustomDeck/CustomDeck_2/CustomDeck_2";
 
 /**
  * Data for deck: Total fresh powder
@@ -40,6 +41,8 @@ const dataDeckTFP = [
     previousValue: "10 kg/h"
   }
 ];
+
+// ESTO HAY QUE MODIFICARLO, ESTRUCTURA IGUAL A OTRAS PANTALLAS
 const graphTFPD = <Deck orientation="horizontal" deck={dataDeckTFP} />;
 
 /**
@@ -146,7 +149,7 @@ class FreshPowder extends Component {
    * [value]: Value of dropdown element
    * [e]: Synthetic event. The event is used internally by UI library 
    */
-   updateDropdownState = (e, { value }, id) => this.setState(prevState => {
+  updateDropdownState = (e, { value }, id) => this.setState(prevState => {
     const dropdownSelector = `currentValueDropdown${id}`;
     const nextUpdate = { ...prevState };
     nextUpdate.currentValueDropdown[dropdownSelector] = value;
@@ -159,18 +162,25 @@ class FreshPowder extends Component {
    * [timeRange]: It can be a string ("day", "week", "month") or an array of two "moment" objects
    */
   getDataFromServer = async (id, timeRange) => {
+    // Update value of selected dropdown
+    const currentValueDropdown = this.state.currentValueDropdown["currentValueDropdownBBT"];
+
     /**
-     * Contains response data from API. The data is formatted based on nivo library
-     */
-    const filteredData = await connectServer(id, timeRange);
+    * Response data from server API. The data is formatted 
+    * based on nivo library. If an error comes up, then 
+    * "dataFromServer" is "false". Though I can exit the 
+    * function at this point, I'll let it continue. Trends and 
+    * deck elements handle the event of no-data using fallback data 
+    */
+    const dataFromServer = await processDataFromServer(currentValueDropdown, id, timeRange);
 
+    // Update state of all elements
     this.setState(prevState => {
-      const dataSelector = `data${id}`; // dataTFPT, dataSHDT, etc...
-      const currentTimeRange = `timeRange${id}`; // currentTimeRangeTFPT, currentTimeRangeSHDT, etc...
-
+      const dataSelector = `data${id}`;
+      const currentTimeRange = `currentTimeRange${id}`;
       const nextUpdate = { ...prevState };
       nextUpdate.currentTimeRange[currentTimeRange] = timeRange;
-      nextUpdate.api[dataSelector] = filteredData;
+      nextUpdate.api[dataSelector] = dataFromServer;
       return { nextUpdate };
     });
   }
@@ -179,7 +189,7 @@ class FreshPowder extends Component {
   * @param {*} ids Arrays of ids (i.e "TFPT", "TFPD", "SHDT", "BBT")
   * @returns Array of context values for graphs
   */
-   createContextValues = (ids) => {
+  createContextValues = (ids) => {
     const { currentValueDropdown } = this.state;
     const { getDataFromServer, updateDropdownState } = this;
     const baseContextValue = { getDataFromServer, updateDropdownState };
@@ -204,8 +214,10 @@ class FreshPowder extends Component {
     const ids = ["TFPT", "TFPD", "SHDT", "BBT"];
     const contextValue = createContextValues(ids);
 
-
-
+    // Deck UI components
+    const DeckTFPD = <NewDeck data={1} timeRange={1} units="%" orientation="h" />;
+    const DeckSHDD = <NewDeck data={2} timeRange={2} units="$" orientation="v" />;
+    const DeckBBD = <NewDeck data={3} timeRange={3} units="€" orientation="v" />;
 
     // Dropdown UI components
     const DropdownBB = <Dropdown {...propsDropdownBB} />;
@@ -226,7 +238,7 @@ class FreshPowder extends Component {
 
           <GraphContext.Provider value={contextValue[1]}>
             <Col className={styles.deckBox}>
-              <GraphContainer {...propsTitleBarTFPD} graph={graphTFPD} />
+              <GraphContainer {...propsTitleBarTFPD} graph={DeckTFPD} />
             </Col>
           </GraphContext.Provider>
         </Row>
@@ -239,7 +251,7 @@ class FreshPowder extends Component {
           </Col>
 
           <Col className={styles.deckBox}>
-            <GraphContainer {...propsTitleBarSHDD} graph={graphSHDD} />
+            <GraphContainer {...propsTitleBarSHDD} graph={DeckSHDD} />
           </Col>
 
           <Col className={[styles.trendBox, styles.prx].join(" ")}>
@@ -249,7 +261,7 @@ class FreshPowder extends Component {
           </Col>
 
           <Col className={styles.deckBox}>
-            <GraphContainer {...propsTitleBarBBD} graph={graphBBD} />
+            <GraphContainer {...propsTitleBarBBD} graph={DeckBBD} />
           </Col>
         </Row>
       </div>
