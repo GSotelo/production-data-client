@@ -109,7 +109,7 @@ const processDataFromServer = async (currentValueDropdown, id, timeRange) => {
   switch (id) {
     case "ACD":
     case "ECD":
-      data = processDataDeck.run(dataFromServer, timeRange);
+      data = processDataDeck.run(dataFromServer, timeRange, 1);
       break;
     case "ACT":
     case "ECT":

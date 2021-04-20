@@ -1,9 +1,12 @@
 import React from "react";
 import Card from "../../../Card/CardWithFooter/CardWithFooter";
 
+import processDataDeck from "../../../../../utils/processDataDeck";
 import styles from "./CustomDeck_2.module.css";
 import { ReactComponent as Total } from "../../../../../assets/svg/total.svg";
 import { ReactComponent as Average } from "../../../../../assets/svg/average.svg";
+
+const { setFooterLabel, setFooterValue } = processDataDeck;
 
 /**
  * This component renders card elements for
@@ -22,6 +25,10 @@ const Deck = ({ data, timeRange, units, orientation }) => {
     customStyle = styles.verticalDeck;
   }
 
+  // The structure "data" is defined by the "state" object of each "Screen" component
+  const { avgTimeRange, avgPrevTimeRange } = data.average;
+  const { totalTimeRange, totalPrevTimeRange } = data.total;
+
   /**
    *  Configuration for each "Card" element.
    *  1st element: Total value
@@ -31,18 +38,18 @@ const Deck = ({ data, timeRange, units, orientation }) => {
     {
       id: "total",
       icon: <Total />,
-      label: " label",
-      previousValue: "prev value",
+      label: setFooterLabel(timeRange, totalTimeRange, totalPrevTimeRange),
+      previousValue: setFooterValue(timeRange, totalPrevTimeRange, units),
       units,
-      value: "value",
+      value: totalTimeRange,
     },
     {
       id: "average",
       icon: <Average />,
-      label: " label",
-      previousValue: "prev value",
+      label: setFooterLabel(timeRange, avgTimeRange, avgPrevTimeRange),
+      previousValue: setFooterValue(timeRange, avgPrevTimeRange, units),
       units,
-      value: "value",
+      value: avgTimeRange,
     },
   ];
 

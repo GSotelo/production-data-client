@@ -40,6 +40,19 @@ const getMinValueFromArray = (arr) => {
 /**
  * 
  * @param {*} arr Array as data source
+ * @returns Number holding the sum of all values in the array
+ */
+ const getTotalValueFromArray = (arr) => {
+  if (_.isEmpty(arr)) {
+    return 0;
+  }
+  return _.round(_.sum(arr), 2);
+};
+
+
+/**
+ * 
+ * @param {*} arr Array as data source
  * @param {*} property Object property
  * @returns Generates an array containing the values of the extracted property
  */
@@ -183,17 +196,117 @@ const setFooterValue = (timeRange, prevValue, unit) => {
   return `${prevValue} ${unit}`;
 };
 
-const run = (arr, timeRange) => {
+/**
+ * 
+ * @param {*} breakpoint Date used to split the "arr" in two parts (before and after date)
+ * @param {*} currentData Dates after the setpoint
+ * @param {*} prevData Dates before athe setpoint
+ * @returns Object
+ */
+const createDataForDeckType1 = (breakpoint, currentData, prevData) => {
+  /**
+   * Each object in the array has the shape simlar to {x:"2021-04-14T23:58:00.000Z", y: 11 }
+   * x: time stamp
+   * y: process variable value
+   */
+  // Filter "y" values from grouped data
+  const yValueCurrentData = filterArrayByObjectProperty(currentData, "y");
+  const yValuePrevData = filterArrayByObjectProperty(prevData, "y");
 
-  // The "fallbackData" structure matches the state object
-  const fallbackData = {
+  // Get highest peak value from grouped data
+  const yMaxValueCurrentData = getMaxValueFromArray(yValueCurrentData);
+
+  // Get lowest peak value from grouped data
+  const yMinValueCurrentData = getMinValueFromArray(yValueCurrentData);
+
+  // Get average value from grouped data
+  const avgPrevData = getAverage(yValuePrevData);
+  const avgCurrentData = getAverage(yValueCurrentData);
+
+  console.log("Breakpoint", breakpoint);
+  console.log("Before break point, ", prevData);
+  console.log("After breakpoint, ", currentData);
+  console.log("Maximum current value", yMaxValueCurrentData);
+  console.log("Minimum current value", yMinValueCurrentData);
+  console.log("Average current value", avgCurrentData);
+  console.log("Average previous value", avgPrevData);
+
+  return {
     average: {
-      avgTimeRange: -1,
-      avgPrevTimeRange: -1
+      avgTimeRange: avgCurrentData,
+      avgPrevTimeRange: avgPrevData
     },
-    maxValue: -1,
-    minValue: -1
+    maxValue: yMaxValueCurrentData,
+    minValue: yMinValueCurrentData
   };
+};
+
+
+// WORKING HERE...
+const createDataForDeckType2 = (breakpoint, currentData, prevData) => {
+  /**
+  * Each object in the array has the shape simlar to {x:"2021-04-14T23:58:00.000Z", y: 11 }
+  * x: time stamp
+  * y: process variable value
+  */
+  // Filter "y" values from grouped data
+  const yValueCurrentData = filterArrayByObjectProperty(currentData, "y");
+  const yValuePrevData = filterArrayByObjectProperty(prevData, "y");
+
+  // Get average value from grouped data
+  const avgPrevData = getAverage(yValuePrevData);
+  const avgCurrentData = getAverage(yValueCurrentData);
+
+  // Get average value from grouped data
+  const totalPrevData = getTotalValueFromArray(yValuePrevData);
+  const totalCurrentData = getTotalValueFromArray(yValueCurrentData);
+
+  console.log("Breakpoint", breakpoint);
+  console.log("Before break point, ", prevData);
+  console.log("After breakpoint, ", currentData);
+  console.log("Total current value", totalCurrentData);
+  console.log("Total previous value", totalPrevData);
+  console.log("Average current value", avgCurrentData);
+  console.log("Average previous value", avgPrevData);
+
+  return {
+    prevData,
+    currentData,
+    average: {
+      avgTimeRange: avgCurrentData,
+      avgPrevTimeRange: avgPrevData
+    },
+    total: {
+      totalTimeRange: totalCurrentData,
+      totalPrevTimeRange: totalPrevData
+    },
+  };
+};
+
+/**
+ * 
+ * @param {*} arr Array as data source
+ * @param {*} timeRange timeRange String with value of either "day", "week", "month"
+ * @param {*} type Fallback data selecter. Type 1: Fallback for AMM. Type2: Fallback for TA
+ * @returns Object
+ */
+const run = (arr, timeRange, type) => {
+  let fallbackData;
+  /**
+   * Fallback data (when a dropdown element targets a csv, which does not exist)
+   * Type 1: For deck element holding "average", "maximum", "minimum" values
+   * Type 2: For deck element holding "total" and "average" values
+   */
+  if (type === 1) {
+    fallbackData = {
+      average: {
+        avgTimeRange: -1,
+        avgPrevTimeRange: -1
+      },
+      maxValue: -1,
+      minValue: -1
+    };
+  }
 
   console.log("Data from express server: ", arr);
 
@@ -207,7 +320,7 @@ const run = (arr, timeRange) => {
    * there is no need to divide the data into
    * two groups
    */
-  // Separate "arr" data in two parts: before and after date
+  // Separates "arr" data in two parts: before and after date
   const breakpoint = createDateObject(new Date()).subtract(1, timeRange);
   const argsGroupDataByDate = [
     arr,
@@ -230,43 +343,18 @@ const run = (arr, timeRange) => {
     return fallbackData;
   }
 
+  // Grouped data
   const { prevData, currentData } = groupedData;
 
-  /**
-   * Each object in the array has the shape simlar to {x:"2021-04-14T23:58:00.000Z", y: 11 }
-   * x: time stamp
-   * y: process variable value
-   */
-  // Filter "y" values from grouped data
-  const yValueCurrentData = filterArrayByObjectProperty(currentData, "y")
-  const yValuePrevData = filterArrayByObjectProperty(prevData, "y")
+  // Deck: high, maximum, minimum values
+  if (type === 1) {
+    return createDataForDeckType1(breakpoint, currentData, prevData);
+  }
 
-  // Get highest peak value from grouped data
-  const yMaxValueCurrentData = getMaxValueFromArray(yValueCurrentData)
-
-  // Get lowest peak value from grouped data
-  const yMinValueCurrentData = getMinValueFromArray(yValueCurrentData)
-
-  // Get average value from grouped data
-  const avgPrevData = getAverage(yValuePrevData);
-  const avgCurrentData = getAverage(yValueCurrentData);
-
-  console.log("Breakpoint",breakpoint );
-  console.log("Before break point, ", prevData);
-  console.log("After breakpoint, ", currentData);
-  console.log("Maximum current value", yMaxValueCurrentData);
-  console.log("Minimum current value", yMinValueCurrentData);
-  console.log("Average current value", avgCurrentData);
-  console.log("Average previous value", avgPrevData);
-
-  return {
-    average: {
-      avgTimeRange: avgCurrentData,
-      avgPrevTimeRange: avgPrevData
-    },
-    maxValue: yMaxValueCurrentData,
-    minValue: yMinValueCurrentData
-  };
+  // Deck: Total, average
+  if (type === 2) {
+    return createDataForDeckType2(breakpoint, currentData, prevData);
+  }
 }
 
 const processDataDeck = {

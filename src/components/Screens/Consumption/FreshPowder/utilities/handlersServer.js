@@ -1,4 +1,5 @@
 import connectAPI from "../../../../../api/connectAPI";
+import processDataDeck from "../../../../../utils/processDataDeck";
 import { axiosFreshPowder } from "../../../../../api/axios";
 import { propsToasterDanger } from "./props";
 import { toaster } from "evergreen-ui";
@@ -13,14 +14,16 @@ const getEndpoint = (currentValueDropdown, id, timeRange) => {
   let endpoint;
   switch (id) {
     case "TFPT":
-    case "TFPD":
       endpoint = `/total/${timeRange}`;
       break;
+    case "TFPD":
+      endpoint = `/total/deck-${timeRange}`;
+      break;
     case "SHDT":
-      endpoint = `/spectrum/${timeRange}`;
+      endpoint = `/spectrum/deck-${timeRange}`;
       break;
     case "BBT":
-      endpoint = `/bigbag/${currentValueDropdown}/${timeRange}`;
+      endpoint = `/bigbag/${currentValueDropdown}/deck-${timeRange}`;
       break;
     default:
       break;
@@ -69,10 +72,6 @@ const connectServer = async (currentValueDropdown, id, timeRange) => {
    * If control button, then triggers HTTP GET requests
    */
   if (timeRangeIsString) {
-    // const endpoint = getEndpoint(id, timeRange);
-    // const filteredData = await connectAPI.get(axiosFreshPowder, endpoint);
-    // return filteredData;
-
     const endpoint = getEndpoint(currentValueDropdown, id, timeRange);
     let filteredData = false;
     try {
@@ -88,10 +87,6 @@ const connectServer = async (currentValueDropdown, id, timeRange) => {
   * If date picker, then triggers HTTP POST requests
   */
   if (timeRangeIsArray) {
-    // const filename = getFilename(id);
-    // const filteredData = await connectAPI.post(axiosFreshPowder, "/", { filename, timeRange })
-    // return filteredData;
-
     const filename = getFilename(currentValueDropdown, id);
     let filteredData = false;
     try {
@@ -104,34 +99,27 @@ const connectServer = async (currentValueDropdown, id, timeRange) => {
   }
 };
 
-
-// WORKING HERE....
-//const ids = ["TFPT", "TFPD", "SHDT", "BBT"];
-
 /**
  * Data from server is either for "trend" or "deck" elements
  * If data is for a "deck" element, then further processing is needed
  * If data is for a "trend" element, then it goes straight forward
  */
- const processDataFromServer = async (currentValueDropdown, id, timeRange) => {
-  let data;
+const processDataFromServer = async (currentValueDropdown, id, timeRange) => {
+
   const dataFromServer = await connectServer(currentValueDropdown, id, timeRange);
 
-  switch (id) {
-    case "TFPD":
-      //data = processDataDeck.run(dataFromServer, timeRange);
-      data = "data for deck";
-      break;
-    case "BBT":
-    case "SHDT":
-    case "TFPT":
-      data = dataFromServer;
-      break;
-    default:
-      break;
+  if (id === "TFPT") {
+    return dataFromServer;
   }
-  console.log("FROM PROCESS DATA FROM SERVER:", data);
-  return data;
+
+  const dataDeck = processDataDeck.run(dataFromServer, timeRange, 2);
+  if (id === "TFPD") {
+    return dataDeck;
+  }
+
+  if (id === "SHDT" || id === "BBT") {
+    return { dataTrend: dataDeck.currentData, dataDeck };
+  }
 };
 
 export default processDataFromServer;

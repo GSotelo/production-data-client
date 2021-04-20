@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Deck  from "../../../UI/Deck/CustomDeck/CustomDeck_2/CustomDeck_2";
+import Deck from "../../../UI/Deck/CustomDeck/CustomDeck_2/CustomDeck_2";
 import Dropdown from "../../../UI/Dropdown/Dropdown";
 import GraphContainer from "../../../Container/GraphContainer";
 import LineChart from "./utilities/LineChart";
@@ -30,7 +30,36 @@ class FreshPowder extends Component {
  */
   state = {
     api: {
-      dataTFPD: [],
+      dataBBD: {
+        average: {
+          avgTimeRange: 0,
+          avgPrevTimeRange: 0
+        },
+        total: {
+          totalTimeRange: 0,
+          totalPrevTimeRange: 0
+        }
+      },
+      dataSHDD: {
+        average: {
+          avgTimeRange: 0,
+          avgPrevTimeRange: 0
+        },
+        total: {
+          totalTimeRange: 0,
+          totalPrevTimeRange: 0
+        }
+      },
+      dataTFPD: {
+        average: {
+          avgTimeRange: 0,
+          avgPrevTimeRange: 0
+        },
+        total: {
+          totalTimeRange: 0,
+          totalPrevTimeRange: 0
+        },
+      },
       dataBBT: [],
       dataSHDT: [],
       dataTFPT: []
@@ -83,6 +112,45 @@ class FreshPowder extends Component {
     return { nextUpdate };
   })
 
+  updateState = (id, timeRange, dataFromServer) => {
+
+    this.setState(prevState => {
+      const nextUpdate = { ...prevState };
+      const currentTimeRange = `currentTimeRange${id}`;
+      nextUpdate.currentTimeRange[currentTimeRange] = timeRange;
+      return { nextUpdate };
+    });
+
+    console.log("im still here");
+    if (id === "SHDT" || id === "BBT") {
+      const baseSelector = id.slice(0, id.length - 1); // SHD, BB 
+      const dataTrendSelector = `data${id}`; // SHDT, BBT
+      const dataDeckSelector = `data${baseSelector}D`; // SHDD, BBD
+     // const currentTimeRange = `currentTimeRange${id}`;
+
+      console.log("DATA TREND:", dataFromServer.dataTrend);
+      console.log("DATA DECK:", dataFromServer.dataDeck);
+
+      return this.setState(prevState => {
+        const nextUpdate = { ...prevState };
+       // nextUpdate.currentTimeRange[currentTimeRange] = timeRange;
+        nextUpdate.api[dataTrendSelector] = dataFromServer.dataTrend;
+        nextUpdate.api[dataDeckSelector] = dataFromServer.dataDeck;
+        return { nextUpdate };
+      })
+    }
+
+    // Update state of all elements
+    this.setState(prevState => {
+      const dataSelector = `data${id}`;
+     // const currentTimeRange = `currentTimeRange${id}`;
+      const nextUpdate = { ...prevState };
+     // nextUpdate.currentTimeRange[currentTimeRange] = timeRange;
+      nextUpdate.api[dataSelector] = dataFromServer;
+      return { nextUpdate };
+    });
+  };
+
   /**
    * [getDataFromServer]: Establish connection to express server via HTTP requests (GET, POST)
    * [id]: Helps to determine the correct endpoint, filename and axios instance
@@ -102,14 +170,7 @@ class FreshPowder extends Component {
     const dataFromServer = await processDataFromServer(currentValueDropdown, id, timeRange);
 
     // Update state of all elements
-    this.setState(prevState => {
-      const dataSelector = `data${id}`;
-      const currentTimeRange = `currentTimeRange${id}`;
-      const nextUpdate = { ...prevState };
-      nextUpdate.currentTimeRange[currentTimeRange] = timeRange;
-      nextUpdate.api[dataSelector] = dataFromServer;
-      return { nextUpdate };
-    });
+    this.updateState(id, timeRange, dataFromServer);
   }
 
   /**
@@ -135,22 +196,25 @@ class FreshPowder extends Component {
     const { createContextValues } = this;
 
     // Data from express server
-    const { dataBBT, dataSHDT, dataTFPT } = this.state.api;
+    const { dataBBD, dataBBT, dataSHDD, dataSHDT, dataTFPD, dataTFPT } = this.state.api;
+
+    // Current time range for elements
+    const { currentTimeRangeTFPD } = this.state.currentTimeRange;
 
     // Create context values
     const ids = ["TFPT", "TFPD", "SHDT", "BBT"];
     const contextValue = createContextValues(ids);
 
     // Deck UI components
-    const DeckTFPD = <Deck data={1} timeRange={1} units="%" orientation="h" />;
-    const DeckSHDD = <Deck data={2} timeRange={2} units="$" orientation="v" />;
-    const DeckBBD =  <Deck data={3} timeRange={3} units="€" orientation="v" />;
+    const DeckTFPD = <Deck data={dataTFPD} timeRange={currentTimeRangeTFPD} units="kg" orientation="h" />;
+    const DeckSHDD = <Deck data={dataSHDD} timeRange={currentTimeRangeTFPD} units="kg" orientation="v" />;
+    const DeckBBD = <Deck data={dataBBD} timeRange={currentTimeRangeTFPD} units="kg" orientation="v" />;
 
     // Dropdown UI components
     const DropdownBB = <Dropdown {...propsDropdownBB} />;
 
     // Line chart UI components
-    const LineChartBBT  = <LineChart id="BBT" data={[{ id: "Bigbag powder", data: dataBBT }]} />
+    const LineChartBBT = <LineChart id="BBT" data={[{ id: "Bigbag powder", data: dataBBT }]} />
     const LineChartSHDT = <LineChart id="SHDT" data={[{ id: "SHD powder", data: dataSHDT }]} />
     const LineChartTFPT = <LineChart id="TFPT" data={[{ id: "Total powder", data: dataTFPT }]} />
 
