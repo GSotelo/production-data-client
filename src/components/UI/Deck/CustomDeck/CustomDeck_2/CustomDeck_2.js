@@ -1,73 +1,35 @@
 import React from "react";
 import Card from "../../../Card/CardWithFooter/CardWithFooter";
+
+import styles from "./CustomDeck_2.module.css";
 import { ReactComponent as Total } from "../../../../../assets/svg/total.svg";
 import { ReactComponent as Average } from "../../../../../assets/svg/average.svg";
 
-import styles from "./CustomDeck_2.module.css";
-
-const Deck = ({ orientation, deck }) => {
-  const customStyle = orientation === "horizontal" ? styles.horizontalDeck : styles.verticalDeck;
-  return (
-    <div className={customStyle}>
-      {
-        deck.map((card, index) => {
-          if (card.icon === "total") card.icon = <Total />
-          if (card.icon === "average") card.icon = <Average />
-          return (
-            <div className={styles.cardBox} key={index}>
-              <Card
-                {...card}
-              />
-            </div>
-          )
-        }
-        )
-      }
-    </div>
-
-  );
-};
-
-export default Deck;
-
 /**
- * Data for deck: Big bag
+ * This component renders card elements for
+ * showing total and average values. It can 
+ * be found on the following screens:
+ * "Fresh powder"
  */
-//  const dataDeckBB = [
-//   {
-//     icon: "total",
-//     id: "bb_c1",
-//     value: 798,
-//     units: "kg",
-//     label: "▲ Previous week:",
-//     previousValue: "631 kg"
-//   },
-//   {
-//     icon: "average",
-//     id: "bb_c2",
-//     value: 5,
-//     units: "kg/h",
-//     label: "▬ Previous week:",
-//     previousValue: "5 kg/h"
-//   }
-// ];
-// const graphBBD = <Deck orientation="vertical" deck={dataDeckBB} />;
-
-
-export const NewDeck = ({ data, timeRange, units, orientation }) => {
-  //const customStyle = orientation === "horizontal" ? styles.horizontalDeck : styles.verticalDeck;
+const Deck = ({ data, timeRange, units, orientation }) => {
+  // Controlling how cards are displayed (horizontally or vertically)
   let customStyle;
-  if(orientation === "h"){
+  if (orientation === "h") {
     customStyle = styles.horizontalDeck;
   }
 
-  if(orientation === "v"){
+  if (orientation === "v") {
     customStyle = styles.verticalDeck;
   }
 
+  /**
+   *  Configuration for each "Card" element.
+   *  1st element: Total value
+   *  2nd element: Average value
+   */
   const configDeck = [
     {
-      id:"total",
+      id: "total",
       icon: <Total />,
       label: " label",
       previousValue: "prev value",
@@ -75,7 +37,7 @@ export const NewDeck = ({ data, timeRange, units, orientation }) => {
       value: "value",
     },
     {
-      id:"average",
+      id: "average",
       icon: <Average />,
       label: " label",
       previousValue: "prev value",
@@ -84,6 +46,7 @@ export const NewDeck = ({ data, timeRange, units, orientation }) => {
     },
   ];
 
+  // Custom deck UI component
   return (
     <div className={customStyle}>
       {
@@ -99,5 +62,6 @@ export const NewDeck = ({ data, timeRange, units, orientation }) => {
     </div>
   );
 };
+export default Deck;
 
 

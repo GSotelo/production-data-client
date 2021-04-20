@@ -9,9 +9,9 @@ const { setFooterLabel, setFooterValue } = processDataDeck;
 
 /**
  * This component was designed to work in conjuntion with 
- * the "CustomCard_1" component. It renders card elements for
- * showing average, maximum and minimum values. It can be
- * be found on the folloiwinng screens:
+ * the "CustomCard_1" component. It renders card elements 
+ * for showing average, maximum and minimum values. It can
+ * be found on the following screens:
  * "Air pressure"
  * "Humidity and temperature"
  * "Electricity and air"

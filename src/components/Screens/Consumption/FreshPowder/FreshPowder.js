@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Deck from "../../../UI/Deck/CustomDeck/CustomDeck_2/CustomDeck_2";
+import Deck  from "../../../UI/Deck/CustomDeck/CustomDeck_2/CustomDeck_2";
 import Dropdown from "../../../UI/Dropdown/Dropdown";
 import GraphContainer from "../../../Container/GraphContainer";
 import LineChart from "./utilities/LineChart";
@@ -7,6 +7,7 @@ import GraphContext from "../../../Context/GraphContext";
 import { Row, Col } from "antd";
 
 import styles from "./FreshPowder.module.css";
+import processDataFromServer from "./utilities/handlersServer";
 import {
   propsDropdownBB,
   propsTitleBarBBT,
@@ -16,80 +17,6 @@ import {
   propsTitleBarTFPT,
   propsTitleBarTFPD,
 } from "./utilities/props";
-
-import processDataFromServer from "./utilities/handlersServer";
-import { NewDeck } from "../../../UI/Deck/CustomDeck/CustomDeck_2/CustomDeck_2";
-
-/**
- * Data for deck: Total fresh powder
- */
-const dataDeckTFP = [
-  {
-    icon: "total",
-    id: "tfp_c1",
-    value: 1798,
-    units: "kg",
-    label: "▲ Previous week:",
-    previousValue: "1631 kg"
-  },
-  {
-    icon: "average",
-    id: "tfp_c2",
-    value: 11,
-    units: "kg",
-    label: "▲ Previous week:",
-    previousValue: "10 kg/h"
-  }
-];
-
-// ESTO HAY QUE MODIFICARLO, ESTRUCTURA IGUAL A OTRAS PANTALLAS
-const graphTFPD = <Deck orientation="horizontal" deck={dataDeckTFP} />;
-
-/**
- * Data for deck: Spectrum HD
- */
-const dataDeckSHD = [
-  {
-    icon: "total",
-    id: "shd_c1",
-    value: 1000,
-    units: "kg",
-    label: "▬ Previous week:",
-    previousValue: "1000 kg"
-  },
-  {
-    icon: "average",
-    id: "shd_c2",
-    value: 6,
-    units: "kg/h",
-    label: "▼ Previous week:",
-    previousValue: "7 kg/h"
-  }
-];
-const graphSHDD = <Deck orientation="vertical" deck={dataDeckSHD} />;
-
-/**
- * Data for deck: Big bag
- */
-const dataDeckBB = [
-  {
-    icon: "total",
-    id: "bb_c1",
-    value: 798,
-    units: "kg",
-    label: "▲ Previous week:",
-    previousValue: "631 kg"
-  },
-  {
-    icon: "average",
-    id: "bb_c2",
-    value: 5,
-    units: "kg/h",
-    label: "▬ Previous week:",
-    previousValue: "5 kg/h"
-  }
-];
-const graphBBD = <Deck orientation="vertical" deck={dataDeckBB} />;
 
 
 class FreshPowder extends Component {
@@ -215,15 +142,15 @@ class FreshPowder extends Component {
     const contextValue = createContextValues(ids);
 
     // Deck UI components
-    const DeckTFPD = <NewDeck data={1} timeRange={1} units="%" orientation="h" />;
-    const DeckSHDD = <NewDeck data={2} timeRange={2} units="$" orientation="v" />;
-    const DeckBBD = <NewDeck data={3} timeRange={3} units="€" orientation="v" />;
+    const DeckTFPD = <Deck data={1} timeRange={1} units="%" orientation="h" />;
+    const DeckSHDD = <Deck data={2} timeRange={2} units="$" orientation="v" />;
+    const DeckBBD =  <Deck data={3} timeRange={3} units="€" orientation="v" />;
 
     // Dropdown UI components
     const DropdownBB = <Dropdown {...propsDropdownBB} />;
 
     // Line chart UI components
-    const LineChartBBT = <LineChart id="BBT" data={[{ id: "Bigbag powder", data: dataBBT }]} />
+    const LineChartBBT  = <LineChart id="BBT" data={[{ id: "Bigbag powder", data: dataBBT }]} />
     const LineChartSHDT = <LineChart id="SHDT" data={[{ id: "SHD powder", data: dataSHDT }]} />
     const LineChartTFPT = <LineChart id="TFPT" data={[{ id: "Total powder", data: dataTFPT }]} />
 
