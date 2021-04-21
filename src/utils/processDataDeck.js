@@ -80,7 +80,7 @@ const groupByIsSameorBeforeDate = (arr, date, func, timeRange) => {
     return false;
   }
 
-  return _.filter(arr, ({ x }) => func(x).isSameOrBefore(date, timeRange));
+  return _.filter(arr, ({ x }) => func(x).isSameOrBefore(date, "day"));
 };
 
 /**
@@ -99,7 +99,7 @@ const groupByAfterDate = (arr, date, func, timeRange) => {
     return false;
   }
 
-  return _.filter(arr, ({ x }) => func(x).isAfter(date, timeRange) === true);
+  return _.filter(arr, ({ x }) => func(x).isAfter(date, "day") === true);
 };
 
 /**
