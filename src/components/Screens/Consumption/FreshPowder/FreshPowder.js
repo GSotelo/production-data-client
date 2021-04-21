@@ -18,7 +18,6 @@ import {
   propsTitleBarTFPD,
 } from "./utilities/props";
 
-
 class FreshPowder extends Component {
   /**
  * [api]: Contains received data from express server
@@ -80,8 +79,8 @@ class FreshPowder extends Component {
    * 2. Triggers automatic updates every "x" milliseconds
    */
   async componentDidMount() {
-    //this.updateDataOnScreen();
-    //this.timerID = setInterval(() => this.updateDataOnScreen(), 60000);
+    this.updateDataOnScreen();
+    this.timerID = setInterval(() => this.updateDataOnScreen(), 3600000);
   }
 
   // If component unmounts, then free memory resources
@@ -90,13 +89,31 @@ class FreshPowder extends Component {
   }
 
   async updateDataOnScreen() {
-    // const { currentTimeRangeBBT, currentTimeRangeSHDT, currentTimeRangeTFPD, currentTimeRangeTFPT } = this.state.currentTimeRange;
-    // const dataBBT = await connectServer("BBT", currentTimeRangeBBT);
-    // const dataSHDT = await connectServer("SHDT", currentTimeRangeSHDT);
-    // const dataTFPT = await connectServer("TFPT", currentTimeRangeTFPT);
-    // const dataTFPD = await connectServer("TFPD", currentTimeRangeTFPD);
+    // Define id's to target all UI elements
+    const { currentTimeRange, currentValueDropdown } = this.state;
+    const ids = ["BBT", "SHDT", "TFPD", "TFPT"];
 
-    // this.setState({ api: { dataBBT, dataSHDT, dataTFPD, dataTFPT } });
+    // // Get data for all elements
+    const data = await Promise.all(ids.map(async (id) => {
+      const valueDropdown = currentValueDropdown[`currentValueDropdown${id}`];
+      const timeRange = currentTimeRange[`currentTimeRange${id}`];
+      return await processDataFromServer(valueDropdown, id, timeRange);
+    }));
+
+    // Update state for all components
+    this.setState(
+      {
+        api:
+        {
+          dataBBD: data[0].dataDeck,
+          dataBBT: data[0].dataTrend,
+          dataSHDD: data[1].dataDeck,
+          dataSHDT: data[1].dataTrend,
+          dataTFPD: data[2],
+          dataTFPT: data[3]
+        }
+      }
+    );
   }
 
   /**
@@ -113,7 +130,7 @@ class FreshPowder extends Component {
   })
 
   updateState = (id, timeRange, dataFromServer) => {
-
+    // Keep track of timeframe
     this.setState(prevState => {
       const nextUpdate = { ...prevState };
       const currentTimeRange = `currentTimeRange${id}`;
@@ -121,31 +138,25 @@ class FreshPowder extends Component {
       return { nextUpdate };
     });
 
-    console.log("im still here");
+    // These id's must trigger data updates for their respective deck element (SHDD, BBD)
     if (id === "SHDT" || id === "BBT") {
       const baseSelector = id.slice(0, id.length - 1); // SHD, BB 
       const dataTrendSelector = `data${id}`; // SHDT, BBT
       const dataDeckSelector = `data${baseSelector}D`; // SHDD, BBD
-     // const currentTimeRange = `currentTimeRange${id}`;
-
-      console.log("DATA TREND:", dataFromServer.dataTrend);
-      console.log("DATA DECK:", dataFromServer.dataDeck);
-
+      
+      // Update state if SHDT, SHDT, BBD, BBT element and exit function
       return this.setState(prevState => {
         const nextUpdate = { ...prevState };
-       // nextUpdate.currentTimeRange[currentTimeRange] = timeRange;
         nextUpdate.api[dataTrendSelector] = dataFromServer.dataTrend;
         nextUpdate.api[dataDeckSelector] = dataFromServer.dataDeck;
         return { nextUpdate };
       })
     }
 
-    // Update state of all elements
+    // Update state of TFPT, TFPD elements
     this.setState(prevState => {
       const dataSelector = `data${id}`;
-     // const currentTimeRange = `currentTimeRange${id}`;
       const nextUpdate = { ...prevState };
-     // nextUpdate.currentTimeRange[currentTimeRange] = timeRange;
       nextUpdate.api[dataSelector] = dataFromServer;
       return { nextUpdate };
     });

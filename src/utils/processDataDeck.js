@@ -22,7 +22,7 @@ const getMaxValueFromArray = (arr) => {
   if (_.isEmpty(arr)) {
     return 0;
   }
-  return _.round(_.max(arr), 2);;
+  return _.round(_.max(arr), 2);
 };
 
 /**
@@ -224,7 +224,7 @@ const createDataForDeckType1 = (breakpoint, currentData, prevData) => {
   const avgCurrentData = getAverage(yValueCurrentData);
 
   console.log("Breakpoint", breakpoint);
-  console.log("Before break point, ", prevData);
+  console.log("Same or Before break point, ", prevData);
   console.log("After breakpoint, ", currentData);
   console.log("Maximum current value", yMaxValueCurrentData);
   console.log("Minimum current value", yMinValueCurrentData);
@@ -262,7 +262,7 @@ const createDataForDeckType2 = (breakpoint, currentData, prevData) => {
   const totalCurrentData = getTotalValueFromArray(yValueCurrentData);
 
   console.log("Breakpoint", breakpoint);
-  console.log("Before break point, ", prevData);
+  console.log("Samr or Before break point, ", prevData);
   console.log("After breakpoint, ", currentData);
   console.log("Total current value", totalCurrentData);
   console.log("Total previous value", totalPrevData);
@@ -308,10 +308,24 @@ const run = (arr, timeRange, type) => {
     };
   }
 
+  if (type === 2) {
+    fallbackData = {
+      average: {
+        avgTimeRange: -1,
+        avgPrevTimeRange: -1
+      },
+      total: {
+        totalTimeRange: -1,
+        totalPrevTimeRange: -1
+      },
+    };
+  }
+
   console.log("Data from express server: ", arr);
 
   // If API request fails, then "arr" holds "undefined"
-  if (typeof arr === "undefined") {
+  if (typeof arr === "undefined" || arr === false) {
+    console.error("[processDataDeck.run]: There is no data to process");
     return fallbackData;
   }
 
@@ -322,6 +336,7 @@ const run = (arr, timeRange, type) => {
    */
   // Separates "arr" data in two parts: before and after date
   const breakpoint = createDateObject(new Date()).subtract(1, timeRange);
+
   const argsGroupDataByDate = [
     arr,
     breakpoint,
