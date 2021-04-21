@@ -28,7 +28,7 @@ export const axiosPowderType = axios.create({
   baseURL: "/consumption/powder-type"
 });
 
-export const sprayedPowderAPI = axios.create({
+export const axiosSprayedPowder = axios.create({
   baseURL: "/consumption/sprayed-powder"
 });
 

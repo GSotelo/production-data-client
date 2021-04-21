@@ -1,5 +1,5 @@
-import { ReactComponent as Humidity } from "../../../../../assets/svg/humidity.svg";
-import { ReactComponent as Temperature } from "../../../../../assets/svg/temperature.svg";
+import { ReactComponent as Recipe } from "../../../../../assets/svg/programEdit.svg";
+import { ReactComponent as Total } from "../../../../../assets/svg/total.svg";
 
 /**
  * General notes:
@@ -19,8 +19,8 @@ import { ReactComponent as Temperature } from "../../../../../assets/svg/tempera
  * Title bar: Dropdown, icon and description text (type 3)
  */
 export const propsTitleBarHST = {
-  icon: <Humidity />,
-  title: "Humidity sensor",
+  icon: <Recipe />,
+  title: "Sprayed powder calculated - Recipe",
   type: 3
 };
 
@@ -29,8 +29,8 @@ export const propsTitleBarHST = {
  * Title bar: Dropdown, icon and description text (type 3)
  */
 export const propsTitleBarTST = {
-  icon: <Temperature />,
-  title: "Temperature sensor",
+  icon: <Total />,
+  title: "Sprayed powder calculated - Total",
   type: 1
 };
 
@@ -39,8 +39,8 @@ export const propsTitleBarTST = {
  * Title bar: Dropdown, icon and description text (type 3)
  */
 export const propsTitleBarHSD = {
-  icon: <Humidity />,
-  title: "Humidity sensor",
+  icon: <Recipe />,
+  title: "Per recipe",
   type: 3
 };
 
@@ -49,8 +49,8 @@ export const propsTitleBarHSD = {
  * Title bar: Dropdown, icon and description text (type 3)
  */
 export const propsTitleBarTSD = {
-  icon: <Temperature />,
-  title: "Temperature sensor",
+  icon: <Total />,
+  title: "Per total",
   type: 1
 };
 
@@ -65,28 +65,15 @@ export const propsToasterDanger = [
 ];
 
 /**
- * [propsDropdownTS]: Temperature sensor - dropdown options
- */
-export const propsDropdownTS = {
-  options: [
-    { key: 1, text: "TS-1", value: 1 },
-    { key: 2, text: "TS-2", value: 2 },
-    { key: 3, text: "TS-3", value: 3 },
-    { key: 4, text: "TS-4", value: 4 },
-    { key: 5, text: "TS-5", value: 5 }
-  ]
-};
-
-/**
  * [propsDropdownHS]: Humidity sensor - dropdown options
  */
 export const propsDropdownHS = {
   options: [
-    { key: 1, text: "HS-1", value: 1 },
-    { key: 2, text: "HS-2", value: 2 },
-    { key: 3, text: "HS-3", value: 3 },
-    { key: 4, text: "HS-4", value: 4 },
-    { key: 5, text: "HS-5", value: 5 }
+    { key: 1, text: "R-1", value: 1 },
+    { key: 2, text: "R-2", value: 2 },
+    { key: 3, text: "R-3", value: 3 },
+    { key: 4, text: "R-4", value: 4 },
+    { key: 5, text: "R-5", value: 5 }
   ]
 };
 

@@ -18,7 +18,7 @@ const layoutTST = {
   enableArea: false,
   translateX: -30,
   xtitle: "Date",
-  ytitle: "Temperature (°C)"
+  ytitle: "Powder (kg)"
 };
 
 /**
@@ -29,7 +29,7 @@ const layoutHST = {
   enableArea: false,
   translateX: -30,
   xtitle: "Date",
-  ytitle: "Humidity (%)"
+  ytitle: "Powder (kg)"
 };
 
 const LineChart = ({ data, id }) => {

@@ -183,23 +183,22 @@ class HumidityTemperature extends Component {
     const contextValue = createContextValues(ids);
 
     // Deck UI components
-    const DeckHSD = <Deck data={dataHSD} timeRange={currentTimeRangeHSD} units="%" orientation="h" />;
-    const DeckTSD = <Deck data={dataTSD} timeRange={currentTimeRangeTSD} units="°C" orientation="h" />;
+    const DeckHSD = <Deck data={dataHSD} timeRange={currentTimeRangeHSD} units="kg" orientation="h" />;
+    const DeckTSD = <Deck data={dataTSD} timeRange={currentTimeRangeTSD} units="kg" orientation="h" />;
 
     // Dropdown UI components
     const DropdownHS = <Dropdown {...propsDropdownHS} />;
-    const DropdownTS = <Dropdown {...propsDropdownTS} />;
 
     // Line chart UI components
-    const LineChartHST = <LineChart id="HST" data={[{ id: "Humidity", data: dataHST }]} />;
-    const LineChartTST = <LineChart id="TST" data={[{ id: "Temperature", data: dataTST }]} />;
+    const LineChartHST = <LineChart id="HST" data={[{ id: "Recipe", data: dataHST }]} />;
+    const LineChartTST = <LineChart id="TST" data={[{ id: "Total", data: dataTST }]} />;
 
     return (
       <Row className={styles.humidityTemperature}>
         <Col className={styles.left}>
           <div className={styles.top}>
             <GraphContext.Provider value={contextValue[0]}>
-              <GraphContainer {...propsTitleBarTST} graph={LineChartTST} dropdown={DropdownTS} />
+              <GraphContainer {...propsTitleBarTST} graph={LineChartTST} />
             </GraphContext.Provider>
           </div>
 
@@ -213,7 +212,7 @@ class HumidityTemperature extends Component {
         <Col className={styles.right}>
           <div className={styles.top}>
             <GraphContext.Provider value={contextValue[2]}>
-              <GraphContainer {...propsTitleBarTSD} graph={DeckTSD} dropdown={DropdownTS} />
+              <GraphContainer {...propsTitleBarTSD} graph={DeckTSD} />
             </GraphContext.Provider>
           </div>
 

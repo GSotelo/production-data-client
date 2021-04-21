@@ -1,6 +1,6 @@
 import connectAPI from "../../../../../api/connectAPI";
 import processDataDeck from "../../../../../utils/processDataDeck";
-import { axiosHumidityTemperature } from "../../../../../api/axios";
+import { axiosSprayedPowder } from "../../../../../api/axios";
 import { propsToasterDanger } from "./props";
 import { toaster } from "evergreen-ui";
 
@@ -15,16 +15,16 @@ const getEndpoint = (currentValueDropdown, id, timeRange) => {
   let endpoint;
   switch (id) {
     case "HSD":
-      endpoint = `/humidity/${currentValueDropdown}/deck-${timeRange}`;
+      endpoint = `/recipes/${currentValueDropdown}/deck-${timeRange}`;
       break;
     case "TSD":
-      endpoint = `/temperature/${currentValueDropdown}/deck-${timeRange}`;
+      endpoint = `/total/deck-${timeRange}`;
       break;
     case "HST":
-      endpoint = `/humidity/${currentValueDropdown}/${timeRange}`;
+      endpoint = `/recipes/${currentValueDropdown}/${timeRange}`;
       break;
     case "TST":
-      endpoint = `/temperature/${currentValueDropdown}/${timeRange}`;
+      endpoint = `/total/${timeRange}`;
       break;
     default:
       break;
@@ -42,11 +42,11 @@ const getFilename = (currentValueDropdown, id) => {
   switch (id) {
     case "HSD":
     case "HST":
-      filename = `sensor_humidity_${currentValueDropdown}.csv`;
+      filename = `sprayed_powder_recipe_${currentValueDropdown}.csv`;
       break;
     case "TSD":
     case "TST":
-      filename = `sensor_temperature_${currentValueDropdown}.csv`;
+      filename = `sprayed_powder_total.csv`;
       break;
     default:
       break;
@@ -74,7 +74,7 @@ const connectServer = async (currentValueDropdown, id, timeRange) => {
     const endpoint = getEndpoint(currentValueDropdown, id, timeRange);
     let filteredData = false;
     try {
-      filteredData = await connectAPI.get(axiosHumidityTemperature, endpoint);
+      filteredData = await connectAPI.get(axiosSprayedPowder, endpoint);
     } catch (err) {
       toaster.danger(...propsToasterDanger);
       console.error("[connectServer]: Request to server API failed (GET)");
@@ -89,7 +89,7 @@ const connectServer = async (currentValueDropdown, id, timeRange) => {
     const filename = getFilename(currentValueDropdown, id);
     let filteredData = false;
     try {
-      filteredData = await connectAPI.post(axiosHumidityTemperature, "/", { filename, timeRange })
+      filteredData = await connectAPI.post(axiosSprayedPowder, "/", { filename, timeRange })
     } catch (error) {
       toaster.danger(...propsToasterDanger);
       console.error("[connectServer]: Request to server API failed (POST)");
