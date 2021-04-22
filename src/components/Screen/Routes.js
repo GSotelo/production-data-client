@@ -5,8 +5,6 @@ import {
   AirPressure,
   AverageCost,
   BatchInformation,
-  Coatmaster3D,
-  CoatmasterFlex,
   ColorChange,
   ElectricityAir,
   FreshPowder,
@@ -77,19 +75,6 @@ const calculatorCategory = [
   }
 ];
 
-const qualityCategory = [
-  {
-    key: "quality-r1",
-    path: "/quality/coatmaster_flex",
-   screen: <CoatmasterFlex />
-  },
-  {
-    key: "quality-r2",
-    path: "/quality/coatmaster_3d",
-  screen: <Coatmaster3D />
-  }
-];
-
 const efficiencyCategory = [
   {
     key: "efficiency-r1",
@@ -102,7 +87,6 @@ const routeCategories = [
   productionCategory,
   consumptionCategory,
   calculatorCategory,
-  qualityCategory,
   efficiencyCategory
 ];
 

@@ -2,8 +2,6 @@ import React from "react";
 export const AirPressure = React.lazy(() => import("../../Screens/Consumption/AirPressure/AirPressure"));
 export const AverageCost = React.lazy(() => import("../../Screens/Calculator/AverageCost/AverageCost"));
 export const BatchInformation = React.lazy(() => import("../../Screens/Production/BatchInformation/BatchInformation"));
-export const Coatmaster3D = React.lazy(() => import("../../Screens/Quality/Coatmaster3D/Coatmaster3D"));
-export const CoatmasterFlex = React.lazy(() => import("../../Screens/Quality/CoatmasterFlex/CoatmasterFlex"));
 export const ColorChange = React.lazy(() => import("../../Screens/Production/ColorChange/ColorChange"));
 export const ElectricityAir = React.lazy(() => import("../../Screens/Consumption/ElectricityAir/ElectricityAir"));
 export const FreshPowder = React.lazy(() => import("../../Screens/Consumption/FreshPowder/FreshPowder"));

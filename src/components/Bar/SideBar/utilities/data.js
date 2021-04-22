@@ -57,19 +57,6 @@ const calculatorItems = [
   }
 ];
 
-const qualityItems = [
-  {
-    key: "sub4-i1",
-    value: "Coatmaster Flex",
-    path: "/quality/coatmaster_flex"
-  },
-  {
-    key: "sub4-i2",
-    value: "Coatmaster 3D",
-    path: "/quality/coatmaster_3d"
-  }
-];
-
 const efficiencyItems = [
   {
     key: "sub5-i1",
@@ -93,11 +80,6 @@ const menuItems = [
     key: 'sub3',
     title: 'Calculator',
     items: calculatorItems
-  },
-  {
-    key: 'sub4',
-    title: 'Quality',
-    items: qualityItems
   },
   {
     key: 'sub5',
