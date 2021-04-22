@@ -11,36 +11,36 @@ import Line from "../../../../UI/Graph/Line/Line";
  */
 
 /**
- * [layoutTFP]: Layout for consumption per powder type (location: top)
+ * [layoutTopSPCTT]: Layout for "Consumption per powder type" trend (location: top)
  */
-const layoutTopCPT = {
+const layoutTopSPCTT = {
   colors: "#86a315",
   enableArea: false,
   translateX: -30,
   xtitle: "Date",
-  ytitle: "Consumption (kg)"
+  ytitle: "Powder (kg)"
 };
 
 /**
- * [layoutTFP]: Layout for consumption per powder type (location: bottom)
+ * [layoutBottomSPCTT]: Layout for "Consumption per powder type" trend (location: bottom)
  */
-const layoutBottomCPT = {
+const layoutBottomSPCTT = {
   colors: "#e37222",
   enableArea: false,
   translateX: -30,
   xtitle: "Date",
-  ytitle: "Consumption (kg)"
+  ytitle: "Powder (kg)"
 };
 
 const LineChart = ({ data, id }) => {
   let layout;
 
   /**
-   * topCPT: Consumption per powder type (location: top)
-   * bottomCPT: Consumption per powder type (location: bottom)
+   * TopSPCTT: Consumption per powder type trend (location: top)
+   * BottomSPCTT: Consumption per powder type trend (location: bottom)
    */
-  if (id === "TopCPT") layout = layoutTopCPT;
-  if (id === "BottomCPT") layout = layoutBottomCPT;
+  if (id === "TopSPCTT") layout = layoutTopSPCTT;
+  if (id === "BottomSPCTT") layout = layoutBottomSPCTT;
 
   const defaultLineData = [
     {
@@ -49,12 +49,11 @@ const LineChart = ({ data, id }) => {
     }
   ];
 
- /**
-   *  If express server provides no data, then use the default one.
-   */
-  
-  const useDefaultData = typeof data[0].data != "undefined" && data[0].data.length > 0;
-  const lineData = useDefaultData? data : defaultLineData;
+  /**
+  *  If express server provides no data, then use the default one.
+  */
+  const useServerData = typeof data[0].data != "undefined" && data[0].data.length > 0;
+  const lineData = useServerData ? data : defaultLineData;
 
   return (
     <Line {...layout} data={lineData} />

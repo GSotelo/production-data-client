@@ -19,7 +19,6 @@
 
 .dataTable.MuiDataGrid-root .MuiDataGrid-row:hover {
   background-color: var(--color-gypsum);
-  
 }
 
 .dataTable.MuiDataGrid-root .rendering-zone {
@@ -43,3 +42,22 @@
 .dataTable.MuiDataGrid-root .MuiDataGrid-selectedRowCount {
   font-size: 1rem;
 }
+
+.dataTable.MuiDataGrid-root .MuiDataGrid-cellLeft {
+  min-width: 50% !important;
+}
+
+.dataTable.MuiDataGrid-root .MuiDataGrid-colCellSortable {
+  min-width: 50% !important;
+}
+
+.dataTable.MuiDataGrid-root .MuiDataGrid-cellRight {
+  min-width: 50% !important;
+  text-align: start;
+}
+
+.dataTable.MuiDataGrid-root .MuiDataGrid-colCellRight .MuiDataGrid-colCellTitleContainer {
+  justify-content: start;
+}
+
+.dataTable.MuiDataGrid-root .MuiDataGrid-colCellTitleContainer {}

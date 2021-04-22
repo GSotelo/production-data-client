@@ -33,15 +33,15 @@ export const propsCCAT = {
     {
       field: "date",
       headerName: "Date",
-      sortable: true,
-      width: "50%"
+      sortable: true
+     
     },
     {
       field: "pressure",
       headerName: "Pressure (bar)",
       sortable: true,
-      type: "number",
-      width: "50%"
+      type: "number"
+     
     }
   ],
 

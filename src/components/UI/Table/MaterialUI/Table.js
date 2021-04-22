@@ -11,6 +11,7 @@ const Table = ({ rows, columns, pageSize }) => (
     className="dataTable"
     pageSize={pageSize} 
     rows={rows} 
+    onPageChange={(param) => console.log("changing page...", param)}
   />
 );
 
