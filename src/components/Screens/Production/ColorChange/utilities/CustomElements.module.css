@@ -1,23 +1,23 @@
-.customChart {
+.lineBar {
   height: 100%;
   width: 100%;
   display: flex;
   justify-content: space-between;
 }
 
-.customChart .top {
+.lineBar .left {
   height: 100%;
   width: 71%;
 }
 
-.customChart .bottom {
+.lineBar .right {
   height: 100%;
   width: 25%;
   display: flex;
   align-items: center;
 }
 
-.customChart .bottom :global(.cardWithFooter) {
+.lineBar .right :global(.cardWithFooter) {
   height: 70%;
 }
 

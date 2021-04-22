@@ -279,7 +279,7 @@ const createDataForDeckType2 = (breakpoint, currentData, prevData) => {
     total: {
       totalTimeRange: totalCurrentData,
       totalPrevTimeRange: totalPrevData
-    },
+    }
   };
 };
 
