@@ -11,9 +11,9 @@ import Line from "../../../../UI/Graph/Line/Line";
  */
 
 /**
- * [layoutTST]: Layout for temperature sensor trend (location: top)
+ * [layoutSPCTT]: Layout for temperature sensor trend (location: top)
  */
-const layoutTST = {
+const layoutSPCTT = {
   colors: "#86a315",
   enableArea: false,
   translateX: -30,
@@ -24,7 +24,7 @@ const layoutTST = {
 /**
  * [layoutTST]: Layout for humidity sensor trend (location: bottom)
  */
-const layoutHST = {
+const layoutSPCRT = {
   colors: "#e37222",
   enableArea: false,
   translateX: -30,
@@ -37,10 +37,10 @@ const LineChart = ({ data, id }) => {
 
   /**
    * TST: Temperature sensor trend (location: top)
-   * HST: Humidity sensor trend (location: bottom)
+   * SPCRT: Humidity sensor trend (location: bottom)
    */
-  if (id === "TST") layout = layoutTST;
-  if (id === "HST") layout = layoutHST;
+  if (id === "SPCTT") layout = layoutSPCTT;
+  if (id === "SPCRT") layout = layoutSPCRT;
 
   const defaultLineData = [
     {

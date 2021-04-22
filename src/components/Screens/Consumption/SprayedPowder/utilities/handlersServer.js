@@ -14,16 +14,16 @@ import { toaster } from "evergreen-ui";
 const getEndpoint = (currentValueDropdown, id, timeRange) => {
   let endpoint;
   switch (id) {
-    case "HSD":
+    case "SPCRD":
       endpoint = `/recipes/${currentValueDropdown}/deck-${timeRange}`;
       break;
-    case "TSD":
+    case "SPCTD":
       endpoint = `/total/deck-${timeRange}`;
       break;
-    case "HST":
+    case "SPCRT":
       endpoint = `/recipes/${currentValueDropdown}/${timeRange}`;
       break;
-    case "TST":
+    case "SPCTT":
       endpoint = `/total/${timeRange}`;
       break;
     default:
@@ -40,12 +40,12 @@ const getEndpoint = (currentValueDropdown, id, timeRange) => {
 const getFilename = (currentValueDropdown, id) => {
   let filename;
   switch (id) {
-    case "HSD":
-    case "HST":
+    case "SPCRD":
+    case "SPCRT":
       filename = `sprayed_powder_recipe_${currentValueDropdown}.csv`;
       break;
-    case "TSD":
-    case "TST":
+    case "SPCTD":
+    case "SPCTT":
       filename = `sprayed_powder_total.csv`;
       break;
     default:
@@ -108,12 +108,12 @@ const processDataFromServer = async (currentValueDropdown, id, timeRange) => {
   const dataFromServer = await connectServer(currentValueDropdown, id, timeRange);
 
   switch (id) {
-    case "HSD":
-    case "TSD":
+    case "SPCRD":
+    case "SPCTD":
       data = processDataDeck.run(dataFromServer, timeRange, 2);
       break;
-    case "HST":
-    case "TST":
+    case "SPCRT":
+    case "SPCTT":
       data = dataFromServer;
       break;
     default:

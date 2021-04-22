@@ -18,17 +18,17 @@ import { ReactComponent as Total } from "../../../../../assets/svg/total.svg";
  * [propsTitleBarHST]: Title bar in "Humidity sensor" (trend)
  * Title bar: Dropdown, icon and description text (type 3)
  */
-export const propsTitleBarHST = {
+export const propsTitleBarSPCRT = {
   icon: <Recipe />,
   title: "Sprayed powder calculated - Recipe",
   type: 3
 };
 
 /**
- * [propsTitleBarHST]: Title bar in "Temperature sensor" (trend)
- * Title bar: Dropdown, icon and description text (type 3)
+ * [propsTitleBarSPCTT]: Title bar in "Temperature sensor" (trend)
+ * Title bar: Dropdown, icon and description text (type 1)
  */
-export const propsTitleBarTST = {
+export const propsTitleBarSPCTT = {
   icon: <Total />,
   title: "Sprayed powder calculated - Total",
   type: 1
@@ -38,17 +38,17 @@ export const propsTitleBarTST = {
  * [propsTitleBarHSD]: Title bar in "Humidity sensor" (deck)
  * Title bar: Dropdown, icon and description text (type 3)
  */
-export const propsTitleBarHSD = {
+export const propsTitleBarSPCRD= {
   icon: <Recipe />,
   title: "Per recipe",
   type: 3
 };
 
 /**
- * [propsTitleBarTSD]: Title bar in "Temperature sensor" (deck)
+ * [propsTitleBarSPCTD]: Title bar in "Temperature sensor" (deck)
  * Title bar: Dropdown, icon and description text (type 3)
  */
-export const propsTitleBarTSD = {
+export const propsTitleBarSPCTD = {
   icon: <Total />,
   title: "Per total",
   type: 1
@@ -67,7 +67,7 @@ export const propsToasterDanger = [
 /**
  * [propsDropdownHS]: Humidity sensor - dropdown options
  */
-export const propsDropdownHS = {
+export const propsDropdownSPCR = {
   options: [
     { key: 1, text: "R-1", value: 1 },
     { key: 2, text: "R-2", value: 2 },

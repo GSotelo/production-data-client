@@ -10,25 +10,24 @@ import styles from "./HumidityTemperature.module.css";
 import processDataFromServer from "./utilities/handlersServer";
 import { setCurrentValueDropdown } from "./utilities/miscellaneous";
 import {
-  propsDropdownHS,
-  propsDropdownTS,
-  propsTitleBarHSD,
-  propsTitleBarHST,
-  propsTitleBarTSD,
-  propsTitleBarTST
+  propsDropdownSPCR,
+  propsTitleBarSPCRD,
+  propsTitleBarSPCRT,
+  propsTitleBarSPCTD,
+  propsTitleBarSPCTT
 } from "./utilities/props";
 
-class HumidityTemperature extends Component {
+class SprayedPowder extends Component {
   /**
   * [api]: Contains received data from express server
   * [currentTimeRange]: Contains selected time frame for trend and deck elements
   * [currentValueDropdown]: Contains current value of dropdown for trend and deck elements
-  * [dataHSD, dataHST, dataTSD, dataTST]: Holds data for "sensor_humidity_x.csv", "sensor_temperature_x.csv" 
+  * [dataSPCRD, dataSPCRT, dataSPCTD, dataSPCTT]: Holds data for "sensor_humidity_x.csv", "sensor_temperature_x.csv" 
   * The "x" represents the sensor location
   */
   state = {
     api: {
-      dataHSD:  {
+      dataSPCRD: {
         average: {
           avgTimeRange: 0,
           avgPrevTimeRange: 0
@@ -38,7 +37,7 @@ class HumidityTemperature extends Component {
           totalPrevTimeRange: 0
         }
       },
-      dataTSD:  {
+      dataSPCTD: {
         average: {
           avgTimeRange: 0,
           avgPrevTimeRange: 0
@@ -48,20 +47,20 @@ class HumidityTemperature extends Component {
           totalPrevTimeRange: 0
         }
       },
-      dataHST: [],
-      dataTST: [],
+      dataSPCRT: [],
+      dataSPCTT: [],
     },
     currentTimeRange: {
-      currentTimeRangeHSD: "week",
-      currentTimeRangeHST: "week",
-      currentTimeRangeTST: "week",
-      currentTimeRangeTSD: "week"
+      currentTimeRangeSPCRD: "week",
+      currentTimeRangeSPCRT: "week",
+      currentTimeRangeSPCTT: "week",
+      currentTimeRangeSPCTD: "week"
     },
     currentValueDropdown: {
-      currentValueDropdownHSD: 1,
-      currentValueDropdownHST: 1,
-      currentValueDropdownTSD: 1,
-      currentValueDropdownTST: 1,
+      currentValueDropdownSPCRD: 1,
+      currentValueDropdownSPCRT: 1,
+      currentValueDropdownSPCTD: 1,
+      currentValueDropdownSPCTT: 1,
     }
   }
 
@@ -71,7 +70,7 @@ class HumidityTemperature extends Component {
    */
   async componentDidMount() {
     this.updateDataOnScreen();
-    this.timerID = setInterval(() => this.updateDataOnScreen(), 3500);
+    this.timerID = setInterval(() => this.updateDataOnScreen(), 3600000);
   }
 
   // If component unmounts, then free memory resources
@@ -85,7 +84,7 @@ class HumidityTemperature extends Component {
   async updateDataOnScreen() {
     // Define id's to target all UI elements
     const { currentTimeRange, currentValueDropdown } = this.state;
-    const ids = ["HSD", "HST", "TSD", "TST"];
+    const ids = ["SPCRD", "SPCRT", "SPCTD", "SPCTT"];
 
     // Get data for all elements
     const data = await Promise.all(ids.map(async (id) => {
@@ -94,15 +93,15 @@ class HumidityTemperature extends Component {
       return await processDataFromServer(valueDropdown, id, timeRange);
     }));
 
-     // Update state for all components
-     this.setState(
+    // Update state for all components
+    this.setState(
       {
         api:
         {
-          dataHSD: data[0],
-          dataHST: data[1],
-          dataTSD: data[2],
-          dataTST: data[3]
+          dataSPCRD: data[0],
+          dataSPCRT: data[1],
+          dataSPCTD: data[2],
+          dataSPCTT: data[3]
         }
       }
     );
@@ -151,7 +150,7 @@ class HumidityTemperature extends Component {
   }
 
   /**
-  * @param {*} ids Arrays of ids (i.e "TST", "HST", "TSD", "HSD")
+  * @param {*} ids Arrays of ids (i.e "SPCTT", "SPCRT", "SPCTD", "SPCRD")
   * @returns Array of context values for graphs
   */
   createContextValues = (ids) => {
@@ -173,38 +172,38 @@ class HumidityTemperature extends Component {
     const { createContextValues } = this;
 
     // Data from express server
-    const { dataHSD, dataHST, dataTSD, dataTST } = this.state.api;
+    const { dataSPCRD, dataSPCRT, dataSPCTD, dataSPCTT } = this.state.api;
 
     // Current time range for elements
-    const { currentTimeRangeHSD, currentTimeRangeTSD } = this.state.currentTimeRange;
+    const { currentTimeRangeSPCRD, currentTimeRangeSPCTD } = this.state.currentTimeRange;
 
     // Create context values
-    const ids = ["TST", "HST", "TSD", "HSD"];
+    const ids = ["SPCTT", "SPCRT", "SPCTD", "SPCRD"];
     const contextValue = createContextValues(ids);
 
     // Deck UI components
-    const DeckHSD = <Deck data={dataHSD} timeRange={currentTimeRangeHSD} units="kg" orientation="h" />;
-    const DeckTSD = <Deck data={dataTSD} timeRange={currentTimeRangeTSD} units="kg" orientation="h" />;
+    const DeckSPCRD = <Deck data={dataSPCRD} timeRange={currentTimeRangeSPCRD} units="kg" orientation="h" />;
+    const DeckSPCTD = <Deck data={dataSPCTD} timeRange={currentTimeRangeSPCTD} units="kg" orientation="h" />;
 
     // Dropdown UI components
-    const DropdownHS = <Dropdown {...propsDropdownHS} />;
+    const DropdownHS = <Dropdown {...propsDropdownSPCR} />;
 
     // Line chart UI components
-    const LineChartHST = <LineChart id="HST" data={[{ id: "Recipe", data: dataHST }]} />;
-    const LineChartTST = <LineChart id="TST" data={[{ id: "Total", data: dataTST }]} />;
+    const LineChartSPCRT = <LineChart id="SPCRT" data={[{ id: "Recipe", data: dataSPCRT }]} />;
+    const LineChartSPCTT = <LineChart id="SPCTT" data={[{ id: "Total", data: dataSPCTT }]} />;
 
     return (
       <Row className={styles.humidityTemperature}>
         <Col className={styles.left}>
           <div className={styles.top}>
             <GraphContext.Provider value={contextValue[0]}>
-              <GraphContainer {...propsTitleBarTST} graph={LineChartTST} />
+              <GraphContainer {...propsTitleBarSPCTT} graph={LineChartSPCTT} />
             </GraphContext.Provider>
           </div>
 
           <div className={styles.bottom}>
             <GraphContext.Provider value={contextValue[1]}>
-              <GraphContainer {...propsTitleBarHST} graph={LineChartHST} dropdown={DropdownHS} />
+              <GraphContainer {...propsTitleBarSPCRT} graph={LineChartSPCRT} dropdown={DropdownHS} />
             </GraphContext.Provider>
           </div>
         </Col>
@@ -212,13 +211,13 @@ class HumidityTemperature extends Component {
         <Col className={styles.right}>
           <div className={styles.top}>
             <GraphContext.Provider value={contextValue[2]}>
-              <GraphContainer {...propsTitleBarTSD} graph={DeckTSD} />
+              <GraphContainer {...propsTitleBarSPCTD} graph={DeckSPCTD} />
             </GraphContext.Provider>
           </div>
 
           <div className={styles.bottom}>
             <GraphContext.Provider value={contextValue[3]}>
-              <GraphContainer {...propsTitleBarHSD} graph={DeckHSD} dropdown={DropdownHS} />
+              <GraphContainer {...propsTitleBarSPCRD} graph={DeckSPCRD} dropdown={DropdownHS} />
             </GraphContext.Provider>
           </div>
         </Col>
@@ -227,4 +226,4 @@ class HumidityTemperature extends Component {
   }
 }
 
-export default HumidityTemperature;
+export default SprayedPowder;
