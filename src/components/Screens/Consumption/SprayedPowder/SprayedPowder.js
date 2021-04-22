@@ -6,7 +6,7 @@ import GraphContext from "../../../Context/GraphContext";
 import LineChart from "./utilities/LineChart";
 import { Row, Col } from "antd";
 
-import styles from "./HumidityTemperature.module.css";
+import styles from "./SprayedPowder.module.css";
 import processDataFromServer from "./utilities/handlersServer";
 import { setCurrentValueDropdown } from "./utilities/miscellaneous";
 import {
@@ -22,8 +22,8 @@ class SprayedPowder extends Component {
   * [api]: Contains received data from express server
   * [currentTimeRange]: Contains selected time frame for trend and deck elements
   * [currentValueDropdown]: Contains current value of dropdown for trend and deck elements
-  * [dataSPCRD, dataSPCRT, dataSPCTD, dataSPCTT]: Holds data for "sensor_humidity_x.csv", "sensor_temperature_x.csv" 
-  * The "x" represents the sensor location
+  * [dataSPCRD, dataSPCRT, dataSPCTD, dataSPCTT]: Holds data for "sprayed_powder_total.csv", "sprayed_powder_recipe_x.csv" 
+  * The "x" represents recipe number
   */
   state = {
     api: {
@@ -193,7 +193,7 @@ class SprayedPowder extends Component {
     const LineChartSPCTT = <LineChart id="SPCTT" data={[{ id: "Total", data: dataSPCTT }]} />;
 
     return (
-      <Row className={styles.humidityTemperature}>
+      <Row className={styles.sprayedPowder}>
         <Col className={styles.left}>
           <div className={styles.top}>
             <GraphContext.Provider value={contextValue[0]}>

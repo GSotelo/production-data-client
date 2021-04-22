@@ -1,23 +1,22 @@
 .sprayedPowder {
   height: 100%;
-  padding: 0.5rem;
   width: 100%;
+  padding: 0.5rem;
 }
 
 .left {
-  display: flex;
-  flex-direction: column;
   height: 100%;
-  width: 66.7%;
+  width: 66.67%;
 }
 
-.left>.top {
+.left .top {
   height: 50%;
   padding-bottom: 0.5rem;
   padding-right: 0.25rem;
 }
 
-.left>.bottom {
+.left .bottom {
+  height: 50%;
   height: 50%;
   padding-right: 0.25rem;
 }
@@ -56,19 +55,18 @@
 }
 
 .right {
-  display: flex;
-  flex-direction: column;
   height: 100%;
-  width: 33.3%;
+  width: 33.33%;
 }
 
-.right>.top {
+.right .top {
   height: 50%;
   padding-bottom: 0.5rem;
   padding-left: 0.25rem;
 }
 
-.right>.bottom {
+.right .bottom {
+  height: 50%;
   height: 50%;
   padding-left: 0.25rem;
 }
@@ -85,24 +83,16 @@
   height: 73.33%;
 }
 
-.right .top :global(.titleBox) :global(.wa) {
-  width: 9%;
+.right :global(.titleBox) :global(.wx) {
+  width: 7.5%;
 }
 
-.right .top :global(.titleBox) :global(.wb) {
-  width: 91%;
+.right :global(.titleBox) :global(.wy) {
+  width: 64.5%;
 }
 
-.right .bottom :global(.titleBox) :global(.wx) {
-  width: 9%;
-}
-
-.right .bottom :global(.titleBox) :global(.wy) {
-  width: 61%;
-}
-
-.right .bottom :global(.titleBox) :global(.wz) {
-  width: 30%;
+.right :global(.titleBox) :global(.wz) {
+  width: 28%;
 }
 
 .right :global(.deck) {
@@ -110,7 +100,7 @@
 }
 
 .right :global(.deck .cardBox) {
-  width: 48.5%;
+  width: 31.3%;
 }
 
 .right :global(.deck .cardWithoutFooter) {

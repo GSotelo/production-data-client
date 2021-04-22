@@ -15,7 +15,7 @@ import { ReactComponent as Total } from "../../../../../assets/svg/total.svg";
  */
 
 /**
- * [propsTitleBarHST]: Title bar in "Humidity sensor" (trend)
+ * [propsTitleBarSPCRT]: Title bar in "Sprayed powder calculated recipe" (trend)
  * Title bar: Dropdown, icon and description text (type 3)
  */
 export const propsTitleBarSPCRT = {
@@ -25,7 +25,7 @@ export const propsTitleBarSPCRT = {
 };
 
 /**
- * [propsTitleBarSPCTT]: Title bar in "Temperature sensor" (trend)
+ * [propsTitleBarSPCTT]: Title bar in "Sprayed powder calculated total" (trend)
  * Title bar: Dropdown, icon and description text (type 1)
  */
 export const propsTitleBarSPCTT = {
@@ -35,7 +35,7 @@ export const propsTitleBarSPCTT = {
 };
 
 /**
- * [propsTitleBarHSD]: Title bar in "Humidity sensor" (deck)
+ * [propsTitleBarHSD]: Title bar in "Sprayed powder calculated recipe" (deck)
  * Title bar: Dropdown, icon and description text (type 3)
  */
 export const propsTitleBarSPCRD= {
@@ -45,8 +45,8 @@ export const propsTitleBarSPCRD= {
 };
 
 /**
- * [propsTitleBarSPCTD]: Title bar in "Temperature sensor" (deck)
- * Title bar: Dropdown, icon and description text (type 3)
+ * [propsTitleBarSPCTD]: Title bar in "Sprayed powder calculated total" (deck)
+ * Title bar: Dropdown, icon and description text (type 1)
  */
 export const propsTitleBarSPCTD = {
   icon: <Total />,
@@ -60,12 +60,12 @@ export const propsTitleBarSPCTD = {
 export const propsToasterDanger = [
   "Error",
   {
-    description: "Sensor device not found."
+    description: "Resource not found"
   }
 ];
 
 /**
- * [propsDropdownHS]: Humidity sensor - dropdown options
+ * [propsDropdownSPCR]: Sprayed powder calculted recipe - dropdown options
  */
 export const propsDropdownSPCR = {
   options: [

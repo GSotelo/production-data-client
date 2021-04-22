@@ -11,7 +11,7 @@ import Line from "../../../../UI/Graph/Line/Line";
  */
 
 /**
- * [layoutSPCTT]: Layout for temperature sensor trend (location: top)
+ * [layoutSPCTT]: Layout for "Sprayed powder calculated total" trend (location: top)
  */
 const layoutSPCTT = {
   colors: "#86a315",
@@ -22,7 +22,7 @@ const layoutSPCTT = {
 };
 
 /**
- * [layoutTST]: Layout for humidity sensor trend (location: bottom)
+ * [layoutSPCRT]: Layout for "Sprayed powder calculated recipe" trend (location: bottom)
  */
 const layoutSPCRT = {
   colors: "#e37222",
@@ -36,8 +36,8 @@ const LineChart = ({ data, id }) => {
   let layout;
 
   /**
-   * TST: Temperature sensor trend (location: top)
-   * SPCRT: Humidity sensor trend (location: bottom)
+   * SPCTT: Sprayed powder calculated total trend (location: top)
+   * SPCRT: Sprayed powder calculated recipe trend (location: bottom)
    */
   if (id === "SPCTT") layout = layoutSPCTT;
   if (id === "SPCRT") layout = layoutSPCRT;
