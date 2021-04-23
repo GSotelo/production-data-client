@@ -4,7 +4,7 @@ export const axiosAirPressure = axios.create({
   baseURL: "/consumption/air-pressure"
 });
 
-export const colorChangeAPI = axios.create({
+export const axiosColorChange = axios.create({
   baseURL: "/production/color-change"
 });
 

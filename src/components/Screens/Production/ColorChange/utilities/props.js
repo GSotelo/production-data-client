@@ -50,6 +50,16 @@ export const propsCCAC = {
 };
 
 /**
+ * [propsToasterDanger]: Alert configuration if API request fails
+ */
+ export const propsToasterDanger = [
+  "Error",
+  {
+    description: "Resource not found"
+  }
+];
+
+/**
  * [propsCCAT]: "Color changes aborted" (table)
  */
 export const propsCCAT = {
