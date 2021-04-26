@@ -16,7 +16,7 @@ import { toaster } from "evergreen-ui";
 const getEndpoint = (id, timeRange) => {
   let endpoint;
   switch (id) {
-    case "CCAC":
+    case "CCA":
       endpoint = `/aborted/${timeRange}`;
       break;
     case "CCD":
@@ -39,7 +39,7 @@ const getEndpoint = (id, timeRange) => {
 const getFilename = (id) => {
   let filename;
   switch (id) {
-    case "CCAC":
+    case "CCA":
       filename = "color_change_aborted.csv";
       break;
     case "CCD":

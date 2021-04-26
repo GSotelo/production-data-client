@@ -1,55 +1,76 @@
 import React, { Component } from 'react';
-import CustomCard from "./utilities/CustomCard";
+import Card from "./utilities/Card";
 import GraphContainer from "../../../Container/GraphContainer";
 import GraphContext from "../../../Context/GraphContext";
 import LineBarCardChart from "./utilities/LineBarCardChart";
-import Table from "../../../UI/Table/MaterialUI/Table";
+import Table from "./utilities/Table";
 import { Row, Col } from "antd";
 
 import styles from "./ColorChange.module.css";
 import processDataFromServer from "./utilities/handlersServer";
-
 import { propsCCQL, propsCCD, propsCCAC, propsCCAT } from "./utilities/props";
 
-
 class ColorChange extends Component {
-
-  state={
-    dataCCD:[],
-    dataCCQL:[]
-  }
-
-
-  getDataFromServer = async (id, timeRange) => {
-    
-    const data = await processDataFromServer(id, timeRange);
-    console.log("CC getDataFromServer",id, data);
-  }
-
-  updateState = (id, timeRange, dataFromServer) => {
-    // // Keep track of timeframe
-    // this.setState(prevState => {
-    //   const nextUpdate = { ...prevState };
-    //   const currentTimeRange = `currentTimeRange${id}`;
-    //   nextUpdate.currentTimeRange[currentTimeRange] = timeRange;
-    //   return { nextUpdate };
-    // });
-
-    // // These id's must trigger data updates for their respective deck element (SHDD, BBD)
-    // if (id === "SHDT" || id === "BBT") {
-    //   const baseSelector = id.slice(0, id.length - 1); // SHD, BB 
-    //   const dataTrendSelector = `data${id}`; // SHDT, BBT
-    //   const dataDeckSelector = `data${baseSelector}D`; // SHDD, BBD
-      
-    //   // Update state if SHDT, SHDT, BBD, BBT element and exit function
-    //   return this.setState(prevState => {
-    //     const nextUpdate = { ...prevState };
-    //     nextUpdate.api[dataTrendSelector] = dataFromServer.dataTrend;
-    //     nextUpdate.api[dataDeckSelector] = dataFromServer.dataDeck;
-    //     return { nextUpdate };
-    //   })
+  /**
+ * [api]: Contains received data from express server
+ * [currentTimeRange]: Contains selected time frame for all elements
+ * [dataCCA, dataCCD, dataCCQL]: Holds data for "color_change_aborted.csv",
+ * "color_change_duration.csv", "color_change_longest.csv", "color_change_quickest.csv"
+ */
+  state = {
+    api: {
+      dataCCA: [],
+      dataCCD: [],
+      dataCCQL: []
+    },
+    currentTimeRange: {
+      currentTimeRangeCCA: "week",
+      currentTimeRangeCCD: "week",
+      currentTimeRangeCCQL: "week"
     }
+  }
 
+  /**
+   * 
+   * @param {*} id Target element to update
+   * @param {*} dataFromServer Data from express server
+   * @param {*} timeRange Current time range for selected element
+   */
+  updateState = (id, dataFromServer, timeRange) => {
+    const dataSelector = `data${id}`;
+    const currentTimeRange = `currentTimeRange${id}`;
+
+    this.setState(prevState => {
+      const nextUpdate = { ...prevState };
+      nextUpdate.api[dataSelector] = dataFromServer;
+      nextUpdate.currentTimeRange[currentTimeRange] = timeRange;
+      return { nextUpdate };
+    });
+  }
+
+  /**
+  * [getDataFromServer]: Establish connection to express server via HTTP requests (GET, POST)
+  * [id]: Helps to determine the correct endpoint, filename and axios instance
+  * [timeRange]: It can be a string ("day", "week", "month") or an array of two "moment" objects
+  */
+  getDataFromServer = async (id, timeRange) => {
+    /**
+    * Response data from server API. The data is formatted 
+    * based on nivo library. If an error comes up, then 
+    * "dataFromServer" is "false". Though I can exit the 
+    * function at this point, I'll let it continue. Trends and 
+    * deck elements handle the event of no-data using fallback data 
+    */
+    const data = await processDataFromServer(id, timeRange);
+
+    // Update state of all elements
+    this.updateState(id, data, timeRange);
+  }
+
+  /**
+  * @param {*} ids Arrays of ids (i.e "CCA", "CCD", "CCQL")
+  * @returns Array of context values for graphs
+  */
   createContextValues = (ids) => {
     const { getDataFromServer } = this;
     const baseContextValue = { getDataFromServer };
@@ -63,31 +84,26 @@ class ColorChange extends Component {
   }
 
   render() {
-    const tableRows = [
-      { id: 1, date: "2021/03/17", pressure: 5.7 },
-      { id: 2, date: "2021/03/18", pressure: 5.3 },
-      { id: 3, date: "2021/03/19", pressure: 5.6 },
-      { id: 4, date: "2021/03/20", pressure: 4.3 },
-      { id: 5, date: "2021/03/21", pressure: 4.7 },
-      { id: 6, date: "2021/03/22", pressure: 5.1 },
-      { id: 7, date: "2021/03/23", pressure: 5.4 },
-      { id: 8, date: "2021/03/24", pressure: 5.9 },
-      { id: 9, date: "2021/03/25", pressure: 4.8 },
-      { id: 10, date: "2021/03/26", pressure: 4.9 },
-      { id: 11, date: "2021/03/27", pressure: 4.1 },
-      { id: 12, date: "2021/03/28", pressure: 5.9 },
-      { id: 13, date: "2021/03/29", pressure: 6.2 },
-      { id: 14, date: "2021/03/30", pressure: 6.7 }
-    ];
+    // Extract some class methods
+    const { createContextValues } = this;
 
-    // Line, bar chart UI components
-    const BarChartCCQL = <LineBarCardChart id="CCQL" data="data" timeRange="week" />;
-    const LineChartCCD = <LineBarCardChart id="CCD" data="data" timeRange="week" />;
+    // Data from express server
+    const { dataCCA, dataCCD, dataCCQL } = this.state.api;
+
+    // Current time range for elements
+    const { currentTimeRangeCCA, currentTimeRangeCCD, currentTimeRangeCCQL } = this.state.currentTimeRange;
 
     // Create context values
-    const { createContextValues } = this;
-    const ids = ["CCQL", "CCD", "CCAC"];
+    const ids = ["CCQL", "CCD", "CCA"];
     const contextValue = createContextValues(ids);
+
+    // Line, bar chart UI components
+    const BarChartCCQL = <LineBarCardChart id="CCQL" data={dataCCQL} timeRange={currentTimeRangeCCQL} />;
+    const LineChartCCD = <LineBarCardChart id="CCD" data={dataCCD} timeRange={currentTimeRangeCCD} />;
+
+    // Table, Card UI components
+    const TableCCA = <Table data={dataCCA} {...propsCCAT} />;
+    const CardCCA = <Card data={dataCCA} />;
 
     return (
       <Row className={styles.colorChange}>
@@ -108,12 +124,12 @@ class ColorChange extends Component {
         <Col className={styles.right}>
           <div className={styles.top}>
             <GraphContext.Provider value={contextValue[2]}>
-              <GraphContainer  {...propsCCAC} graph={<CustomCard value="17" />} />
+              <GraphContainer  {...propsCCAC} graph={CardCCA} />
             </GraphContext.Provider>
           </div>
 
           <div className={styles.bottom}>
-            <Table rows={tableRows} {...propsCCAT} />
+            {TableCCA}
           </div>
         </Col>
       </Row>

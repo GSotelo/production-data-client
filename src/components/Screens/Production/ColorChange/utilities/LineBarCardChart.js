@@ -184,6 +184,7 @@ const propsBarChart = {
 const LineBarCardChart = ({ data, id, timeRange }) => {
   // linechart tiene que generat set label set footer value, process deck
   // time range is important to display card with previous timeframe
+  console.log("DATA IN linebarcard: ", data);
 
   let layout;
   // Filtered data debe generar data para line / bar
@@ -319,7 +320,7 @@ const LineBarCardChart = ({ data, id, timeRange }) => {
    /**
   *  If express server provides no data, then use the default one.
   */
-    const useServerData = typeof data[0].data != "undefined" && data[0].data.length > 0;
+    //const useServerData = typeof data[0].data != "undefined" && data[0].data.length > 0;
    // const lineData = useServerData ? data : defaultLineData;
 
 
@@ -340,7 +341,7 @@ const LineBarCardChart = ({ data, id, timeRange }) => {
   const isBarChart = (id === "CCQL") ? true : false;
 
   return (
-    <div className={styles.lineBar}>
+    <div className={styles.lineBarCard}>
       <div className={styles.left}>
         {isLineChart && <Line {...layoutCCD} data={lineData} />}
         {isBarChart && <Bar {...layoutCCQL} data={barData} />}

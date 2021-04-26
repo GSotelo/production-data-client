@@ -19,7 +19,7 @@ import {
 } from "./utilities/props";
 
 class FreshPowder extends Component {
-  /**
+ /**
  * [api]: Contains received data from express server
  * [currentTimeRange]: Contains selected time frame for trend and deck elements
  * [currentValueDropdown]: Contains current value of dropdown for trend and deck elements
@@ -129,6 +129,12 @@ class FreshPowder extends Component {
     return { nextUpdate };
   })
 
+  /**
+   * 
+   * @param {*} id Target element to update
+   * @param {*} dataFromServer Data from express server
+   * @param {*} timeRange Current time range for selected element
+   */
   updateState = (id, timeRange, dataFromServer) => {
     // Keep track of timeframe
     this.setState(prevState => {

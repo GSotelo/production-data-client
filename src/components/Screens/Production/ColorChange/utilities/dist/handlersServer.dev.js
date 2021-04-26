@@ -39,7 +39,7 @@ var getEndpoint = function getEndpoint(id, timeRange) {
   var endpoint;
 
   switch (id) {
-    case "CCAC":
+    case "CCA":
       endpoint = "/aborted/".concat(timeRange);
       break;
 
@@ -68,7 +68,7 @@ var getFilename = function getFilename(id) {
   var filename;
 
   switch (id) {
-    case "CCAC":
+    case "CCA":
       filename = "color_change_aborted.csv";
       break;
 
