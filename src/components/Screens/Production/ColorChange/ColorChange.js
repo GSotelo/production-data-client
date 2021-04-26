@@ -14,12 +14,41 @@ import { propsCCQL, propsCCD, propsCCAC, propsCCAT } from "./utilities/props";
 
 class ColorChange extends Component {
 
+  state={
+    dataCCD:[],
+    dataCCQL:[]
+  }
+
 
   getDataFromServer = async (id, timeRange) => {
-    console.log("HERE THE ID,", id);
-    console.log("HERE THE TIMERANGE,", timeRange);
-    const data = await processDataFromServer(1, id, timeRange);
+    
+    const data = await processDataFromServer(id, timeRange);
+    console.log("CC getDataFromServer",id, data);
   }
+
+  updateState = (id, timeRange, dataFromServer) => {
+    // // Keep track of timeframe
+    // this.setState(prevState => {
+    //   const nextUpdate = { ...prevState };
+    //   const currentTimeRange = `currentTimeRange${id}`;
+    //   nextUpdate.currentTimeRange[currentTimeRange] = timeRange;
+    //   return { nextUpdate };
+    // });
+
+    // // These id's must trigger data updates for their respective deck element (SHDD, BBD)
+    // if (id === "SHDT" || id === "BBT") {
+    //   const baseSelector = id.slice(0, id.length - 1); // SHD, BB 
+    //   const dataTrendSelector = `data${id}`; // SHDT, BBT
+    //   const dataDeckSelector = `data${baseSelector}D`; // SHDD, BBD
+      
+    //   // Update state if SHDT, SHDT, BBD, BBT element and exit function
+    //   return this.setState(prevState => {
+    //     const nextUpdate = { ...prevState };
+    //     nextUpdate.api[dataTrendSelector] = dataFromServer.dataTrend;
+    //     nextUpdate.api[dataDeckSelector] = dataFromServer.dataDeck;
+    //     return { nextUpdate };
+    //   })
+    }
 
   createContextValues = (ids) => {
     const { getDataFromServer } = this;

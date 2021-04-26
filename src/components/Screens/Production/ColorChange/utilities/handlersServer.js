@@ -1,5 +1,8 @@
 import connectAPI from "../../../../../api/connectAPI";
 import processDataDeck from "../../../../../utils/processDataDeck";
+import groupData from "../../../../../utils/groupDataByDate";
+import _ from "lodash";
+
 import { axiosColorChange } from "../../../../../api/axios";
 import { propsToasterDanger } from "./props";
 import { toaster } from "evergreen-ui";
@@ -10,7 +13,7 @@ import { toaster } from "evergreen-ui";
  * @param {*} timeRange String with value of either "day", "week", "month"
  * @returns String containing the API endpoint
  */
-const getEndpoint = (currentValueDropdown, id, timeRange) => {
+const getEndpoint = (id, timeRange) => {
   let endpoint;
   switch (id) {
     case "CCAC":
@@ -33,7 +36,7 @@ const getEndpoint = (currentValueDropdown, id, timeRange) => {
  * @param {*} id Helps to determine the filename for executing API requests
  * @returns String containing the filename
  */
-const getFilename = (currentValueDropdown, id) => {
+const getFilename = (id) => {
   let filename;
   switch (id) {
     case "CCAC":
@@ -57,7 +60,7 @@ const getFilename = (currentValueDropdown, id) => {
  * @param {*} timeRange String or array of two "moment" objects
  * @returns Data to feed line chart according to "nivo" library
  */
-const connectServer = async (currentValueDropdown, id, timeRange) => {
+const connectServer = async (id, timeRange) => {
   /**
    * Check is request comes from a control button or date picker
    */
@@ -71,7 +74,7 @@ const connectServer = async (currentValueDropdown, id, timeRange) => {
    * If control button, then trigger HTTP GET requests
    */
   if (timeRangeIsString) {
-    const endpoint = getEndpoint(currentValueDropdown, id, timeRange);
+    const endpoint = getEndpoint(id, timeRange);
     let filteredData = false;
     try {
       !isPreviousTimeRequired && (filteredData = await connectAPI.get(axiosColorChange, endpoint));
@@ -87,7 +90,7 @@ const connectServer = async (currentValueDropdown, id, timeRange) => {
   * If date picker, then trigger HTTP POST requests
   */
   if (timeRangeIsArray) {
-    const filename = getFilename(currentValueDropdown, id);
+    const filename = getFilename(id);
 
     let filteredData = false;
     try {
@@ -100,32 +103,17 @@ const connectServer = async (currentValueDropdown, id, timeRange) => {
   }
 };
 
-/**
- * Data from server is either for "trend" or "deck" elements
- * If data is for a "deck" element, then further processing is needed
- * If data is for a "trend" element, then it goes straight forward
- */
-const processDataFromServer = async (currentValueDropdown, id, timeRange) => {
-  let data;
 
-  const dataFromServer = await connectServer(currentValueDropdown, id, timeRange);
+const processDataFromServer = async (id, timeRange) => {
+  // If error, then "dataFromServer" equals to empty array
+  const dataFromServer = await connectServer(id, timeRange);
+  const isEmptyData = _.isEmpty(_.flatten(dataFromServer));
 
-  switch (id) {
-    // case "SPCRD":
-    // case "SPCTD":
-    //   data = processDataDeck.run(dataFromServer, timeRange, 1);
-    //   break;
-
-    case "CCD":
-      data = dataFromServer;
-      break;
-    case "CCQL":
-      data = dataFromServer;
-      break;
-    default:
-      break;
+  if (isEmptyData) {
+    return false;
   }
-  return data;
+  
+  return dataFromServer;
 };
 
 export default processDataFromServer;

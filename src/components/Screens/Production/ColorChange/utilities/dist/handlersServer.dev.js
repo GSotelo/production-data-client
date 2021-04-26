@@ -9,6 +9,10 @@ var _connectAPI = _interopRequireDefault(require("../../../../../api/connectAPI"
 
 var _processDataDeck = _interopRequireDefault(require("../../../../../utils/processDataDeck"));
 
+var _groupDataByDate = _interopRequireDefault(require("../../../../../utils/groupDataByDate"));
+
+var _lodash = _interopRequireDefault(require("lodash"));
+
 var _axios = require("../../../../../api/axios");
 
 var _props = require("./props");
@@ -31,7 +35,7 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
  * @param {*} timeRange String with value of either "day", "week", "month"
  * @returns String containing the API endpoint
  */
-var getEndpoint = function getEndpoint(currentValueDropdown, id, timeRange) {
+var getEndpoint = function getEndpoint(id, timeRange) {
   var endpoint;
 
   switch (id) {
@@ -60,7 +64,7 @@ var getEndpoint = function getEndpoint(currentValueDropdown, id, timeRange) {
  */
 
 
-var getFilename = function getFilename(currentValueDropdown, id) {
+var getFilename = function getFilename(id) {
   var filename;
 
   switch (id) {
@@ -90,7 +94,7 @@ var getFilename = function getFilename(currentValueDropdown, id) {
  */
 
 
-var connectServer = function connectServer(currentValueDropdown, id, timeRange) {
+var connectServer = function connectServer(id, timeRange) {
   var timeRangeIsArray, timeRangeIsString, isPreviousTimeRequired, endpoint, filteredData, filename, _filteredData;
 
   return regeneratorRuntime.async(function connectServer$(_context) {
@@ -113,7 +117,7 @@ var connectServer = function connectServer(currentValueDropdown, id, timeRange) 
             break;
           }
 
-          endpoint = getEndpoint(currentValueDropdown, id, timeRange);
+          endpoint = getEndpoint(id, timeRange);
           filteredData = false;
           _context.prev = 6;
           _context.t0 = !isPreviousTimeRequired;
@@ -164,7 +168,7 @@ var connectServer = function connectServer(currentValueDropdown, id, timeRange) 
             break;
           }
 
-          filename = getFilename(currentValueDropdown, id);
+          filename = getFilename(id);
           _filteredData = false;
           _context.prev = 27;
           _context.next = 30;
@@ -196,43 +200,31 @@ var connectServer = function connectServer(currentValueDropdown, id, timeRange) 
     }
   }, null, null, [[6, 19], [27, 33]]);
 };
-/**
- * Data from server is either for "trend" or "deck" elements
- * If data is for a "deck" element, then further processing is needed
- * If data is for a "trend" element, then it goes straight forward
- */
 
-
-var processDataFromServer = function processDataFromServer(currentValueDropdown, id, timeRange) {
-  var data, dataFromServer;
+var processDataFromServer = function processDataFromServer(id, timeRange) {
+  var dataFromServer, isEmptyData;
   return regeneratorRuntime.async(function processDataFromServer$(_context2) {
     while (1) {
       switch (_context2.prev = _context2.next) {
         case 0:
           _context2.next = 2;
-          return regeneratorRuntime.awrap(connectServer(currentValueDropdown, id, timeRange));
+          return regeneratorRuntime.awrap(connectServer(id, timeRange));
 
         case 2:
           dataFromServer = _context2.sent;
-          _context2.t0 = id;
-          _context2.next = _context2.t0 === "CCD" ? 6 : _context2.t0 === "CCQL" ? 8 : 10;
-          break;
+          isEmptyData = _lodash["default"].isEmpty(_lodash["default"].flatten(dataFromServer));
+
+          if (!isEmptyData) {
+            _context2.next = 6;
+            break;
+          }
+
+          return _context2.abrupt("return", false);
 
         case 6:
-          data = dataFromServer;
-          return _context2.abrupt("break", 11);
+          return _context2.abrupt("return", dataFromServer);
 
-        case 8:
-          data = dataFromServer;
-          return _context2.abrupt("break", 11);
-
-        case 10:
-          return _context2.abrupt("break", 11);
-
-        case 11:
-          return _context2.abrupt("return", data);
-
-        case 12:
+        case 7:
         case "end":
           return _context2.stop();
       }

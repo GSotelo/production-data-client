@@ -309,6 +309,20 @@ const LineBarCardChart = ({ data, id, timeRange }) => {
     }
   ];
 
+  const defaultLineData = [
+    {
+      id,
+      data: [{ x: new Date().toISOString(), y: 0 }]
+    }
+  ];
+
+   /**
+  *  If express server provides no data, then use the default one.
+  */
+    const useServerData = typeof data[0].data != "undefined" && data[0].data.length > 0;
+   // const lineData = useServerData ? data : defaultLineData;
+
+
 
   // Props for card element (la carta es la misma para line / bar)
   const propsCard = {

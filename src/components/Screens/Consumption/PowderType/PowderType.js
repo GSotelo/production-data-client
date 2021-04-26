@@ -79,8 +79,8 @@ class PowderType extends Component {
       currentTimeRangeTopSPCTT: "week",
     },
     currentValueDropdown: {
-      currentValueDropdownBottomSPCTT: 1,
-      currentValueDropdownTopSPCTT: 2,
+      currentValueDropdownBottomSPCTT: 2,
+      currentValueDropdownTopSPCTT: 1,
     }
   }
 
