@@ -31,6 +31,7 @@ class Chart extends Component {
       return <HorizontalCards cards={cardItems} />
     }
   }
+  
   render() {
     const customStyles = this.setCustomStyles(this.props.config.size);
     const graph = this.selectGraph(this.props.config.graph);

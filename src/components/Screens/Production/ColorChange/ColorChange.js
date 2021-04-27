@@ -31,6 +31,47 @@ class ColorChange extends Component {
   }
 
   /**
+   * 1. Fetch data when component mounts for the first time
+   * 2. Triggers automatic updates every "x" milliseconds
+   */
+   async componentDidMount() {
+    this.updateDataOnScreen();
+    //this.timerID = setInterval(() => this.updateDataOnScreen(), 3600000);
+  }
+
+  // If component unmounts, then free memory resources
+  componentWillUnmount() {
+    clearInterval(this.timerID);
+  }
+
+  /**
+   * [updateDataOnScreen]: Trigger screen updates every "x" millisenconds
+   */
+  async updateDataOnScreen() {
+    // Define id's to target all UI elements
+    const { currentTimeRange } = this.state;
+    const ids = ["CCA", "CCD", "CCQL"];
+
+    // Get data for all elements
+    const data = await Promise.all(ids.map(async (id) => {
+      const timeRange = currentTimeRange[`currentTimeRange${id}`];
+      return await processDataFromServer(id, timeRange);
+    }));
+
+    // Update state for all components
+    this.setState(
+      {
+        api:
+        {
+          dataCCA: data[0],
+          dataCCD: data[1],
+          dataCCQL: data[2]
+        }
+      }
+    );
+  }
+
+  /**
    * 
    * @param {*} id Target element to update
    * @param {*} dataFromServer Data from express server
@@ -91,7 +132,7 @@ class ColorChange extends Component {
     const { dataCCA, dataCCD, dataCCQL } = this.state.api;
 
     // Current time range for elements
-    const { currentTimeRangeCCA, currentTimeRangeCCD, currentTimeRangeCCQL } = this.state.currentTimeRange;
+    const { currentTimeRangeCCD, currentTimeRangeCCQL } = this.state.currentTimeRange;
 
     // Create context values
     const ids = ["CCQL", "CCD", "CCA"];

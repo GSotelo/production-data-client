@@ -1,6 +1,4 @@
 import connectAPI from "../../../../../api/connectAPI";
-import processDataDeck from "../../../../../utils/processDataDeck";
-import groupData from "../../../../../utils/groupDataByDate";
 import _ from "lodash";
 
 import { axiosColorChange } from "../../../../../api/axios";

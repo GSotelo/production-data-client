@@ -3,14 +3,12 @@ import { Route } from "react-router-dom";
 
 import {
   AirPressure,
-  AverageCost,
   BatchInformation,
   ColorChange,
   ElectricityAir,
   FreshPowder,
   HumidityTemperature,
   Monitoring,
-  Performance,
   PowderType,
   SprayedPowder
 
@@ -67,27 +65,9 @@ const consumptionCategory = [
   }
 ];
 
-const calculatorCategory = [
-  {
-    key: "calculator-r1",
-    path: "/calculator/average_costs",
-    screen: <AverageCost />
-  }
-];
-
-const efficiencyCategory = [
-  {
-    key: "efficiency-r1",
-    path: "/efficiency/performance",
-   screen: <Performance />
-  }
-];
-
 const routeCategories = [
   productionCategory,
-  consumptionCategory,
-  calculatorCategory,
-  efficiencyCategory
+  consumptionCategory
 ];
 
 const rootItems = routeCategories.map(routeCategory => routeCategory.map(route =>

@@ -49,22 +49,6 @@ const consumptionItems = [
   }
 ];
 
-const calculatorItems = [
-  {
-    key: "sub3-i1",
-    value: "Average costs",
-    path: "/calculator/average_costs"
-  }
-];
-
-const efficiencyItems = [
-  {
-    key: "sub5-i1",
-    value: "Performance",
-    path: "/efficiency/performance"
-  }
-];
-
 const menuItems = [
   {
     key: 'sub1',
@@ -75,16 +59,6 @@ const menuItems = [
     key: 'sub2',
     title: 'Consumption',
     items: consumptionItems
-  },
-  {
-    key: 'sub3',
-    title: 'Calculator',
-    items: calculatorItems
-  },
-  {
-    key: 'sub5',
-    title: 'Efficiency',
-    items: efficiencyItems
   }
 ];
 
