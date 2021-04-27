@@ -271,7 +271,6 @@ const LineBarCardChart = ({ data, id, timeRange }) => {
   }
 
   if(id === "CCQL"){
-    console.log(data);
     propsCard = processAvgCardData(data[1], ...argsCardData);
   }
 

@@ -3,11 +3,7 @@ import CardWithoutFooter from "../../../../UI/Card/CardWithoutFooter/CardWithout
 import { ReactComponent as Total } from "../../../../../assets/svg/total.svg";
 
 import styles from "./CustomElements.module.css";
-import processDataDeck from "../../../../../utils/processDataDeck";
 import _ from "lodash";
-
-// Unpacking some methods
-const { filterArrayByObjectProperty, getTotalValueFromArray } = processDataDeck;
 
 /**
  * 
@@ -16,15 +12,11 @@ const { filterArrayByObjectProperty, getTotalValueFromArray } = processDataDeck;
  * @returns 
  */
 const processDataCard = (data, fallback) => {
-  const filteredData = filterArrayByObjectProperty(data, "y");
-  const isBoolean = _.isBoolean(filteredData);
-
-  // if "filterArrayByObjectProperty" fails, it returns "false"
-  if (!isBoolean) {
-    return getTotalValueFromArray(filteredData);
+  // If no data from server, data holds "false" as value. If not, holds an array of objects
+  if (typeof data === "boolean" && !data) {
+    return fallback;
   }
-
-  return fallback;
+  return _.size(data);
 };
 
 /**

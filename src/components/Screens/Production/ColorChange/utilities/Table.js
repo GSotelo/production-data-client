@@ -9,7 +9,7 @@ import { createDateObject } from "../../../../../utils/time";
  * @returns 03.04.2021 23:08:01
  */
 const formatDate = (dateAsString) => {
-  const createTwoDigits = (el) => el < 9 ? `0${el}` : el;
+  const createTwoDigits = (el) => el <= 9 ? `0${el}` : el;
   const dayjs = createDateObject(dateAsString);
   const { $y, $M, $D, $H, $m, $s } = dayjs;
 
