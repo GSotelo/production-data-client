@@ -1,94 +1,99 @@
 import React, { Component } from 'react';
-import Chart from "./Chart/Chart";
+import BarChart from "./utilities/BarChart";
+import GraphContext from "../../../Context/GraphContext";
+import Deck from "./utilities/Deck";
+import GraphContainer from "../../../Container/GraphContainer";
+import LineChart from "./utilities/LineChart";
+import PieChart from "./utilities/PieChart.js"
 import { Row, Col } from "antd";
-import {
-  propsCoatedSurface,
-  propsConveyorSpeed, 
-  propsLineDensity, 
-  propsRunningHours, 
-  propsSprayMode, 
-  propsSystemStatus 
-} from "./props";
 
 import styles from "./Monitoring.module.css";
+import {
+  propsTitleBarCS,
+  propsTitleBarCVS,
+  propsTitleBarLD,
+  propsTitleBarRH,
+  propsTitleBarSM,
+  propsTitleBarSYS
+} from "./props";
+
 
 class Monitoring extends Component {
 
+
+  getDataFromServer = async (id, timeRange) => {
+    console.log("TRIGGER ELEMENT / TIMERANGE ARE:", id, timeRange);
+  }
+
+  /**
+   * @param {*} ids Arrays of ids ("CS", "CVS", "LD", "RH", "SM", "SYS")
+   * @returns Array of context values for graphs
+   */
+  createContextValues = (ids) => {
+    const { getDataFromServer } = this;
+    const baseContextValue = { getDataFromServer };
+
+    return ids.map(id => (
+      {
+        ...baseContextValue,
+        id,
+      }
+    ));
+  }
+
   render() {
+    // Extract some class methods
+    const { createContextValues } = this;
 
-    /*Spraying mode data*/
-    const dataSprayingMode = [
-      {
-        "id": "automatic",
-        "label": "Automatic",
-        "value": 70
-      },
-      {
-        "id": "manual",
-        "label": "Manual",
-        "value": 20
-      },
-      {
-        "id": "idle",
-        "label": "Idle",
-        "value": 10,
-      }
-    ]
 
-    /*System status data*/
-    const dataSystemStatus = [
-      {
-        "id": "production",
-        "label": "Production",
-        "value": 75
-      },
-      {
-        "id": "system fault",
-        "label": "System fault",
-        "value": 16
-      },
-      {
-        "id": "color change",
-        "label": "Color change",
-        "value": 15,
-      },
-      {
-        "id": "standby",
-        "label": "Standby",
-        "value": 10,
-      }
-    ]
 
-    /* Line density data */
-    const dataLineDensity = [
+    // TEMPORAL: HOW STATES SHOULD BE
+    const dataConveyorSpeedState = [
+      { x: '2021-03-13T23:59:00.000Z', y: 1 },
+      { x: '2021-04-13T23:59:00.000Z', y: 23 },
+      { x: '2021-05-13T23:59:00.000Z', y: 17 },
+      { x: '2021-06-13T23:59:00.000Z', y: 9 },
+    ];
+
+    const dataCoatedSurfaceState = [
+      { x: '2021-03-13T23:59:00.000Z', y: 17 },
+      { x: '2021-04-13T23:59:00.000Z', y: 1 },
+      { x: '2021-05-13T23:59:00.000Z', y: 3 },
+      { x: '2021-06-13T23:59:00.000Z', y: 3 },
+      { x: '2021-07-13T23:59:00.000Z', y: 19 },
+      { x: '2021-08-13T23:59:00.000Z', y: 3 },
+    ];
+
+    // Esta forma tiene que seR dada dentro del componente EN SI
+    const dataLineDensityState = [
       {
         "date": "2021/01/01",
-        "Coated parts": 118
+        "Coated parts": 18
       },
       {
         "date": "2021/01/02",
-        "Coated parts": 182
+        "Coated parts": 12
       },
       {
         "date": "2021/01/03",
-        "Coated parts": 74
+        "Coated parts": 4
       },
       {
         "date": "2021/01/04",
-        "Coated parts": 131
+        "Coated parts": 13
       },
       {
         "date": "2021/01/05",
-        "Coated parts": 89
+        "Coated parts": 9
       },
       {
         "date": "2021/01/06",
-        "Coated parts": 94
-    
+        "Coated parts": 9
+
       },
       {
         "date": "2021/01/07",
-        "Coated parts": 36
+        "Coated parts": 6
       },
       {
         "date": "2021/01/08",
@@ -96,28 +101,28 @@ class Monitoring extends Component {
       },
       {
         "date": "2021/01/09",
-        "Coated parts": 78
+        "Coated parts": 8
       },
       {
         "date": "2021/01/10",
-        "Coated parts": 182
+        "Coated parts": 12
       },
       {
         "date": "2021/01/11",
-        "Coated parts": 74
+        "Coated parts": 14
       },
       {
         "date": "2021/01/12",
-        "Coated parts": 131
+        "Coated parts": 13
       },
       {
         "date": "2021/01/13",
-        "Coated parts": 89
+        "Coated parts": 9
       },
       {
         "date": "2021/01/14",
-        "Coated parts": 94
-    
+        "Coated parts": 4
+
       },
       {
         "date": "2021/01/15",
@@ -129,91 +134,82 @@ class Monitoring extends Component {
       },
       {
         "date": "2021/01/17",
-        "Coated parts": 182
+        "Coated parts": 12
       },
       {
         "date": "2021/01/18",
-        "Coated parts": 74
+        "Coated parts": 4
       },
       {
         "date": "2021/01/19",
-        "Coated parts": 131
+        "Coated parts": 13
       },
       {
         "date": "2021/01/20",
-        "Coated parts": 89
+        "Coated parts": 9
       }
     ];
 
-    /* Conveyor speed data */
-    const dataConveyorSpeed = [
-      {
-        id: 'Speed',
-        data: [
-          { x: '2021-03-13T23:59:00.000Z', y: 7 },
-          { x: '2021-04-13T23:59:00.000Z', y: 3 },
-          { x: '2021-05-13T23:59:00.000Z', y: 17 },
-          { x: '2021-06-13T23:59:00.000Z', y: 19 },
-        ]
-      }
-    ];
+    // Create context values
+    const ids = ["RH", "SM", "SYS", "CS", "LD", "CVS"];
+    const contextValue = createContextValues(ids);
 
-    
-    /* Conveyor speed data */
-    const dataCoatedSurface = [
-      {
-        id: 'Square meters',
-        data: [
-          { x: '2021-03-13T23:59:00.000Z', y: 7 },
-          { x: '2021-04-13T23:59:00.000Z', y: 13 },
-          { x: '2021-05-13T23:59:00.000Z', y: 3 },
-          { x: '2021-06-13T23:59:00.000Z', y: 3 },
-          { x: '2021-07-13T23:59:00.000Z', y: 15 },
-          { x: '2021-08-13T23:59:00.000Z', y: 3 },
-        ]
-      }
-    ];
+    // Line chart UI components
+    const LineChartCVS = <LineChart id="CVS" data={[{ id: "Speed", data: dataConveyorSpeedState }]} />;
+    const LineChartCS = <LineChart id="CS" data={[{ id: "Area", data: dataCoatedSurfaceState }]} />;
 
-    /*Triple horizontal cards*/
-    const dataRunningHours = [
-      { type: 1, value: 47, units: "h" },
-      { type: 2, value: 40, units: "h" },
-      { type: 3, value: 40, units: "#" }
-    ];
+    // Bar chart UI components
+    const BarChartLD = <BarChart id="LD" data={"data"} />;
+
+    // Pie chart UI components
+    const PieChartSYS = <PieChart data={"data SYS"} />;
+    const PieChartSM = <PieChart data={"data SM"} />;
+
+    // Deck UI components
+    const DeckRH = <Deck data="data" />
 
     return (
       <Row className={styles.monitoring}>
         <Col className={[styles.left, styles.pb0].join(" ")}>
-          <Chart 
-            config={propsRunningHours}
-            data={dataRunningHours}  
+          <div className={styles.small}>
+            <GraphContext.Provider value={contextValue[0]}>
+              <GraphContainer  {...propsTitleBarRH} graph={DeckRH} />
+            </GraphContext.Provider>
+          </div>
 
-          />
-          <Chart 
-            config={propsSprayMode}
-            data={dataSprayingMode}  
-          />
-          <Chart 
-            config={propsSystemStatus}
-            data={dataSystemStatus}  
-          />
+          <div className={styles.small}>
+            <GraphContext.Provider value={contextValue[1]} >
+              <GraphContainer  {...propsTitleBarSM} graph={PieChartSM} />
+            </GraphContext.Provider>
+          </div>
+
+          <div className={styles.small}>
+            <GraphContext.Provider value={contextValue[2]}>
+              <GraphContainer  {...propsTitleBarSYS} graph={PieChartSYS} />
+            </GraphContext.Provider>
+          </div>
         </Col>
 
         <Col className={styles.right}>
-          <Chart 
-              config={propsCoatedSurface}
-              data={dataCoatedSurface}
-          />
+          <div className={styles.large} >
+            <GraphContext.Provider value={contextValue[3]}>
+              <GraphContainer  {...propsTitleBarCS} graph={LineChartCS} />
+            </GraphContext.Provider>
+          </div>
 
           <div className={[styles.group, styles.pb0].join(" ")}>
             <div>
-              <Chart 
-                config={propsLineDensity}
-                data={dataLineDensity}/>
+              <div className={styles.medium}>
+                <GraphContext.Provider value={contextValue[4]}>
+                  <GraphContainer  {...propsTitleBarLD} graph={BarChartLD} />
+                </GraphContext.Provider>
+              </div>
 
-              <Chart 
-                config={propsConveyorSpeed}
-                data={dataConveyorSpeed}/>
+              <div className={styles.medium}>
+                <GraphContext.Provider value={contextValue[5]}>
+                  <GraphContainer  {...propsTitleBarCVS} graph={LineChartCVS} />
+                </GraphContext.Provider>
+              </div>
             </div>
           </div>
         </Col>

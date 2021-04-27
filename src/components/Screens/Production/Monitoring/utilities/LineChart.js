@@ -11,36 +11,36 @@ import Line from "../../../../UI/Graph/Line/Line";
  */
 
 /**
- * [layoutECT]: Layout for electricity consumption trend (location: top)
+ * [layoutCST]: Layout for coated surface trend
  */
-const layoutECT = {
+const layoutCST = {
+  colors: "#86a315",
+  enableArea: true,
+  translateX: -30,
+  xtitle: "Date",
+  ytitle: "Coated surface (sqm)"
+};
+
+/**
+ * [layoutCVST]: Layout for conveyor speed trend
+ */
+const layoutCVST = {
   colors: "#86a315",
   enableArea: false,
   translateX: -30,
   xtitle: "Date",
-  ytitle: "Consumption (kW)"
-};
-
-/**
- * [layoutACT]: Layout for air consumption trend (location: bottom)
- */
-const layoutACT = {
-  colors: "#e37222",
-  enableArea: false,
-  translateX: -30,
-  xtitle: "Date",
-  ytitle: "Consumption (m3/h)"
+  ytitle: "Speed(m/h)"
 };
 
 const LineChart = ({ data, id }) => {
   let layout;
 
   /**
-   * ECT: Electricity consumption (location: top)
-   * ACT: Air consumption (location: bottom)
+   * CST: Coated surface layout
+   * CVST: Conveyor speed layout
    */
-  if (id === "ECT") layout = layoutECT;
-  if (id === "ACT") layout = layoutACT;
+  if (id === "CS") layout = layoutCST;
+  if (id === "CVS") layout = layoutCVST;
 
   const defaultLineData = [
     {
@@ -49,11 +49,11 @@ const LineChart = ({ data, id }) => {
     }
   ];
 
- /**
-   *  If express server provides no data, then use the default one.
-   */
+  /**
+  *  If express server provides no data, then use the default one.
+  */
   const noDefaultData = typeof data[0].data != "undefined" && data[0].data.length > 0;
-  const lineData = noDefaultData? data : defaultLineData;
+  const lineData = noDefaultData ? data : defaultLineData;
 
   return (
     <Line {...layout} data={lineData} />

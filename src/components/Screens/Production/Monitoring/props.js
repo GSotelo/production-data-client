@@ -7,86 +7,78 @@ import { ReactComponent as Speed } from "../../../../assets/svg/speed.svg";
 import { ReactComponent as StatusAllrightBig } from "../../../../assets/svg/statusAllrightBig.svg";
 import { ReactComponent as SystemUtility } from "../../../../assets/svg/systemUtility.svg";
 
-export const propsSprayMode = {
-  graph: "pie",
+/**
+ * General notes:
+ * The following objects are used to give proper 
+ * customization to the title bar contained in the 
+ * "GraphContainer". Properties for card elements
+ * are provided here too. I do this in a separate file 
+ * because I don't want to populate the main flow 
+ * of the screen with configuration data for inner
+ * components. The title bar element can receive 
+ * icons, description text, and dropdown elements 
+ * based on the provided type
+ */
+
+/**
+ * [propsTitleBarSM]: Title bar in "Spraying mode" (Pie)
+ * Title bar: Icon and description text (type 1)
+ */
+export const propsTitleBarSM = {
   icon: <PowderGun />,
-  id: "spraying-mode",
-  size: "small",
   title: "Spraying Mode",
   type: 1,
 };
 
-export const propsSystemStatus = {
-  graph: "pie",
+/**
+ * [propsTitleBarSS]: Title bar in "System status" (Pie)
+ * Title bar: Icon and description text (type 1)
+ */
+export const propsTitleBarSYS = {
   icon: <StatusAllrightBig />,
-  id: "system-status",
-  size: "small",
   title: "System status",
   type: 1,
 };
 
-export const propsRunningHours = {
-  graph: "cards",
+/**
+ * [propsTitleBarRH]: Title bar in "Running hours" (Deck)
+ * Title bar: Icon and description text (type 1)
+ */
+export const propsTitleBarRH = {
   icon: <Runtime />,
-  id: "running-hours",
-  size: "small",
   title: "Running hours",
   type: 1
 };
 
-export const propsLineDensity = {
-  graph: "bar",
+/**
+ * [propsTitleBarLD]: Title bar in "Line density" (Bar)
+ * Title bar: Two icons and description text (type 2)
+ */
+export const propsTitleBarLD = {
   icon1: <LineDensity />,
   icon2: <SystemUtility />,
-  id: "line-density",
-  size: "medium",
   title: "Line density",
   type: 2
 };
 
-export const propsConveyorSpeed = {
-  graph: "line",
+/**
+ * [propsTitleBarCVS]: Title bar in "Conveyor speed" (trend)
+ * Title bar: Two icons and description text (type 2)
+ */
+export const propsTitleBarCVS = {
   icon1: <Conveyor />,
   icon2: <Speed />,
-  id: "conveyor-speed",
-  size: "medium",
   title: "Conveyor speed",
   type: 2
 };
 
-export const propsCoatedSurface = {
-  graph: "line",
+/**
+ * [propsTitleBarCS]: Title bar in "Coated surface" (trend)
+ * Title bar: Two icons and description text (type 2)
+ */
+export const propsTitleBarCS = {
   icon1: <PowderGun />,
   icon2: <Product />,
-  id: "coated-surface",
-  size: "large",
   title: "Coated surface",
   type: 2
 };
-
-export const propsLineDensityLayout = {
-  colors: "#e37222",
-  indexBy: "date",
-  keys: ["Coated parts"],
-  translateX: -30,
-  xtitle: "Date",
-  ytitle: "Total(%)",
-  itemWidth:100,
-};
-
-export const propsLayoutConveyorSpeed = {
-  colors: "#86a315",
-  enableArea: false,
-  translateX: -30,
-  xtitle: "Date",
-  ytitle: "Speed(m/h)"
-};
-
-export const propsLayoutCoatedSurface = {
-  colors: "#86a315",
-  enableArea: true,
-  translateX: -30,
-  xtitle: "Date",
-  ytitle: "Coated area (sqm)"
-};
-

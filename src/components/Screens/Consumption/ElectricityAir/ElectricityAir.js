@@ -2,8 +2,8 @@ import React, { Component } from "react";
 import Deck from "../../../UI/Deck/CustomDeck/CustomDeck_1";
 import Dropdown from "../../../UI/Dropdown/Dropdown";
 import GraphContainer from "../../../Container/GraphContainer";
-import LineChart from "./utilities/LineChart";
 import GraphContext from "../../../Context/GraphContext";
+import LineChart from "./utilities/LineChart";
 import { Row, Col } from "antd";
 
 import styles from "./ElectricityAir.module.css";
