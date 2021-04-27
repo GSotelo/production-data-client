@@ -120,6 +120,7 @@ const run = (data, fallbackData, timeRange) => {
 
 
 const groupData = {
+  filterArrayByObjectProperty,
   getAverage,
   getMaxValueFromArray,
   getMinValueFromArray,

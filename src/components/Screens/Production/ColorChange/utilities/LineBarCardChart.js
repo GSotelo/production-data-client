@@ -5,6 +5,13 @@ import Line from "../../../../UI/Graph/Line/Line";
 import { ReactComponent as Average } from "../../../../../assets/svg/average.svg";
 
 import styles from "./CustomElements.module.css";
+import processDataDeck from "../../../../../utils/processDataDeck";
+import groupData from "../../../../../utils/groupDataByDate";
+import _ from "lodash";
+
+
+const { setFooterLabel, setFooterValue } = processDataDeck;
+const { filterArrayByObjectProperty, getAverage } = groupData;
 
 /**
  * General notes:
@@ -39,19 +46,7 @@ export const layoutCCQL = {
   ytitle: "Time (min)"
 };
 
-// Data for Color change duration
-const lineData = [
-  {
-    id: 'Time',
-    data: [
-      { x: '2021-03-13T23:59:00.000Z', y: 17 },
-      { x: '2021-04-13T23:59:00.000Z', y: 3 },
-      { x: '2021-05-13T23:59:00.000Z', y: 17 },
-      { x: '2021-06-13T23:59:00.000Z', y: 3 },
-      { x: '2021-07-13T23:59:00.000Z', y: 17 },
-    ]
-  }
-];
+
 
 // Data for color change quickest longest
 const barData = [
@@ -161,16 +156,6 @@ const barData = [
 
 
 // Properties for color change duration graph
-const propsLineChart = {
-  id: "CCD",
-  // lineData: dataCCD,
-  cardData: {
-    value: 18,
-    label: "▬ Previous month",
-    previousValue: "8 min"
-  }
-}
-// Properties for color change duration graph
 const propsBarChart = {
   id: "CCQL",
   // barData: dataCCQL,
@@ -181,30 +166,120 @@ const propsBarChart = {
   }
 }
 
+/**
+ * @param {*} data Data from server
+ * @returns Boolean. True: Data is valid. Otherwise, false
+ */
+const assertData = (data) => {
+  // If no data from server, then return false
+  if ((data === false) || _.isEmpty(data)) {
+    return false;
+  }
+  return true;
+};
+
+/**
+ * @param {*} data Data from server
+ * @param {*} id Id of UI component
+ * @param {*} fallback If no data to display,then send fallback data
+ * @param {*} timeRange Time range used to extract data
+ * @param {*} assertData Evaluates if data is according to what is expected
+ * @returns 
+ */
+const processLineData = (data, id, fallback, timeRange, assertData) => {
+  if (!assertData(data)) {
+    return fallback;
+  }
+
+  // If data is provided, then give format as defined in "Line" component
+  const { currentData } = groupData.run(data, fallback, timeRange);
+  const processedData = [{ id, data: currentData }];
+  return processedData;
+};
+
+/**
+ * 
+ * @param {*} data Data from server
+ * @param {*} id Id of UI component
+ * @param {*} fallback If no data to display,then send fallback data
+ * @param {*} timeRange Time range used to extract data
+ * @param {*} assertData Evaluates if data is according to what is expected
+ * @returns 
+ */
+const processAvgCardData = (data, units,fallback, timeRange, assertData) => {
+  // Data validation
+  if (!assertData(data)) {
+    return fallback;
+  }
+
+  // If data is okay, then unpack it
+  const { prevData, currentData } = groupData.run(data, fallback, timeRange);
+
+  /**
+   * Extracting "y" values from "prevData", "currentData"
+   * The arrays contain objects with structure as {x:"2021-04-19T23:58:00.000Z", y:5}
+   * Before running any metrics, save all values in separate arrays
+   */
+  const valuesCurrentData = filterArrayByObjectProperty(currentData, "y");
+  const valuesPrevData = filterArrayByObjectProperty(prevData, "y");
+
+  // Metrics calculation
+  const currentAvg = getAverage(valuesCurrentData);
+  const prevAvg = getAverage(valuesPrevData);
+  const cardFooterLabel = setFooterLabel(timeRange, currentAvg, prevAvg);
+  const cardFooterValue = setFooterValue(timeRange, prevAvg, units);
+
+  // Format data
+  const cardData = {
+    icon: <Average />,
+    value: currentAvg,
+    label: cardFooterLabel,
+    previousValue: cardFooterValue,
+    units
+  };
+
+  return cardData;
+};
+
 const LineBarCardChart = ({ data, id, timeRange }) => {
-  // linechart tiene que generat set label set footer value, process deck
-  // time range is important to display card with previous timeframe
-  console.log("DATA IN linebarcard: ", data);
-
-  let layout;
-  // Filtered data debe generar data para line / bar
-  let filteredData = data*2;
-
-  // Data for Color change duration
-  const lineData = [
+  // Fallback data for all components
+  const fallbackLineData = [
     {
-      id: 'Time',
-      data: [
-        { x: '2021-03-13T23:59:00.000Z', y: 17 },
-        { x: '2021-04-13T23:59:00.000Z', y: 3 },
-        { x: '2021-05-13T23:59:00.000Z', y: 17 },
-        { x: '2021-06-13T23:59:00.000Z', y: 3 },
-        { x: '2021-07-13T23:59:00.000Z', y: 17 },
-      ]
+      id,
+      data: [{ x: new Date().toISOString(), y: 0 }]
     }
   ];
+  const fallbackCardData = {
+    icon: <Average />,
+    value: -1,
+    label: "Not available",
+    previousValue: -1,
+    units:"min"
+  };
 
-  // Data for color change quickest longest
+  // Line component
+  const argsLineData = [data, id, fallbackLineData, timeRange, assertData];
+  const lineData = processLineData(...argsLineData);
+
+  // Card component
+  let propsCard;
+  const units = "min";
+  const argsCardData = [units, fallbackCardData, timeRange, assertData];
+
+  if(id === "CCD"){
+    propsCard = processAvgCardData(data, ...argsCardData);
+  }
+
+  if(id === "CCQL"){
+    console.log(data);
+    propsCard = processAvgCardData(data[1], ...argsCardData);
+  }
+
+
+  //const propsCard = processAvgCardData(...argsCardData);
+  
+
+  // PROCESSING FOR CCQL : DESIRED OUTPUT
   const barData = [
     {
       "date": "2021/01/01",
@@ -310,41 +385,11 @@ const LineBarCardChart = ({ data, id, timeRange }) => {
     }
   ];
 
-  const defaultLineData = [
-    {
-      id,
-      data: [{ x: new Date().toISOString(), y: 0 }]
-    }
-  ];
-
-   /**
-  *  If express server provides no data, then use the default one.
-  */
-    //const useServerData = typeof data[0].data != "undefined" && data[0].data.length > 0;
-   // const lineData = useServerData ? data : defaultLineData;
-
-
-
-  // Props for card element (la carta es la misma para line / bar)
-  const propsCard = {
-    units: "min",
-    value: 6.5, //dinamico
-    label: "▬ Previous month",  //dinamico
-    previousValue: "2 min",  //dinamico
-    icon: <Average />
-  }
-
-  // Implement default data for line and bar
-
-  // Use "id" to choose a layout and data
-  const isLineChart = (id === "CCD") ? true : false;
-  const isBarChart = (id === "CCQL") ? true : false;
-
   return (
     <div className={styles.lineBarCard}>
       <div className={styles.left}>
-        {isLineChart && <Line {...layoutCCD} data={lineData} />}
-        {isBarChart && <Bar {...layoutCCQL} data={barData} />}
+        {(id === "CCD") && <Line {...layoutCCD} data={lineData} />}
+        {(id === "CCQL") && <Bar {...layoutCCQL} data={barData} />}
       </div>
 
       <div className={styles.right}>

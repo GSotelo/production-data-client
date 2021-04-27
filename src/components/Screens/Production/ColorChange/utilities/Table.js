@@ -1,23 +1,50 @@
 import React, { Fragment } from "react";
 import Table from "../../../../UI/Table/MaterialUI/Table";
 
-const tableRows = [
-  { id: 1, date: "2021/03/17", pressure: 5.7 },
-  { id: 2, date: "2021/03/18", pressure: 5.3 },
-  { id: 3, date: "2021/03/19", pressure: 5.6 },
-  { id: 4, date: "2021/03/20", pressure: 4.3 },
-  { id: 5, date: "2021/03/21", pressure: 4.7 },
-  { id: 6, date: "2021/03/22", pressure: 5.1 },
-  { id: 7, date: "2021/03/23", pressure: 5.4 },
-  { id: 8, date: "2021/03/24", pressure: 5.9 },
-  { id: 9, date: "2021/03/25", pressure: 4.8 },
-  { id: 10, date: "2021/03/26", pressure: 4.9 },
-  { id: 11, date: "2021/03/27", pressure: 4.1 },
-  { id: 12, date: "2021/03/28", pressure: 5.9 },
-  { id: 13, date: "2021/03/29", pressure: 6.2 },
-  { id: 14, date: "2021/03/30", pressure: 6.7 }
-];
-// const TableCCA = <Table rows={tableRows} {...propsCCAT} />;
+import _ from "lodash";
+import { createDateObject } from "../../../../../utils/time";
+
+/**
+ * @param {*} dateAsString "2021-04-03T23:08:01.000Z"
+ * @returns 03.04.2021 23:08:01
+ */
+const formatDate = (dateAsString) => {
+  const createTwoDigits = (el) => el < 9 ? `0${el}` : el;
+  const dayjs = createDateObject(dateAsString);
+  const { $y, $M, $D, $H, $m, $s } = dayjs;
+
+  // Format each date component
+  const day = createTwoDigits($D);
+  const month = createTwoDigits($M + 1);
+  const hour = createTwoDigits($H);
+  const minute = createTwoDigits($m);
+  const second = createTwoDigits($s);
+
+  // Format
+  return `${day}.${month}.${$y} ${hour}:${minute}:${second}`;
+};
+
+/**
+ * 
+ * @param {*} data Data from express server
+ * @param {*} fallback If function fails, provide default data
+ * @returns 
+ */
+const processDataTable = (data, fallback) => {
+  // If no data from server, then send default data
+  if (!data || !(data instanceof Array)) {
+    return fallback;
+  }
+
+  // Format data for "Table" component (including custom date format)
+  return _.map(data, (el, index) => (
+    {
+      id: index,
+      date: formatDate(el.x),
+      pressure: el.y
+    }
+  ));
+};
 
 /**
  * This component is a customization of Material UI "Table".
@@ -28,12 +55,34 @@ const tableRows = [
  * components.
  */
 const TableCCA = (props) => {
-  const { data, ...propsCard } = props;
-  console.log("DATA IN TABLE: ", data);
+  const { data, ...propsTable } = props;
+
+  // Parse table rows
+  const parsedTableRows = processDataTable(data, false);
+
+  // If "processDataCard" fails, then function returns false
+  const isBoolean = _.isBoolean(parsedTableRows);
+
+  /**
+  *  If no data to display, then use default table
+  *  Fields: Must be always defined in the table properties
+  *  Fields for table: "data", "pressure"
+  */
+  const defaulDataTable = _.map([1, 2, 3, 4, 5], (el, index) => (
+    {
+      id: index,
+      date: "",
+      pressure: ""
+    }
+  ));
+  
+  // Check if default data is required
+  const tableRows = !isBoolean ? parsedTableRows : defaulDataTable;
+
   return (
-    <>
-      <Table rows={tableRows} {...propsCard} />
-    </>
+    <Fragment>
+      <Table rows={tableRows} {...propsTable} />
+    </Fragment>
   );
 }
 
