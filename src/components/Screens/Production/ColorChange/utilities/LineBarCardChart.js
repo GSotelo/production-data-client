@@ -9,6 +9,7 @@ import processDataDeck from "../../../../../utils/processDataDeck";
 import groupData from "../../../../../utils/groupDataByDate";
 import _ from "lodash";
 
+import { formatDate} from "../../../../../utils/time";
 
 const { setFooterLabel, setFooterValue } = processDataDeck;
 const { filterArrayByObjectProperty, getAverage } = groupData;
@@ -40,138 +41,18 @@ export const layoutCCQL = {
   colors: ["#005293", "#eeab00"],
   indexBy: "date",
   itemWidth: 100,
-  keys: ["Quickest CC", "Longest CC"],
+  keys: ["Quickest", "Longest"],
   translateX: 0,
   xtitle: "Date",
   ytitle: "Time (min)"
 };
-
-
-
-// Data for color change quickest longest
-const barData = [
-  {
-    "date": "2021/01/01",
-    "Quickest CC": 17,
-    "Longest CC": 19
-  },
-  {
-    "date": "2021/01/02",
-    "Quickest CC": 17,
-    "Longest CC": 20
-  },
-  {
-    "date": "2021/01/03",
-    "Quickest CC": 14,
-    "Longest CC": 20
-  },
-  {
-    "date": "2021/01/04",
-    "Quickest CC": 13,
-    "Longest CC": 21
-  },
-  {
-    "date": "2021/01/05",
-    "Quickest CC": 8,
-    "Longest CC": 25
-  },
-  {
-    "date": "2021/01/06",
-    "Quickest CC": 4,
-    "Longest CC": 22
-
-  },
-  {
-    "date": "2021/01/07",
-    "Quickest CC": 6,
-    "Longest CC": 20
-  },
-  {
-    "date": "2021/01/08",
-    "Quickest CC": 8,
-    "Longest CC": 22
-  },
-  {
-    "date": "2021/01/09",
-    "Quickest CC": 8,
-    "Longest CC": 20
-  },
-  {
-    "date": "2021/01/10",
-    "Quickest CC": 18,
-    "Longest CC": 23
-  },
-  {
-    "date": "2021/01/11",
-    "Quickest CC": 7,
-    "Longest CC": 20
-  },
-  {
-    "date": "2021/01/12",
-    "Quickest CC": 11,
-    "Longest CC": 24
-  },
-  {
-    "date": "2021/01/13",
-    "Quickest CC": 9,
-    "Longest CC": 20
-  },
-  {
-    "date": "2021/01/14",
-    "Quickest CC": 9,
-    "Longest CC": 23
-
-  },
-  {
-    "date": "2021/01/15",
-    "Quickest CC": 6,
-    "Longest CC": 22
-  },
-  {
-    "date": "2021/01/16",
-    "Quickest CC": 18,
-    "Longest CC": 20
-  },
-  {
-    "date": "2021/01/17",
-    "Quickest CC": 18,
-    "Longest CC": 20
-  },
-  {
-    "date": "2021/01/18",
-    "Quickest CC": 7,
-    "Longest CC": 17
-  },
-  {
-    "date": "2021/01/19",
-    "Quickest CC": 13,
-    "Longest CC": 19
-  },
-  {
-    "date": "2021/01/20",
-    "Quickest CC": 9,
-    "Longest CC": 15
-  }
-];
-
-
-// Properties for color change duration graph
-const propsBarChart = {
-  id: "CCQL",
-  // barData: dataCCQL,
-  cardData: {
-    value: 7,
-    label: "▬ Previous month",
-    previousValue: "6 min"
-  }
-}
 
 /**
  * @param {*} data Data from server
  * @returns Boolean. True: Data is valid. Otherwise, false
  */
 const assertData = (data) => {
-  // If no data from server, then return false
+  // Check is no data from server
   if ((data === false) || _.isEmpty(data)) {
     return false;
   }
@@ -197,6 +78,26 @@ const processLineData = (data, id, fallback, timeRange, assertData) => {
   return processedData;
 };
 
+
+const processGroupedBarData = (data, fallback, timeRange, assertData) => {
+  // Each element in the "data" array is structured as : x (timestamp), y(quickest CC), y2(longest CC)
+  if (!assertData(data)) {
+    return fallback;
+  }
+
+  const { currentData } = groupData.run(data, fallback, timeRange);
+  
+  const barData = _.map(currentData, ({ x, y, y2 }) => (
+    {
+      date: formatDate(x),
+      Quickest: y,
+      Longest: y2
+    }
+  ));
+
+  return barData;
+};
+
 /**
  * 
  * @param {*} data Data from server
@@ -206,7 +107,7 @@ const processLineData = (data, id, fallback, timeRange, assertData) => {
  * @param {*} assertData Evaluates if data is according to what is expected
  * @returns 
  */
-const processAvgCardData = (data, units,fallback, timeRange, assertData) => {
+const processCardData = (data, units,fallback, timeRange, assertData) => {
   // Data validation
   if (!assertData(data)) {
     return fallback;
@@ -242,6 +143,8 @@ const processAvgCardData = (data, units,fallback, timeRange, assertData) => {
 };
 
 const LineBarCardChart = ({ data, id, timeRange }) => {
+  let lineData, barData;
+
   // Fallback data for all components
   const fallbackLineData = [
     {
@@ -249,6 +152,7 @@ const LineBarCardChart = ({ data, id, timeRange }) => {
       data: [{ x: new Date().toISOString(), y: 0 }]
     }
   ];
+
   const fallbackCardData = {
     icon: <Average />,
     value: -1,
@@ -257,133 +161,31 @@ const LineBarCardChart = ({ data, id, timeRange }) => {
     units:"min"
   };
 
-  // Line component
-  const argsLineData = [data, id, fallbackLineData, timeRange, assertData];
-  const lineData = processLineData(...argsLineData);
-
-  // Card component
-  let propsCard;
-  const units = "min";
-  const argsCardData = [units, fallbackCardData, timeRange, assertData];
-
-  if(id === "CCD"){
-    propsCard = processAvgCardData(data, ...argsCardData);
-  }
-
-  if(id === "CCQL"){
-    propsCard = processAvgCardData(data[1], ...argsCardData);
-  }
-
-
-  //const propsCard = processAvgCardData(...argsCardData);
-  
-
-  // PROCESSING FOR CCQL : DESIRED OUTPUT
-  const barData = [
+  const fallbackGroupedBarData = [
     {
-      "date": "2021/01/01",
-      "Quickest CC": 17,
-      "Longest CC": 19
-    },
-    {
-      "date": "2021/01/02",
-      "Quickest CC": 17,
-      "Longest CC": 20
-    },
-    {
-      "date": "2021/01/03",
-      "Quickest CC": 14,
-      "Longest CC": 20
-    },
-    {
-      "date": "2021/01/04",
-      "Quickest CC": 13,
-      "Longest CC": 21
-    },
-    {
-      "date": "2021/01/05",
-      "Quickest CC": 8,
-      "Longest CC": 25
-    },
-    {
-      "date": "2021/01/06",
-      "Quickest CC": 4,
-      "Longest CC": 22
-
-    },
-    {
-      "date": "2021/01/07",
-      "Quickest CC": 6,
-      "Longest CC": 20
-    },
-    {
-      "date": "2021/01/08",
-      "Quickest CC": 8,
-      "Longest CC": 22
-    },
-    {
-      "date": "2021/01/09",
-      "Quickest CC": 8,
-      "Longest CC": 20
-    },
-    {
-      "date": "2021/01/10",
-      "Quickest CC": 18,
-      "Longest CC": 23
-    },
-    {
-      "date": "2021/01/11",
-      "Quickest CC": 7,
-      "Longest CC": 20
-    },
-    {
-      "date": "2021/01/12",
-      "Quickest CC": 11,
-      "Longest CC": 24
-    },
-    {
-      "date": "2021/01/13",
-      "Quickest CC": 9,
-      "Longest CC": 20
-    },
-    {
-      "date": "2021/01/14",
-      "Quickest CC": 9,
-      "Longest CC": 23
-
-    },
-    {
-      "date": "2021/01/15",
-      "Quickest CC": 6,
-      "Longest CC": 22
-    },
-    {
-      "date": "2021/01/16",
-      "Quickest CC": 18,
-      "Longest CC": 20
-    },
-    {
-      "date": "2021/01/17",
-      "Quickest CC": 18,
-      "Longest CC": 20
-    },
-    {
-      "date": "2021/01/18",
-      "Quickest CC": 7,
-      "Longest CC": 17
-    },
-    {
-      "date": "2021/01/19",
-      "Quickest CC": 13,
-      "Longest CC": 19
-    },
-    {
-      "date": "2021/01/20",
-      "Quickest CC": 9,
-      "Longest CC": 15
+      "date": formatDate(new Date()),
+      "Quickest": 0,
+      "Longest": 0
     }
   ];
 
+  // Processing data for line component
+  if (id === "CCD") {
+    const argsLineData = [data, id, fallbackLineData, timeRange, assertData];
+    lineData = processLineData(...argsLineData);
+  }
+
+  // Processing data for grouped bar component
+  if (id === "CCQL") {
+    const argsBarData = [data, fallbackGroupedBarData, timeRange, assertData];
+    barData = processGroupedBarData(...argsBarData);
+  }
+
+  // Card data
+  const units = "min";
+  const argsCardData = [units, fallbackCardData, timeRange, assertData];
+  const propsCard = processCardData(data, ...argsCardData);
+  
   return (
     <div className={styles.lineBarCard}>
       <div className={styles.left}>

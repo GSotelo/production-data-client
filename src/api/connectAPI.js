@@ -5,7 +5,14 @@
  */
 const filterDataFromAPI = (arr) => {
   const results = [];
-  arr.map(({ timestamp, value }) => results.push({ x: timestamp, y: value }));
+  /**
+   * This is the way I map the keys on the server side.
+   * In case a csv row does not contain all keys, the
+   * value assigned to the corresponing "y" value is 
+   * "undefined". Before assigning a value to any chart, 
+   * I validate data is different than "undefined"
+   */
+  arr.map(({ timestamp, value, value2, value3 }) => results.push({ x: timestamp, y: value, y2: value2, y3: value3 }));
   return results;
 };
 

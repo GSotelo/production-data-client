@@ -2,27 +2,7 @@ import React, { Fragment } from "react";
 import Table from "../../../../UI/Table/MaterialUI/Table";
 
 import _ from "lodash";
-import { createDateObject } from "../../../../../utils/time";
-
-/**
- * @param {*} dateAsString "2021-04-03T23:08:01.000Z"
- * @returns 03.04.2021 23:08:01
- */
-const formatDate = (dateAsString) => {
-  const createTwoDigits = (el) => el <= 9 ? `0${el}` : el;
-  const dayjs = createDateObject(dateAsString);
-  const { $y, $M, $D, $H, $m, $s } = dayjs;
-
-  // Format each date component
-  const day = createTwoDigits($D);
-  const month = createTwoDigits($M + 1);
-  const hour = createTwoDigits($H);
-  const minute = createTwoDigits($m);
-  const second = createTwoDigits($s);
-
-  // Format
-  return `${day}.${month}.${$y} ${hour}:${minute}:${second}`;
-};
+import { formatDate } from "../../../../../utils/time";
 
 /**
  * 

@@ -44,7 +44,7 @@ const getFilename = (id) => {
       filename = "color_change_duration.csv";
       break;
     case "CCQL":
-      filename = ["color_change_longest.csv", "color_change_quickest.csv"];
+      filename = "color_change_quickest_longest";
       break;
     default:
       break;
@@ -59,24 +59,21 @@ const getFilename = (id) => {
  * @returns Data to feed line chart according to "nivo" library
  */
 const connectServer = async (id, timeRange) => {
+  let filteredData = false;
+
   /**
    * Check is request comes from a control button or date picker
    */
   const timeRangeIsArray = timeRange instanceof Array;
   const timeRangeIsString = typeof timeRange === "string";
 
-  // Check if I should target more than one file as resource
-  const isPreviousTimeRequired = (id === "CCQL");
-
   /**
    * If control button, then trigger HTTP GET requests
    */
   if (timeRangeIsString) {
     const endpoint = getEndpoint(id, timeRange);
-    let filteredData = false;
     try {
-      !isPreviousTimeRequired && (filteredData = await connectAPI.get(axiosColorChange, endpoint));
-      isPreviousTimeRequired && (filteredData = await connectAPI.getMultipleResources(axiosColorChange, endpoint));
+      filteredData = await connectAPI.get(axiosColorChange, endpoint);
     } catch (err) {
       toaster.danger(...propsToasterDanger);
       console.error("[connectServer]: Request to server API failed (GET)");
@@ -89,8 +86,6 @@ const connectServer = async (id, timeRange) => {
   */
   if (timeRangeIsArray) {
     const filename = getFilename(id);
-
-    let filteredData = false;
     try {
       filteredData = await connectAPI.post(axiosColorChange, "/", { filename, timeRange })
     } catch (error) {
@@ -101,17 +96,7 @@ const connectServer = async (id, timeRange) => {
   }
 };
 
-
-const processDataFromServer = async (id, timeRange) => {
-  // If error, then "dataFromServer" equals to empty array
-  const dataFromServer = await connectServer(id, timeRange);
-  const isEmptyData = _.isEmpty(_.flatten(dataFromServer));
-
-  if (isEmptyData) {
-    return false;
-  }
-  
-  return dataFromServer;
-};
+// I create this wrapper to decorate "connectServer" in case needed
+const processDataFromServer = async (id, timeRange) => await connectServer(id, timeRange);
 
 export default processDataFromServer;

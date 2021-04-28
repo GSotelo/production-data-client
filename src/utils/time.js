@@ -13,3 +13,20 @@ dayjs.extend(isSameOrBefore);
 export const createDateObject = dateAsString => {
   return dayjs.utc(dateAsString);
 };
+
+export const formatDate = (dateAsString) => {
+  const createTwoDigits = (el) => el <= 9 ? `0${el}` : el;
+  
+  const dayjs = createDateObject(dateAsString);
+  const { $y, $M, $D, $H, $m, $s } = dayjs;
+
+  // Format each date component
+  const day = createTwoDigits($D);
+  const month = createTwoDigits($M + 1);
+  const hour = createTwoDigits($H);
+  const minute = createTwoDigits($m);
+  const second = createTwoDigits($s);
+
+  // Format
+  return `${day}.${month}.${$y} ${hour}:${minute}:${second}`;
+};
