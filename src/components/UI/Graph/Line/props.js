@@ -33,7 +33,7 @@ export const general = {
   },
   pointBorderColor: { from: 'color', modifiers: [] },
   pointBorderWidth: 2,
-  pointSize: 6,
+  pointSize: 0, // Normal -> 6
   pointSymbol: CustomSymbol,
 
   xFormat: "time:%Y/%m/%d %H:%M",

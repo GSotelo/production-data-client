@@ -22,7 +22,7 @@ export const general = {
     bottom: 30,
     left: 60
   },
-  padding: 0.4
+  //padding: 0.4 // Normal -> 0.4
 };
 
 export const legends =

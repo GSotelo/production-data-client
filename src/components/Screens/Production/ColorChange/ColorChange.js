@@ -35,8 +35,8 @@ class ColorChange extends Component {
    * 2. Triggers automatic updates every "x" milliseconds
    */
    async componentDidMount() {
-    //this.updateDataOnScreen();
-    //this.timerID = setInterval(() => this.updateDataOnScreen(), 3600000);
+    this.updateDataOnScreen();
+    this.timerID = setInterval(() => this.updateDataOnScreen(), 3600000);
   }
 
   // If component unmounts, then free memory resources
