@@ -20,7 +20,7 @@ export const axiosHumidityTemperature = axios.create({
   baseURL: "/consumption/humidity-temperature"
 });
 
-export const monitoringAPI = axios.create({
+export const axiosMonitoring = axios.create({
   baseURL: "/production/monitoring"
 });
 

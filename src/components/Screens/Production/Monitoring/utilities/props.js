@@ -1,11 +1,11 @@
-import { ReactComponent as Conveyor } from "../../../../assets/svg/conveyor.svg";
-import { ReactComponent as LineDensity } from "../../../../assets/svg/lineDensity.svg";
-import { ReactComponent as PowderGun } from "../../../../assets/svg/powderGun.svg";
-import { ReactComponent as Product } from "../../../../assets/svg/product.svg";
-import { ReactComponent as Runtime } from "../../../../assets/svg/runtime.svg";
-import { ReactComponent as Speed } from "../../../../assets/svg/speed.svg";
-import { ReactComponent as StatusAllrightBig } from "../../../../assets/svg/statusAllrightBig.svg";
-import { ReactComponent as SystemUtility } from "../../../../assets/svg/systemUtility.svg";
+import { ReactComponent as Conveyor } from "../../../../../assets/svg/conveyor.svg";
+import { ReactComponent as LineDensity } from "../../../../../assets/svg/lineDensity.svg";
+import { ReactComponent as PowderGun } from "../../../../../assets/svg/powderGun.svg";
+import { ReactComponent as Product } from "../../../../../assets/svg/product.svg";
+import { ReactComponent as Runtime } from "../../../../../assets/svg/runtime.svg";
+import { ReactComponent as Speed } from "../../../../../assets/svg/speed.svg";
+import { ReactComponent as StatusAllrightBig } from "../../../../../assets/svg/statusAllrightBig.svg";
+import { ReactComponent as SystemUtility } from "../../../../../assets/svg/systemUtility.svg";
 
 /**
  * General notes:
@@ -82,3 +82,13 @@ export const propsTitleBarCS = {
   title: "Coated surface",
   type: 2
 };
+
+/**
+ * [propsToasterDanger]: Alert configuration if API request fails
+ */
+ export const propsToasterDanger = [
+  "Error",
+  {
+    description:"Sensor device not found."
+  }
+];

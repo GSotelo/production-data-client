@@ -8,6 +8,7 @@ import PieChart from "./utilities/PieChart.js"
 import { Row, Col } from "antd";
 
 import styles from "./Monitoring.module.css";
+import processDataFromServer from "./utilities/handlersServer";
 import {
   propsTitleBarCS,
   propsTitleBarCVS,
@@ -15,14 +16,39 @@ import {
   propsTitleBarRH,
   propsTitleBarSM,
   propsTitleBarSYS
-} from "./props";
+} from "./utilities/props";
 
 
 class Monitoring extends Component {
+  
+   state = {
+    api: {
+      dataCS: [],
+      dataCVS: [],
+      dataLD: []
+    },
+    currentTimeRange: {
+      currentTimeRangeCS: "week",
+      currentTimeRangeCVS: "week",
+      currentTimeRangeLD: "week"
+    }
+  }
 
+   updateState = (id, dataFromServer, timeRange) => {
+    const dataSelector = `data${id}`;
+    const currentTimeRange = `currentTimeRange${id}`;
+
+    this.setState(prevState => {
+      const nextUpdate = { ...prevState };
+      nextUpdate.api[dataSelector] = dataFromServer;
+      nextUpdate.currentTimeRange[currentTimeRange] = timeRange;
+      return { nextUpdate };
+    });
+  }
 
   getDataFromServer = async (id, timeRange) => {
-    console.log("TRIGGER ELEMENT / TIMERANGE ARE:", id, timeRange);
+    const data = await processDataFromServer(id, timeRange);
+    this.updateState(id, data, timeRange);
   }
 
   /**
@@ -44,6 +70,8 @@ class Monitoring extends Component {
   render() {
     // Extract some class methods
     const { createContextValues } = this;
+
+    console.log("STATE:", this.state);
 
 
 
@@ -162,8 +190,8 @@ class Monitoring extends Component {
     const BarChartLD = <BarChart id="LD" data={"data"} />;
 
     // Pie chart UI components
-    const PieChartSYS = <PieChart data={"data SYS"} />;
-    const PieChartSM = <PieChart data={"data SM"} />;
+    const PieChartSYS = <PieChart id="SYS" data={"data SYS"} />;
+    const PieChartSM = <PieChart id="SM" data={"data SM"} />;
 
     // Deck UI components
     const DeckRH = <Deck data="data" />

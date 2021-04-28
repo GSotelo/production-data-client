@@ -78,8 +78,11 @@ const PieChart = ({ data, id }) => {
   */
   const pieData = noData ? defaultPieData : dataSystemStatus;
 
+  // TEST
+  const foo = id==="SYS"? dataSystemStatus:dataSprayingMode;
+
   return (
-    <Pie data={pieData} />
+    <Pie data={foo} />
   );
 };
 
