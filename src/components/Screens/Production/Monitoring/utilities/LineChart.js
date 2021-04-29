@@ -55,12 +55,21 @@ const layoutCVS = {
  * @returns 
  */
  const processLineData = (data, id, fallback, assertData) => {
+  let legend;
   if (!assertData(data)) {
     return fallback;
   }
 
+  if(id === "CVS"){
+    legend= "Conveyor speed"
+  }
+
+  if(id === "CS"){
+    legend= "Coated surface"
+  }
+
   // If data is provided, then give format as defined in "Line" component
-  const processedData = [{ id, data }];
+  const processedData = [{ id:legend, data }];
   return processedData;
 };
 

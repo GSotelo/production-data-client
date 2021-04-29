@@ -2,6 +2,8 @@ import { ReactComponent as BigBag } from "../../../../../assets/svg/bigBag.svg";
 import { ReactComponent as FeedPowder } from "../../../../../assets/svg/powderFeed.svg";
 import { ReactComponent as FreshPowder } from "../../../../../assets/svg/freshPowder.svg";
 
+import _ from "lodash";
+
 /**
  * General notes:
  * The following objects are used to give proper 
@@ -89,12 +91,8 @@ export const propsTitleBarBBD = {
 /**
  * [propsDropdownBB]: Bigbag - dropdown options
  */
- export const propsDropdownBB = {
-  options: [
-    { key: 1, text: "BB-1", value: 1 },
-    { key: 2, text: "BB-2", value: 2 },
-    { key: 3, text: "BB-3", value: 3 },
-    { key: 4, text: "BB-4", value: 4 },
-    { key: 5, text: "BB-5", value: 5 }
-  ]
-};
+// Text value should be customized
+const numberOfBigBags = _.range(1, 7);
+const createOptionDropdown = el => ({ key: el, text: `BB-${el}`, value: el });
+const dropdownOptionsBB = _.map(numberOfBigBags, createOptionDropdown);
+export const propsDropdownBB = { options: dropdownOptionsBB };

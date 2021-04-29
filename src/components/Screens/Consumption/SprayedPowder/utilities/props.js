@@ -1,6 +1,8 @@
 import { ReactComponent as Recipe } from "../../../../../assets/svg/programEdit.svg";
 import { ReactComponent as Total } from "../../../../../assets/svg/total.svg";
 
+import _ from "lodash";
+
 /**
  * General notes:
  * The following objects are used to give proper 
@@ -38,7 +40,7 @@ export const propsTitleBarSPCTT = {
  * [propsTitleBarHSD]: Title bar in "Sprayed powder calculated recipe" (deck)
  * Title bar: Dropdown, icon and description text (type 3)
  */
-export const propsTitleBarSPCRD= {
+export const propsTitleBarSPCRD = {
   icon: <Recipe />,
   title: "Per recipe",
   type: 3
@@ -67,13 +69,9 @@ export const propsToasterDanger = [
 /**
  * [propsDropdownSPCR]: Sprayed powder calculted recipe - dropdown options
  */
-export const propsDropdownSPCR = {
-  options: [
-    { key: 1, text: "R-1", value: 1 },
-    { key: 2, text: "R-2", value: 2 },
-    { key: 3, text: "R-3", value: 3 },
-    { key: 4, text: "R-4", value: 4 },
-    { key: 5, text: "R-5", value: 5 }
-  ]
-};
+// Text value should be customized
+const numberOfRecipes = _.range(1, 256);
+const createOptionDropdown = el => ({ key: el, text: `R${el}`, value: el });
+const dropdownOptions = _.map(numberOfRecipes, createOptionDropdown);
+export const propsDropdownSPCR = { options: dropdownOptions };
 

@@ -1,5 +1,6 @@
 import { ReactComponent as PressureSensor } from "../../../../../assets/svg/pressureSensor.svg";
 
+import _ from "lodash";
 /**
  * [propsTitleBarAPT]: Title bar in "Air pressure sensor" (trend)
  * Title bar: Dropdown, icon and description text (type 3)
@@ -31,14 +32,9 @@ export const propsToasterDanger = [
 ];
 
 /**
- * [propsDropdownAP]: Dropdown options
+ * [propsDropdownAC]: Air comsumption - dropdown options
  */
-export const propsDropdownAP = {
-  options : [
-    { key: 1, text: "AP-1", value: 1 },
-    { key: 2, text: "AP-2", value: 2 },
-    { key: 3, text: "AP-3", value: 3 },
-    { key: 4, text: "AP-4", value: 4 },
-    { key: 5, text: "AP-5", value: 5 }
-  ]
-};
+ const numberOfAirSensors = _.range(1, 7);
+ const createOptionDropdownAP = el => ({ key: el, text: `AP-${el}`, value: el });
+ const dropdownOptionsAP = _.map(numberOfAirSensors, createOptionDropdownAP);
+ export const propsDropdownAP = { options: dropdownOptionsAP };

@@ -1,6 +1,8 @@
 import { ReactComponent as Humidity } from "../../../../../assets/svg/humidity.svg";
 import { ReactComponent as Temperature } from "../../../../../assets/svg/temperature.svg";
 
+import _ from "lodash";
+
 /**
  * General notes:
  * The following objects are used to give proper 
@@ -65,28 +67,18 @@ export const propsToasterDanger = [
 ];
 
 /**
- * [propsDropdownTS]: Temperature sensor - dropdown options
+ * [propsDropdownTS]: Air comsumption - dropdown options
  */
-export const propsDropdownTS = {
-  options: [
-    { key: 1, text: "TS-1", value: 1 },
-    { key: 2, text: "TS-2", value: 2 },
-    { key: 3, text: "TS-3", value: 3 },
-    { key: 4, text: "TS-4", value: 4 },
-    { key: 5, text: "TS-5", value: 5 }
-  ]
-};
+ const numberOfTempSensors = _.range(1, 7);
+ const createOptionDropdownTS = el => ({ key: el, text: `TS-${el}`, value: el });
+ const dropdownOptionsTS = _.map(numberOfTempSensors, createOptionDropdownTS);
+ export const propsDropdownTS = { options: dropdownOptionsTS };
+
 
 /**
- * [propsDropdownHS]: Humidity sensor - dropdown options
+ * [propsDropdownHS]: Air comsumption - dropdown options
  */
-export const propsDropdownHS = {
-  options: [
-    { key: 1, text: "HS-1", value: 1 },
-    { key: 2, text: "HS-2", value: 2 },
-    { key: 3, text: "HS-3", value: 3 },
-    { key: 4, text: "HS-4", value: 4 },
-    { key: 5, text: "HS-5", value: 5 }
-  ]
-};
-
+ const numberOfHumSensors = _.range(1, 7);
+ const createOptionDropdownHS = el => ({ key: el, text: `HS-${el}`, value: el });
+ const dropdownOptionsHS = _.map(numberOfHumSensors, createOptionDropdownHS);
+ export const propsDropdownHS = { options: dropdownOptionsHS };

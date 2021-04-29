@@ -1,4 +1,5 @@
 import { ReactComponent as PowderBox } from "../../../../../assets/svg/freshPowder.svg";
+import _ from "lodash";
 
 /**
  * General notes:
@@ -36,26 +37,21 @@ export const propsToasterDanger = [
 /**
  * [propsDropdownCPT]: Consumption per powder type - dropdown options
  */
-export const propsDropdownCPT = {
-  options: [
-    { key: 1, text: "T-1", value: 1 },
-    { key: 2, text: "T-2", value: 2 },
-    { key: 3, text: "T-3", value: 3 },
-    { key: 4, text: "T-4", value: 4 },
-    { key: 5, text: "T-5", value: 5 }
-  ]
-};
+const numberOfPowderTypes = _.range(1, 256);
+const createOptionDropdown = el => ({ key: el, text: `T${el}`, value: el });
+const dropdownOptionsCPT = _.map(numberOfPowderTypes, createOptionDropdown);
+export const propsDropdownCPT = { options: dropdownOptionsCPT };
 
 /**
  * [propsTableCPT]: Table for all powder types
  */
- export const propsTableCPT = {
+export const propsTableCPT = {
   columns: [
     {
       field: "type",
       headerName: "Type",
       sortable: true,
-   
+
     },
     {
       field: "consumption",
