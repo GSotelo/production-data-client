@@ -44,7 +44,7 @@ const getFilename = (id) => {
       filename = "color_change_duration.csv";
       break;
     case "CCQL":
-      filename = "color_change_quickest_longest";
+      filename = "color_change_quickest_longest.csv";
       break;
     default:
       break;

@@ -2,6 +2,7 @@ import React from "react";
 import Bar from "../../../../UI/Graph/Bar/Bar";
 
 import _ from "lodash";
+import { formatDate } from "../../../../../utils/time";
 
 /**
  * General notes:
@@ -25,91 +26,34 @@ export const layoutLD = {
   itemWidth: 100
 };
 
-const dataLineDensityState = [
-  {
-    "date": "2021/01/01",
-    "Coated parts": 18
-  },
-  {
-    "date": "2021/01/02",
-    "Coated parts": 12
-  },
-  {
-    "date": "2021/01/03",
-    "Coated parts": 4
-  },
-  {
-    "date": "2021/01/04",
-    "Coated parts": 13
-  },
-  {
-    "date": "2021/01/05",
-    "Coated parts": 9
-  },
-  {
-    "date": "2021/01/06",
-    "Coated parts": 9
-
-  },
-  {
-    "date": "2021/01/07",
-    "Coated parts": 6
-  },
-  {
-    "date": "2021/01/08",
-    "Coated parts": 18
-  },
-  {
-    "date": "2021/01/09",
-    "Coated parts": 8
-  },
-  {
-    "date": "2021/01/10",
-    "Coated parts": 12
-  },
-  {
-    "date": "2021/01/11",
-    "Coated parts": 14
-  },
-  {
-    "date": "2021/01/12",
-    "Coated parts": 13
-  },
-  {
-    "date": "2021/01/13",
-    "Coated parts": 9
-  },
-  {
-    "date": "2021/01/14",
-    "Coated parts": 4
-
-  },
-  {
-    "date": "2021/01/15",
-    "Coated parts": 36
-  },
-  {
-    "date": "2021/01/16",
-    "Coated parts": 18
-  },
-  {
-    "date": "2021/01/17",
-    "Coated parts": 12
-  },
-  {
-    "date": "2021/01/18",
-    "Coated parts": 4
-  },
-  {
-    "date": "2021/01/19",
-    "Coated parts": 13
-  },
-  {
-    "date": "2021/01/20",
-    "Coated parts": 9
+/**
+ * @param {*} data Data from server
+ * @returns Boolean. True: Data is valid. Otherwise, false
+ */
+const assertData = (data) => {
+  // Check is no data from server
+  if ((data === false) || _.isEmpty(data)) {
+    return false;
   }
-];
+  return true;
+};
 
+
+const processBarData = (data, fallback, assertData) => {
+  // Each element in the "data" array is structured as : x (timestamp), y(quickest CC), y2(longest CC)
+  if (!assertData(data)) {
+    return fallback;
+  }
+
+  const barData = _.map(data, ({ x, y }) => (
+    {
+      date: formatDate(x),
+      "Coated parts": y
+    }
+  ));
+
+  return barData;
+};
 
 const BarChart = ({ data, id }) => {
   let layout;
@@ -119,18 +63,15 @@ const BarChart = ({ data, id }) => {
    */
   if (id === "LD") layout = layoutLD;
 
-  const defaultBarData = [
+  // If server provides no data, then use a default one
+  const fallbackBarData = [
     {
       date: new Date().toISOString(),
       "Coated parts": 0
     }
   ];
 
-  /**
-  *  If express server provides no data, then use the default data.
-  */
-  const useDefaultData = _.isEmpty(data);
-  const barData = useDefaultData ? defaultBarData : dataLineDensityState;
+  const barData = processBarData(data, fallbackBarData, assertData);
 
   return (
     <Bar {...layout} data={barData} />

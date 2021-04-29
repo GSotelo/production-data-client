@@ -22,6 +22,9 @@ const getEndpoint = (id, timeRange) => {
     case "CS":
       endpoint = `/coated-surface/${timeRange}`;
       break;
+    case "RH":
+      endpoint = `/running-hours/${timeRange}`;
+      break;
     default:
       break;
   }
@@ -45,6 +48,9 @@ const getFilename = (id) => {
     case "CS":
       filename = "coated_surface.csv";
       break;
+    case "RH":
+      filename = "running_hours.csv";
+      break;
     default:
       break;
   }
@@ -58,6 +64,8 @@ const getFilename = (id) => {
  * @returns Data to feed line chart according to "nivo" library
  */
 export const connectServer = async (id, timeRange) => {
+  let filteredData = false;
+
   /**
    * Check is request comes from a control button or date picker
    */
@@ -69,7 +77,6 @@ export const connectServer = async (id, timeRange) => {
    */
   if (timeRangeIsString) {
     const endpoint = getEndpoint(id, timeRange);
-    let filteredData = false;
     try {
       filteredData = await connectAPI.get(axiosMonitoring, endpoint);
     } catch (error) {
@@ -84,7 +91,6 @@ export const connectServer = async (id, timeRange) => {
   */
   if (timeRangeIsArray) {
     const filename = getFilename(id);
-    let filteredData = false;
     try {
       filteredData = await connectAPI.post(axiosMonitoring, "/", { filename, timeRange })
     } catch (error) {
@@ -95,23 +101,8 @@ export const connectServer = async (id, timeRange) => {
   }
 };
 
-/**
- * Data from server is either for "trend" or "deck" elements
- * If data is for a "deck" element, then further processing is needed
- * If data is for a "trend" element, then it goes straight forward
- */
-const processDataFromServer = async (id, timeRange) => {
-  const dataFromServer = await connectServer(id, timeRange);
-
-  // Unpack data for single/multiple file requests;
-  const isEmptyData = _.isEmpty(_.flatten(dataFromServer));
-
-  if (isEmptyData) {
-    return false;
-  }
-
-  return dataFromServer;
-};
+// I create this wrapper to decorate "connectServer" in case needed
+const processDataFromServer = async (id, timeRange) => await connectServer(id, timeRange);
 
 export default processDataFromServer;
 

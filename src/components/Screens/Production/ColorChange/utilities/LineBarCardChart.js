@@ -7,9 +7,9 @@ import { ReactComponent as Average } from "../../../../../assets/svg/average.svg
 import styles from "./CustomElements.module.css";
 import processDataDeck from "../../../../../utils/processDataDeck";
 import groupData from "../../../../../utils/groupDataByDate";
+import { formatDate} from "../../../../../utils/time";
 import _ from "lodash";
 
-import { formatDate} from "../../../../../utils/time";
 
 const { setFooterLabel, setFooterValue } = processDataDeck;
 const { filterArrayByObjectProperty, getAverage } = groupData;

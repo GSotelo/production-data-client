@@ -1,6 +1,8 @@
 import React from "react";
 import Line from "../../../../UI/Graph/Line/Line";
 
+import _ from "lodash";
+
 /**
  * General notes:
  * The following objects are used to
@@ -11,9 +13,9 @@ import Line from "../../../../UI/Graph/Line/Line";
  */
 
 /**
- * [layoutCST]: Layout for coated surface trend
+ * [layoutCS]: Layout for coated surface trend
  */
-const layoutCST = {
+const layoutCS = {
   colors: "#86a315",
   enableArea: true,
   translateX: -30,
@@ -22,9 +24,9 @@ const layoutCST = {
 };
 
 /**
- * [layoutCVST]: Layout for conveyor speed trend
+ * [layoutCVS]: Layout for conveyor speed trend
  */
-const layoutCVST = {
+const layoutCVS = {
   colors: "#86a315",
   enableArea: false,
   translateX: -30,
@@ -32,15 +34,46 @@ const layoutCVST = {
   ytitle: "Speed(m/h)"
 };
 
+/**
+ * @param {*} data Data from server
+ * @returns Boolean. True: Data is valid. Otherwise, false
+ */
+ const assertData = (data) => {
+  // Check is no data from server
+  if ((data === false) || _.isEmpty(data)) {
+    return false;
+  }
+  return true;
+};
+
+/**
+ * @param {*} data Data from server
+ * @param {*} id Id of UI component
+ * @param {*} fallback If no data to display,then send fallback data
+ * @param {*} timeRange Time range used to extract data
+ * @param {*} assertData Evaluates if data is according to what is expected
+ * @returns 
+ */
+ const processLineData = (data, id, fallback, assertData) => {
+  if (!assertData(data)) {
+    return fallback;
+  }
+
+  // If data is provided, then give format as defined in "Line" component
+  const processedData = [{ id, data }];
+  return processedData;
+};
+
+
 const LineChart = ({ data, id }) => {
   let layout;
 
   /**
-   * CST: Coated surface layout
-   * CVST: Conveyor speed layout
+   * CS: Coated surface layout
+   * CVS: Conveyor speed layout
    */
-  if (id === "CS") layout = layoutCST;
-  if (id === "CVS") layout = layoutCVST;
+  if (id === "CS") layout = layoutCS;
+  if (id === "CVS") layout = layoutCVS;
 
   const defaultLineData = [
     {
@@ -49,12 +82,8 @@ const LineChart = ({ data, id }) => {
     }
   ];
 
-  /**
-  *  If express server provides no data, then use the default one.
-  */
-  const noDefaultData = typeof data[0].data != "undefined" && data[0].data.length > 0;
-  const lineData = noDefaultData ? data : defaultLineData;
-
+  const lineData = processLineData(data, id, defaultLineData, assertData);
+ 
   return (
     <Line {...layout} data={lineData} />
   );

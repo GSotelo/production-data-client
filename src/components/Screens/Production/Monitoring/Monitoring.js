@@ -20,21 +20,29 @@ import {
 
 
 class Monitoring extends Component {
-  
-   state = {
+
+  state = {
     api: {
       dataCS: [],
       dataCVS: [],
-      dataLD: []
+      dataLD: [],
+      dataRH: []
     },
     currentTimeRange: {
       currentTimeRangeCS: "week",
       currentTimeRangeCVS: "week",
-      currentTimeRangeLD: "week"
+      currentTimeRangeLD: "week",
+      currentTimeRangeRH: "week",
     }
   }
 
-   updateState = (id, dataFromServer, timeRange) => {
+  /**
+   * 
+   * @param {*} id Target element to update
+   * @param {*} dataFromServer Data from express server
+   * @param {*} timeRange Current time range for selected element
+   */
+  updateState = (id, dataFromServer, timeRange) => {
     const dataSelector = `data${id}`;
     const currentTimeRange = `currentTimeRange${id}`;
 
@@ -47,7 +55,16 @@ class Monitoring extends Component {
   }
 
   getDataFromServer = async (id, timeRange) => {
+    /**
+   * Response data from server API. The data is formatted 
+   * based on nivo library. If an error comes up, then 
+   * "dataFromServer" is "false". Though I can exit the 
+   * function at this point, I'll let it continue. Trends and 
+   * deck elements handle the event of no-data using fallback data 
+   */
     const data = await processDataFromServer(id, timeRange);
+    
+    // Update state of all elements
     this.updateState(id, data, timeRange);
   }
 
@@ -71,130 +88,26 @@ class Monitoring extends Component {
     // Extract some class methods
     const { createContextValues } = this;
 
-    console.log("STATE:", this.state);
-
-
-
-    // TEMPORAL: HOW STATES SHOULD BE
-    const dataConveyorSpeedState = [
-      { x: '2021-03-13T23:59:00.000Z', y: 1 },
-      { x: '2021-04-13T23:59:00.000Z', y: 23 },
-      { x: '2021-05-13T23:59:00.000Z', y: 17 },
-      { x: '2021-06-13T23:59:00.000Z', y: 9 },
-    ];
-
-    const dataCoatedSurfaceState = [
-      { x: '2021-03-13T23:59:00.000Z', y: 17 },
-      { x: '2021-04-13T23:59:00.000Z', y: 1 },
-      { x: '2021-05-13T23:59:00.000Z', y: 3 },
-      { x: '2021-06-13T23:59:00.000Z', y: 3 },
-      { x: '2021-07-13T23:59:00.000Z', y: 19 },
-      { x: '2021-08-13T23:59:00.000Z', y: 3 },
-    ];
-
-    // Esta forma tiene que seR dada dentro del componente EN SI
-    const dataLineDensityState = [
-      {
-        "date": "2021/01/01",
-        "Coated parts": 18
-      },
-      {
-        "date": "2021/01/02",
-        "Coated parts": 12
-      },
-      {
-        "date": "2021/01/03",
-        "Coated parts": 4
-      },
-      {
-        "date": "2021/01/04",
-        "Coated parts": 13
-      },
-      {
-        "date": "2021/01/05",
-        "Coated parts": 9
-      },
-      {
-        "date": "2021/01/06",
-        "Coated parts": 9
-
-      },
-      {
-        "date": "2021/01/07",
-        "Coated parts": 6
-      },
-      {
-        "date": "2021/01/08",
-        "Coated parts": 18
-      },
-      {
-        "date": "2021/01/09",
-        "Coated parts": 8
-      },
-      {
-        "date": "2021/01/10",
-        "Coated parts": 12
-      },
-      {
-        "date": "2021/01/11",
-        "Coated parts": 14
-      },
-      {
-        "date": "2021/01/12",
-        "Coated parts": 13
-      },
-      {
-        "date": "2021/01/13",
-        "Coated parts": 9
-      },
-      {
-        "date": "2021/01/14",
-        "Coated parts": 4
-
-      },
-      {
-        "date": "2021/01/15",
-        "Coated parts": 36
-      },
-      {
-        "date": "2021/01/16",
-        "Coated parts": 18
-      },
-      {
-        "date": "2021/01/17",
-        "Coated parts": 12
-      },
-      {
-        "date": "2021/01/18",
-        "Coated parts": 4
-      },
-      {
-        "date": "2021/01/19",
-        "Coated parts": 13
-      },
-      {
-        "date": "2021/01/20",
-        "Coated parts": 9
-      }
-    ];
+    // Data from express server
+    const { dataCS, dataCVS, dataLD, dataRH } = this.state.api;
 
     // Create context values
     const ids = ["RH", "SM", "SYS", "CS", "LD", "CVS"];
     const contextValue = createContextValues(ids);
 
     // Line chart UI components
-    const LineChartCVS = <LineChart id="CVS" data={[{ id: "Speed", data: dataConveyorSpeedState }]} />;
-    const LineChartCS = <LineChart id="CS" data={[{ id: "Area", data: dataCoatedSurfaceState }]} />;
+    const LineChartCVS = <LineChart id="CVS" data={dataCVS} />;
+    const LineChartCS = <LineChart id="CS" data={dataCS} />;
 
     // Bar chart UI components
-    const BarChartLD = <BarChart id="LD" data={"data"} />;
+    const BarChartLD = <BarChart id="LD" data={dataLD} />;
 
     // Pie chart UI components
     const PieChartSYS = <PieChart id="SYS" data={"data SYS"} />;
     const PieChartSM = <PieChart id="SM" data={"data SM"} />;
 
     // Deck UI components
-    const DeckRH = <Deck data="data" />
+    const DeckRH = <Deck data={dataRH} />
 
     return (
       <Row className={styles.monitoring}>
