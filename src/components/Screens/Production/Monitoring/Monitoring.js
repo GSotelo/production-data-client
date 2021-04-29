@@ -63,7 +63,7 @@ class Monitoring extends Component {
    * deck elements handle the event of no-data using fallback data 
    */
     const data = await processDataFromServer(id, timeRange);
-    
+
     // Update state of all elements
     this.updateState(id, data, timeRange);
   }
@@ -89,7 +89,7 @@ class Monitoring extends Component {
     const { createContextValues } = this;
 
     // Data from express server
-    const { dataCS, dataCVS, dataLD, dataRH } = this.state.api;
+    const { dataCS, dataCVS, dataLD, dataRH, dataSM, dataSYS } = this.state.api;
 
     // Create context values
     const ids = ["RH", "SM", "SYS", "CS", "LD", "CVS"];
@@ -103,8 +103,8 @@ class Monitoring extends Component {
     const BarChartLD = <BarChart id="LD" data={dataLD} />;
 
     // Pie chart UI components
-    const PieChartSYS = <PieChart id="SYS" data={"data SYS"} />;
-    const PieChartSM = <PieChart id="SM" data={"data SM"} />;
+    const PieChartSYS = <PieChart id="SYS" data={dataSYS} />;
+    const PieChartSM = <PieChart id="SM" data={dataSM} />;
 
     // Deck UI components
     const DeckRH = <Deck data={dataRH} />

@@ -1,6 +1,10 @@
 import React from "react";
-
 import Pie from "../../../../UI/Graph/Pie/Pie";
+
+import groupData from "../../../../../utils/groupDataByDate";
+import _ from "lodash";
+
+const { filterArrayByObjectProperty, getTotalValueFromArray } = groupData;
 
 /**
  * General notes:
@@ -53,36 +57,77 @@ const dataSprayingMode = [
   }
 ]
 
+// Data validation
+const assertData = (data) => {
+  // Check is no data from server
+  if ((data === false) || _.isEmpty(data)) {
+    return false;
+  }
+  return true;
+};
+
+// Process data for Pie component
+const processDataPie = (data, fallback) => {
+  if (!assertData(data)) {
+    return fallback;
+  }
+
+  /**
+   * Mapping y, y2, y3 values (Data must contain object with such keys!)
+   * Otherwise, code guards are needed
+   */
+  const objectKeys = ["y", "y2", "y3"];
+  const filteredData = objectKeys.map(key => filterArrayByObjectProperty(data, key));
+  const dataPie = filteredData.map(el => getTotalValueFromArray(el));
+  const [automatic, manual, idle] = dataPie;
+
+  return { automatic, manual, idle };
+};
+
+
 const PieChart = ({ data, id }) => {
 
-  // const defaultLineData = [
-  //   {
-  //     id,
-  //     data: [{ x: new Date().toISOString(), y: 0 }]
-  //   }
-  // ];
+  console.log("DATA FOR PIE", data);
+  let dataPie;
 
-  const defaultPieData = [
+  /**
+   * Data is an array, which contains objects with a 
+   * structure as {timestamp, value, value2, value3}
+   * [y]: Total hours
+   * [y2]: Sprayed hours
+   * [y3]: Number of times the system started / stopped production
+   */
+  const fallbackDataPieSM = {
+    automatic: 0,
+    manual: 0,
+    idle: 0
+  }
+
+
+  const filteredData = processDataPie(data, fallbackDataPieSM);
+  const { automatic, manual, idle } = filteredData;
+  const dataPieSM = [
     {
-      "id": "production",
-      "label": "Production",
-      "value": 1
+      "id": "automatic",
+      "label": "Automatic",
+      "value": automatic
+    },
+    {
+      "id": "manual",
+      "label": "Manual",
+      "value": manual
+    },
+    {
+      "id": "idle",
+      "label": "Idle",
+      "value": idle
     }
   ]
 
-  // Default data for pie
-  const noData = false;
 
-  /**
-  *  If express server provides no data, then use the default one.
-  */
-  const pieData = noData ? defaultPieData : dataSystemStatus;
-
-  // TEST
-  const foo = id==="SYS"? dataSystemStatus:dataSprayingMode;
 
   return (
-    <Pie data={foo} />
+    <Pie data={dataPieSM} />
   );
 };
 

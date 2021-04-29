@@ -2,7 +2,6 @@ import connectAPI from "../../../../../api/connectAPI";
 import { axiosMonitoring } from "../../../../../api/axios";
 import { propsToasterDanger } from "./props";
 import { toaster } from "evergreen-ui";
-import _ from "lodash";
 
 /**
  * This function works in conjuction with HTTP GET requests
@@ -24,6 +23,12 @@ const getEndpoint = (id, timeRange) => {
       break;
     case "RH":
       endpoint = `/running-hours/${timeRange}`;
+      break;
+    case "SM":
+      endpoint = `/spray-mode/${timeRange}`;
+      break;
+    case "SYS":
+      endpoint = `/system-status/${timeRange}`;
       break;
     default:
       break;
@@ -50,6 +55,12 @@ const getFilename = (id) => {
       break;
     case "RH":
       filename = "running_hours.csv";
+      break;
+    case "SM":
+      filename = "sprayed_mode.csv";
+      break;
+    case "SYS":
+      filename = "system_status.csv";
       break;
     default:
       break;
