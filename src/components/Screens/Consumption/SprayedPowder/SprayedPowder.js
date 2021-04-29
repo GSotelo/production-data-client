@@ -7,7 +7,7 @@ import LineChart from "./utilities/LineChart";
 import { Row, Col } from "antd";
 
 import styles from "./SprayedPowder.module.css";
-import processDataFromServer from "./utilities/handlersServer";
+import processDataFromServer, { getDataForDropdown } from "./utilities/handlersServer";
 import { setCurrentValueDropdown } from "./utilities/miscellaneous";
 import {
   propsDropdownSPCR,
@@ -18,6 +18,12 @@ import {
 } from "./utilities/props";
 
 class SprayedPowder extends Component {
+  /**
+   * Class fields (Belong to the class itself. Prototype chain not affected) 
+   * These fields are used by the server to set options for dropdown elements
+   */
+  optionsDropdownSPCR = [{ key: 1, text: "R1", value: 1 }];
+
   /**
   * [api]: Contains received data from express server
   * [currentTimeRange]: Contains selected time frame for trend and deck elements
@@ -69,8 +75,13 @@ class SprayedPowder extends Component {
    * 2. Triggers automatic updates every "x" milliseconds
    */
   async componentDidMount() {
+    // Load options for dropdowns
+    const fallbackOptionsDropdown = [{ key: 1, text: "R1", value: 1 }];
+    this.optionsDropdownSPCR = await getDataForDropdown("recipes", fallbackOptionsDropdown);
+
+    // Set automatic updates
     this.updateDataOnScreen();
-    this.timerID = setInterval(() => this.updateDataOnScreen(), 3600000);
+    this.timerID = setInterval(() => this.updateDataOnScreen(), 10000);
   }
 
   // If component unmounts, then free memory resources
@@ -168,8 +179,8 @@ class SprayedPowder extends Component {
   }
 
   render() {
-    // Extract some class methods
-    const { createContextValues } = this;
+    // Extract some class methods / fields
+    const { createContextValues, optionsDropdownSPCR } = this;
 
     // Data from express server
     const { dataSPCRD, dataSPCRT, dataSPCTD, dataSPCTT } = this.state.api;
@@ -185,8 +196,9 @@ class SprayedPowder extends Component {
     const DeckSPCRD = <Deck data={dataSPCRD} timeRange={currentTimeRangeSPCRD} units="kg" orientation="h" />;
     const DeckSPCTD = <Deck data={dataSPCTD} timeRange={currentTimeRangeSPCTD} units="kg" orientation="h" />;
 
-    // Dropdown UI components
-    const DropdownHS = <Dropdown {...propsDropdownSPCR} />;
+    // Dropdown UI components (Static vs. Dynamic)
+    // const DropdownHS = <Dropdown {...propsDropdownSPCR} />;
+    const DropdownHS = <Dropdown options={optionsDropdownSPCR} />;
 
     // Line chart UI components
     const LineChartSPCRT = <LineChart id="SPCRT" data={[{ id: "Recipe", data: dataSPCRT }]} />;

@@ -7,7 +7,7 @@ import GraphContext from "../../../Context/GraphContext";
 import { Row, Col } from "antd";
 
 import styles from "./FreshPowder.module.css";
-import processDataFromServer from "./utilities/handlersServer";
+import processDataFromServer, { getDataForDropdown } from "./utilities/handlersServer";
 import {
   propsDropdownBB,
   propsTitleBarBBT,
@@ -19,14 +19,20 @@ import {
 } from "./utilities/props";
 
 class FreshPowder extends Component {
- /**
- * [api]: Contains received data from express server
- * [currentTimeRange]: Contains selected time frame for trend and deck elements
- * [currentValueDropdown]: Contains current value of dropdown for trend and deck elements
- * [dataBBT, dataSHDT, dataTFPD, dataTFPT]: Holds data for "powder_total_fresh.csv", 
- * "powder_spectrum.csv", "powder_big_bag_x.csv"  
- * The "x" represents the sensor location
- */
+  /**
+   * Class fields (Belong to the class itself. Prototype chain not affected) 
+   * These fields are used by the server to set options for dropdown elements
+   */
+  optionsDropdownBB = [{ key: 1, text: `BB1`, value: 1 }];
+
+  /**
+  * [api]: Contains received data from express server
+  * [currentTimeRange]: Contains selected time frame for trend and deck elements
+  * [currentValueDropdown]: Contains current value of dropdown for trend and deck elements
+  * [dataBBT, dataSHDT, dataTFPD, dataTFPT]: Holds data for "powder_total_fresh.csv", 
+  * "powder_spectrum.csv", "powder_big_bag_x.csv"  
+  * The "x" represents the sensor location
+  */
   state = {
     api: {
       dataBBD: {
@@ -79,6 +85,11 @@ class FreshPowder extends Component {
    * 2. Triggers automatic updates every "x" milliseconds
    */
   async componentDidMount() {
+    // Load options for dropdowns
+    const fallbackOptionsDropdown = [{ key: 1, text: `BB1`, value: 1 }];
+    this.optionsDropdownBB = await getDataForDropdown("bigbags", fallbackOptionsDropdown);
+
+    // Set automatic updates
     this.updateDataOnScreen();
     this.timerID = setInterval(() => this.updateDataOnScreen(), 3600000);
   }
@@ -149,7 +160,7 @@ class FreshPowder extends Component {
       const baseSelector = id.slice(0, id.length - 1); // SHD, BB 
       const dataTrendSelector = `data${id}`; // SHDT, BBT
       const dataDeckSelector = `data${baseSelector}D`; // SHDD, BBD
-      
+
       // Update state if SHDT, SHDT, BBD, BBT element and exit function
       return this.setState(prevState => {
         const nextUpdate = { ...prevState };
@@ -210,7 +221,7 @@ class FreshPowder extends Component {
 
   render() {
     // Extract some class methods
-    const { createContextValues } = this;
+    const { createContextValues, optionsDropdownBB } = this;
 
     // Data from express server
     const { dataBBD, dataBBT, dataSHDD, dataSHDT, dataTFPD, dataTFPT } = this.state.api;
@@ -228,7 +239,8 @@ class FreshPowder extends Component {
     const DeckBBD = <Deck data={dataBBD} timeRange={currentTimeRangeTFPD} units="kg" orientation="v" />;
 
     // Dropdown UI components
-    const DropdownBB = <Dropdown {...propsDropdownBB} />;
+    //const DropdownBB = <Dropdown {...propsDropdownBB} />;
+    const DropdownBB = <Dropdown options={optionsDropdownBB} />;
 
     // Line chart UI components
     const LineChartBBT = <LineChart id="BBT" data={[{ id: "Bigbag powder", data: dataBBT }]} />

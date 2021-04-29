@@ -223,13 +223,13 @@ const createDataForDeckType1 = (breakpoint, currentData, prevData) => {
   const avgPrevData = getAverage(yValuePrevData);
   const avgCurrentData = getAverage(yValueCurrentData);
 
-  console.log("Breakpoint", breakpoint);
-  console.log("Same or Before break point, ", prevData);
-  console.log("After breakpoint, ", currentData);
-  console.log("Maximum current value", yMaxValueCurrentData);
-  console.log("Minimum current value", yMinValueCurrentData);
-  console.log("Average current value", avgCurrentData);
-  console.log("Average previous value", avgPrevData);
+  // console.log("Breakpoint", breakpoint);
+  // console.log("Same or Before break point, ", prevData);
+  // console.log("After breakpoint, ", currentData);
+  // console.log("Maximum current value", yMaxValueCurrentData);
+  // console.log("Minimum current value", yMinValueCurrentData);
+  // console.log("Average current value", avgCurrentData);
+  // console.log("Average previous value", avgPrevData);
 
   return {
     prevData,
@@ -263,13 +263,13 @@ const createDataForDeckType2 = (breakpoint, currentData, prevData) => {
   const totalPrevData = getTotalValueFromArray(yValuePrevData);
   const totalCurrentData = getTotalValueFromArray(yValueCurrentData);
 
-  console.log("Breakpoint", breakpoint);
-  console.log("Samr or Before break point, ", prevData);
-  console.log("After breakpoint, ", currentData);
-  console.log("Total current value", totalCurrentData);
-  console.log("Total previous value", totalPrevData);
-  console.log("Average current value", avgCurrentData);
-  console.log("Average previous value", avgPrevData);
+  // console.log("Breakpoint", breakpoint);
+  // console.log("Samr or Before break point, ", prevData);
+  // console.log("After breakpoint, ", currentData);
+  // console.log("Total current value", totalCurrentData);
+  // console.log("Total previous value", totalPrevData);
+  // console.log("Average current value", avgCurrentData);
+  // console.log("Average previous value", avgPrevData);
 
   return {
     prevData,

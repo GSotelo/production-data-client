@@ -4,6 +4,7 @@ import { axiosSprayedPowder } from "../../../../../api/axios";
 import { propsToasterDanger } from "./props";
 import { toaster } from "evergreen-ui";
 
+// When using "connectAPI" the axios response is affected by a customized filter function 
 
 /**
  * This function works in conjuction with HTTP GET requests
@@ -121,5 +122,16 @@ const processDataFromServer = async (currentValueDropdown, id, timeRange) => {
   }
   return data;
 };
-
 export default processDataFromServer;
+
+export const getDataForDropdown = async (id, fallback) => {
+  let response = false;
+  try {
+    response = await axiosSprayedPowder.get(`/dropdowns/${id}`);
+  } catch (error) {
+    console.error("[getDataForDropdown]: Request to server API failed (GET)");
+    return fallback;
+  }
+
+  return response.data;
+};
