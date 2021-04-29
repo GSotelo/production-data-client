@@ -21,18 +21,26 @@ import {
 
 class Monitoring extends Component {
 
+  /**
+  * [api]: Contains received data from express server
+  * [currentTimeRange]: Contains selected time frame for all elements
+  */
   state = {
     api: {
       dataCS: [],
       dataCVS: [],
       dataLD: [],
-      dataRH: []
+      dataRH: [],
+      dataSM: [],
+      dataSYS: []
     },
     currentTimeRange: {
       currentTimeRangeCS: "week",
       currentTimeRangeCVS: "week",
       currentTimeRangeLD: "week",
       currentTimeRangeRH: "week",
+      currentTimeRangeSM: "week",
+      currentTimeRangeSYS: "week",
     }
   }
 
@@ -54,6 +62,55 @@ class Monitoring extends Component {
     });
   }
 
+  /**
+  * 1. Fetch data when component mounts for the first time
+  * 2. Triggers automatic updates every "x" milliseconds
+  */
+  async componentDidMount() {
+    this.updateDataOnScreen();
+    this.timerID = setInterval(() => this.updateDataOnScreen(), 3600000);
+  }
+
+  // If component unmounts, then free memory resources
+  componentWillUnmount() {
+    clearInterval(this.timerID);
+  }
+
+  /**
+   * [updateDataOnScreen]: Trigger screen updates every "x" millisenconds
+   */
+  async updateDataOnScreen() {
+    // Define id's to target all UI elements
+    const { currentTimeRange } = this.state;
+    const ids = ["CS", "CVS", "LD", "RH", "SM", "SYS"];
+
+    // Get data for all elements
+    const data = await Promise.all(ids.map(async (id) => {
+      const timeRange = currentTimeRange[`currentTimeRange${id}`];
+      return await processDataFromServer(id, timeRange);
+    }));
+
+    // Update state for all components
+    this.setState(
+      {
+        api:
+        {
+          dataCS: data[0],
+          dataCVS: data[1],
+          dataLD: data[2],
+          dataRH: data[3],
+          dataSM: data[4],
+          dataSYS: data[5]
+        }
+      }
+    );
+  }
+
+  /**
+  * [getDataFromServer]: Establish connection to express server via HTTP requests (GET, POST)
+  * [id]: Helps to determine the correct endpoint, filename and axios instance
+  * [timeRange]: It can be a string ("day", "week", "month") or an array of two "moment" objects
+  */
   getDataFromServer = async (id, timeRange) => {
     /**
    * Response data from server API. The data is formatted 

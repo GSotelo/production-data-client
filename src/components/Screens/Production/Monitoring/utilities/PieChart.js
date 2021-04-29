@@ -15,48 +15,6 @@ const { filterArrayByObjectProperty, getTotalValueFromArray } = groupData;
  * based on nivo library ;)
  */
 
-/*System status data*/
-const dataSystemStatus = [
-  {
-    "id": "production",
-    "label": "Production",
-    "value": 75
-  },
-  {
-    "id": "system fault",
-    "label": "System fault",
-    "value": 16
-  },
-  {
-    "id": "color change",
-    "label": "Color change",
-    "value": 15,
-  },
-  {
-    "id": "standby",
-    "label": "Standby",
-    "value": 10,
-  }
-]
-
-const dataSprayingMode = [
-  {
-    "id": "automatic",
-    "label": "Automatic",
-    "value": 70
-  },
-  {
-    "id": "manual",
-    "label": "Manual",
-    "value": 20
-  },
-  {
-    "id": "idle",
-    "label": "Idle",
-    "value": 10,
-  }
-]
-
 // Data validation
 const assertData = (data) => {
   // Check is no data from server
@@ -67,67 +25,42 @@ const assertData = (data) => {
 };
 
 // Process data for Pie component
-const processDataPie = (data, fallback) => {
+const processDataPie = (data, fallback, keys) => {
   if (!assertData(data)) {
     return fallback;
   }
 
-  /**
-   * Mapping y, y2, y3 values (Data must contain object with such keys!)
-   * Otherwise, code guards are needed
-   */
-  const objectKeys = ["y", "y2", "y3"];
-  const filteredData = objectKeys.map(key => filterArrayByObjectProperty(data, key));
-  const dataPie = filteredData.map(el => getTotalValueFromArray(el));
-  const [automatic, manual, idle] = dataPie;
-
-  return { automatic, manual, idle };
+  // Data must contain objects with such keys
+  const filteredData = keys.map(key => filterArrayByObjectProperty(data, key));
+  return filteredData.map(el => getTotalValueFromArray(el));
 };
 
-
 const PieChart = ({ data, id }) => {
+  let fallbackDataPie, labels, keys;
 
-  console.log("DATA FOR PIE", data);
-  let dataPie;
-
-  /**
-   * Data is an array, which contains objects with a 
-   * structure as {timestamp, value, value2, value3}
-   * [y]: Total hours
-   * [y2]: Sprayed hours
-   * [y3]: Number of times the system started / stopped production
-   */
-  const fallbackDataPieSM = {
-    automatic: 0,
-    manual: 0,
-    idle: 0
+  if (id === "SM") {
+    keys = ["y", "y2", "y3"];
+    labels = ["Automatic", "Manual", "Idle"];
+    fallbackDataPie = [0, 0, 0]; // [automatic, manual, idle]
   }
 
+  if (id === "SYS") {
+    keys = ["y", "y2", "y3", "y4"];
+    labels = ["Production", "System fault", "Color change", "Stand by"];
+    fallbackDataPie = [0, 0, 0, 0]; // [production, system fault, color change, stand by]
+  }
 
-  const filteredData = processDataPie(data, fallbackDataPieSM);
-  const { automatic, manual, idle } = filteredData;
-  const dataPieSM = [
+  const processedData = processDataPie(data, fallbackDataPie, keys);
+  const dataPie = labels.map((el, index) => (
     {
-      "id": "automatic",
-      "label": "Automatic",
-      "value": automatic
-    },
-    {
-      "id": "manual",
-      "label": "Manual",
-      "value": manual
-    },
-    {
-      "id": "idle",
-      "label": "Idle",
-      "value": idle
+      label: el,
+      id: el.toLowerCase(),
+      value: processedData[index]
     }
-  ]
-
-
+  ));
 
   return (
-    <Pie data={dataPieSM} />
+    <Pie data={dataPie} />
   );
 };
 

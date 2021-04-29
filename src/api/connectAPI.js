@@ -12,7 +12,7 @@ const filterDataFromAPI = (arr) => {
    * "undefined". Before assigning a value to any chart, 
    * I validate data is different than "undefined"
    */
-  arr.map(({ timestamp, value, value2, value3 }) => results.push({ x: timestamp, y: value, y2: value2, y3: value3 }));
+  arr.map(({ timestamp, value, value2, value3, value4 }) => results.push({ x: timestamp, y: value, y2: value2, y3: value3, y4:value4 }));
   return results;
 };
 
