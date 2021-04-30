@@ -1,15 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import Bar from "../../../../UI/Graph/Bar/Bar";
 import Card from "../../../../UI/Card/CardWithFooter/CardWithFooter";
 import Line from "../../../../UI/Graph/Line/Line";
+import RadioGroup from "../../../../UI/RadioGroup/Custom/TwoRadioGroup";
 import { ReactComponent as Average } from "../../../../../assets/svg/average.svg";
 
 import styles from "./CustomElements.module.css";
 import processDataDeck from "../../../../../utils/processDataDeck";
 import groupData from "../../../../../utils/groupDataByDate";
-import { formatDate} from "../../../../../utils/time";
+import { formatDate } from "../../../../../utils/time";
 import _ from "lodash";
-
 
 const { setFooterLabel, setFooterValue } = processDataDeck;
 const { filterArrayByObjectProperty, getAverage } = groupData;
@@ -72,9 +72,14 @@ const processLineData = (data, id, fallback, timeRange, assertData) => {
     return fallback;
   }
 
+  let label;
+  if (id === "CCD") {
+    label = "Duration";
+  }
+
   // If data is provided, then give format as defined in "Line" component
   const { currentData } = groupData.run(data, fallback, timeRange);
-  const processedData = [{ id, data: currentData }];
+  const processedData = [{ id: label, data: currentData }];
   return processedData;
 };
 
@@ -86,7 +91,7 @@ const processGroupedBarData = (data, fallback, timeRange, assertData) => {
   }
 
   const { currentData } = groupData.run(data, fallback, timeRange);
-  
+
   const barData = _.map(currentData, ({ x, y, y2 }) => (
     {
       date: formatDate(x),
@@ -107,7 +112,7 @@ const processGroupedBarData = (data, fallback, timeRange, assertData) => {
  * @param {*} assertData Evaluates if data is according to what is expected
  * @returns 
  */
-const processCardData = (data, units,fallback, timeRange, assertData) => {
+const processCardData = (data, variable, units, fallback, timeRange, assertData) => {
   // Data validation
   if (!assertData(data)) {
     return fallback;
@@ -121,8 +126,8 @@ const processCardData = (data, units,fallback, timeRange, assertData) => {
    * The arrays contain objects with structure as {x:"2021-04-19T23:58:00.000Z", y:5}
    * Before running any metrics, save all values in separate arrays
    */
-  const valuesCurrentData = filterArrayByObjectProperty(currentData, "y");
-  const valuesPrevData = filterArrayByObjectProperty(prevData, "y");
+  const valuesCurrentData = filterArrayByObjectProperty(currentData, variable);
+  const valuesPrevData = filterArrayByObjectProperty(prevData, variable);
 
   // Metrics calculation
   const currentAvg = getAverage(valuesCurrentData);
@@ -143,7 +148,16 @@ const processCardData = (data, units,fallback, timeRange, assertData) => {
 };
 
 const LineBarCardChart = ({ data, id, timeRange }) => {
-  let lineData, barData;
+  // General stuff
+  let lineData, barData, propsCard, argsCardData, options;
+
+  // State management (hooks)
+  const [activeRadioButton, setActiveRadioButton] = useState(1);
+
+  // Track radio buttons state
+  const onChange = (e) => {
+    setActiveRadioButton(e.target.value);
+  };
 
   // Fallback data for all components
   const fallbackLineData = [
@@ -158,7 +172,7 @@ const LineBarCardChart = ({ data, id, timeRange }) => {
     value: -1,
     label: "Not available",
     previousValue: -1,
-    units:"min"
+    units: "min"
   };
 
   const fallbackGroupedBarData = [
@@ -169,32 +183,64 @@ const LineBarCardChart = ({ data, id, timeRange }) => {
     }
   ];
 
-  // Processing data for line component
-  if (id === "CCD") {
+  // Target element by id
+  const isCCQL = (id === "CCQL");
+  const isCCD = (id === "CCD");
+
+  if (isCCD) {
+    // Arguments for "processCardData" function
+    const units = "min";
+    const variable = "y";
+    argsCardData = [data, variable, units, fallbackCardData, timeRange, assertData];
+
+    // Line data
     const argsLineData = [data, id, fallbackLineData, timeRange, assertData];
     lineData = processLineData(...argsLineData);
   }
 
-  // Processing data for grouped bar component
-  if (id === "CCQL") {
+  if (isCCQL) {
+    // Arguments for "processCardData" function
+    const units = "min";
+    const variable = activeRadioButton === 1 ? "y" : "y2";
+    argsCardData = [data, variable, units, fallbackCardData, timeRange, assertData];
+
+    // Radiobutton options
+    options = [
+      {
+        value: 1,
+        description: "Quick"
+      },
+      {
+        value: 2,
+        description: "Long"
+      }
+    ];
+
+    // Bar data
     const argsBarData = [data, fallbackGroupedBarData, timeRange, assertData];
     barData = processGroupedBarData(...argsBarData);
   }
 
-  // Card data
-  const units = "min";
-  const argsCardData = [units, fallbackCardData, timeRange, assertData];
-  const propsCard = processCardData(data, ...argsCardData);
-  
+  // Car data
+  propsCard = processCardData(...argsCardData);
+
   return (
     <div className={styles.lineBarCard}>
       <div className={styles.left}>
-        {(id === "CCD") && <Line {...layoutCCD} data={lineData} />}
-        {(id === "CCQL") && <Bar {...layoutCCQL} data={barData} />}
+        {isCCD && <Line {...layoutCCD} data={lineData} />}
+        {isCCQL && <Bar {...layoutCCQL} data={barData} />}
       </div>
 
       <div className={styles.right}>
-        <Card {...propsCard} />
+        {
+          isCCQL &&
+          (
+            <div className={styles.radioGroup}>
+              <RadioGroup options={options} onChange={onChange} />
+            </div>
+          )
+        }
+        <div className={styles.card}><Card {...propsCard} /></div>
       </div>
     </div>
   );
