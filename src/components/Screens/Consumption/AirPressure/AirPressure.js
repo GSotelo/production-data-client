@@ -7,11 +7,17 @@ import LineChart from "./utilities/LineChart";
 import { Row, Col } from "antd";
 
 import styles from "./AirPressure.module.css";
-import processDataFromServer from "./utilities/handlersServer";
+import processDataFromServer, { getDataForDropdown } from "./utilities/handlersServer";
 import { setCurrentValueDropdown } from "./utilities/miscellaneous";
 import { propsTitleBarAPT, propsTitleBarAPD, propsDropdownAP } from "./utilities/props";
 
 class AirPressure extends Component {
+  /**
+   * Class fields (Belong to the class itself. Prototype chain not affected) 
+   * These fields are used by the server to set options for dropdown elements
+   */
+   optionsDropdownAP = [{ key: 1, text: "AP1", value: 1 }];
+
   /**
   * [api]: Contains received data from express server
   * [currentTimeRange]: Contains selected time frame for trend and deck elements
@@ -59,6 +65,10 @@ class AirPressure extends Component {
    * 2. Triggers automatic updates every "x" milliseconds
    */
   async componentDidMount() {
+    // Load options for dropdowns
+    const fallbackOptionsDropdownAP = [{ key: 1, text: "AP1", value: 1 }];
+    this.optionsDropdownAP = await getDataForDropdown("air-pressure", fallbackOptionsDropdownAP);
+
     this.updateDataOnScreen();
     this.timerID = setInterval(() => this.updateDataOnScreen(), 3600000);
   }
@@ -158,8 +168,8 @@ class AirPressure extends Component {
   }
 
   render() {
-    // Extract some class methods
-    const { createContextValues } = this;
+    // Extract some class methods / fields
+    const { createContextValues, optionsDropdownAP } = this;
 
     // Data from API
     const { dataBottomAPD, dataBottomAPT, dataTopAPD, dataTopAPT } = this.state.api;
@@ -176,7 +186,8 @@ class AirPressure extends Component {
     const DeckBottomAPD = <Deck data={dataBottomAPD} timeRange={currentTimeRangeBottomAPD} units="bar" />;
 
     // Dropdown UI components
-    const DropdownAP = <Dropdown {...propsDropdownAP} />
+    // const DropdownAP = <Dropdown {...propsDropdownAP} />
+    const DropdownAP = <Dropdown options={optionsDropdownAP} />
 
     // Line chart UI components
     const LineChartBottomAPT = <LineChart id="BottomAPT" data={[{ id: "Air pressure", data: dataBottomAPT }]} />;

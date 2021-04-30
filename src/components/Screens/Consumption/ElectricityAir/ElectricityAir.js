@@ -8,7 +8,7 @@ import { Row, Col } from "antd";
 
 import styles from "./ElectricityAir.module.css";
 import { setCurrentValueDropdown } from "./utilities/miscellaneous";
-import processDataFromServer from "./utilities/handlersServer";
+import processDataFromServer, { getDataForDropdown } from "./utilities/handlersServer";
 import {
   propsDropdownEC,
   propsDropdownAC,
@@ -19,6 +19,13 @@ import {
 } from "./utilities/props";
 
 class ElectricityAir extends Component {
+  /**
+  * Class fields (Belong to the class itself. Prototype chain not affected) 
+  * These fields are used by the server to set options for dropdown elements
+  */
+  optionsDropdownEC = [{ key: 1, text: "EC1", value: 1 }];
+  optionsDropdownAC = [{ key: 1, text: "AC1", value: 1 }];
+
   /**
   * [api]: Contains received data from express server
   * [currentTimeRange]: Contains selected time frame for trend and deck elements
@@ -66,6 +73,13 @@ class ElectricityAir extends Component {
    * 2. Triggers automatic updates every "x" milliseconds
    */
   async componentDidMount() {
+    // Load options for dropdowns
+    const fallbackOptionsDropdownEC = [{ key: 1, text: "EC1", value: 1 }];
+    const fallbackOptionsDropdownAC = [{ key: 1, text: "AC1", value: 1 }];
+    this.optionsDropdownEC = await getDataForDropdown("electricity", fallbackOptionsDropdownEC);
+    this.optionsDropdownAC = await getDataForDropdown("air", fallbackOptionsDropdownAC);
+
+    // Set automatic updates
     this.updateDataOnScreen();
     this.timerID = setInterval(() => this.updateDataOnScreen(), 3600000);
   }
@@ -162,8 +176,8 @@ class ElectricityAir extends Component {
   }
 
   render() {
-    // Extract some class methods
-    const { createContextValues } = this;
+    // Extract some class methods / fields
+    const { createContextValues, optionsDropdownAC, optionsDropdownEC } = this;
 
     // Data from API
     const { dataACT, dataACD, dataECT, dataECD, } = this.state.api;
@@ -180,8 +194,10 @@ class ElectricityAir extends Component {
     const DeckECD = <Deck data={dataECD} timeRange={currentTimeRangeECD} units="kW" />;
 
     // Dropdown UI components
-    const DropdownEC = <Dropdown {...propsDropdownEC} />;
-    const DropdownAC = <Dropdown {...propsDropdownAC} />;
+    // const DropdownEC = <Dropdown {...propsDropdownEC} />;
+    // const DropdownAC = <Dropdown {...propsDropdownAC} />;
+    const DropdownEC = <Dropdown options={optionsDropdownEC} />;
+    const DropdownAC = <Dropdown options={optionsDropdownAC} />;
 
     // Line chart UI components
     const LineChartACT = <LineChart id="ACT" data={[{ id: "Airflow", data: dataACT }]} />;

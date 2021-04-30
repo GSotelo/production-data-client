@@ -7,7 +7,7 @@ import LineChart from "./utilities/LineChart";
 import { Row, Col } from "antd";
 
 import styles from "./HumidityTemperature.module.css";
-import processDataFromServer from "./utilities/handlersServer";
+import processDataFromServer, { getDataForDropdown } from "./utilities/handlersServer";
 import { setCurrentValueDropdown } from "./utilities/miscellaneous";
 import {
   propsDropdownHS,
@@ -19,6 +19,13 @@ import {
 } from "./utilities/props";
 
 class HumidityTemperature extends Component {
+  /**
+  * Class fields (Belong to the class itself. Prototype chain not affected) 
+  * These fields are used by the server to set options for dropdown elements
+  */
+  optionsDropdownHS = [{ key: 1, text: "HS1", value: 1 }];
+  optionsDropdownTS = [{ key: 1, text: "TS1", value: 1 }];
+
   /**
   * [api]: Contains received data from express server
   * [currentTimeRange]: Contains selected time frame for trend and deck elements
@@ -66,6 +73,13 @@ class HumidityTemperature extends Component {
    * 2. Triggers automatic updates every "x" milliseconds
    */
   async componentDidMount() {
+    // Load options for dropdowns
+    const fallbackOptionsDropdownHS = [{ key: 1, text: "HS1", value: 1 }];
+    const fallbackOptionsDropdownTS = [{ key: 1, text: "TS1", value: 1 }];
+    this.optionsDropdownHS = await getDataForDropdown("humidity", fallbackOptionsDropdownHS);
+    this.optionsDropdownTS = await getDataForDropdown("temperature", fallbackOptionsDropdownTS);
+
+    // Set automatic updates
     this.updateDataOnScreen();
     this.timerID = setInterval(() => this.updateDataOnScreen(), 3600000);
   }
@@ -90,8 +104,8 @@ class HumidityTemperature extends Component {
       return await processDataFromServer(valueDropdown, id, timeRange);
     }));
 
-     // Update state for all components
-     this.setState(
+    // Update state for all components
+    this.setState(
       {
         api:
         {
@@ -165,8 +179,8 @@ class HumidityTemperature extends Component {
   }
 
   render() {
-    // Extract some class methods
-    const { createContextValues } = this;
+    // Extract some class methods / fields
+    const { createContextValues, optionsDropdownHS, optionsDropdownTS } = this;
 
     // Data from express server
     const { dataHSD, dataHST, dataTSD, dataTST } = this.state.api;
@@ -183,8 +197,10 @@ class HumidityTemperature extends Component {
     const DeckTSD = <Deck data={dataTSD} timeRange={currentTimeRangeTSD} units="°C" />;
 
     // Dropdown UI components
-    const DropdownHS = <Dropdown {...propsDropdownHS} />;
-    const DropdownTS = <Dropdown {...propsDropdownTS} />;
+    // const DropdownHS = <Dropdown {...propsDropdownHS} />;
+    // const DropdownTS = <Dropdown {...propsDropdownTS} />;
+    const DropdownHS = <Dropdown options={optionsDropdownHS} />;
+    const DropdownTS = <Dropdown options={optionsDropdownTS} />;
 
     // Line chart UI components
     const LineChartHST = <LineChart id="HST" data={[{ id: "Humidity", data: dataHST }]} />;

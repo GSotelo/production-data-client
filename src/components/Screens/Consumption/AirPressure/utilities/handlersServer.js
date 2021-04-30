@@ -94,3 +94,15 @@ const processDataFromServer = async (currentValueDropdown, id, timeRange) => {
 };
 
 export default processDataFromServer;
+
+export const getDataForDropdown = async (id, fallback) => {
+  let response = false;
+  try {
+    response = await axiosAirPressure.get(`/dropdowns/${id}`);
+  } catch (error) {
+    console.error("[getDataForDropdown]: Request to server API failed (GET)");
+    return fallback;
+  }
+
+  return response.data;
+};

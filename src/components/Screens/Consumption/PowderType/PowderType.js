@@ -6,7 +6,7 @@ import LineChart from "./utilities/LineChart";
 import { Row, Col } from "antd";
 
 import styles from "./PowderType.module.css";
-import processDataFromServer from "./utilities/handlersServer";
+import processDataFromServer, { getDataForDropdown } from "./utilities/handlersServer";
 import { setCurrentValueDropdown } from "./utilities/miscellaneous";
 import {
   propsDropdownCPT,
@@ -63,6 +63,12 @@ const tableRows = [
 
 class PowderType extends Component {
   /**
+   * Class fields (Belong to the class itself. Prototype chain not affected) 
+   * These fields are used by the server to set options for dropdown elements
+   */
+   optionsDropdownCPT = [{ key: 1, text: "T1", value: 1 }];
+
+  /**
   * [api]: Contains received data from express server
   * [currentTimeRange]: Contains selected time frame for trend and deck elements
   * [currentValueDropdown]: Contains current value of dropdown for trend and deck elements
@@ -79,7 +85,7 @@ class PowderType extends Component {
       currentTimeRangeTopSPCTT: "week",
     },
     currentValueDropdown: {
-      currentValueDropdownBottomSPCTT: 2,
+      currentValueDropdownBottomSPCTT: 1,
       currentValueDropdownTopSPCTT: 1,
     }
   }
@@ -89,6 +95,11 @@ class PowderType extends Component {
    * 2. Triggers automatic updates every "x" milliseconds
    */
   async componentDidMount() {
+    // Load options for dropdowns
+    const fallbackOptionsDropdown = [{ key: 1, text: "T1", value: 1 }];
+    this.optionsDropdownCPT = await getDataForDropdown("types", fallbackOptionsDropdown);
+
+    // Set automatic updates
     this.updateDataOnScreen();
     this.timerID = setInterval(() => this.updateDataOnScreen(), 3600000);
   }
@@ -186,8 +197,8 @@ class PowderType extends Component {
   }
 
   render() {
-    // Extract some class methods
-    const { createContextValues } = this;
+    // Extract some class methods / fields
+    const { createContextValues, optionsDropdownCPT } = this;
 
     // Data from express server
     const { dataBottomSPCTT, dataTopSPCTT } = this.state.api;
@@ -203,7 +214,8 @@ class PowderType extends Component {
     // Add component
 
     // Dropdown UI components
-    const DropdownHS = <Dropdown {...propsDropdownCPT} />;
+    //const DropdownHS = <Dropdown {...propsDropdownCPT} />;
+    const DropdownHS = <Dropdown options={optionsDropdownCPT} />;
 
     // Line chart UI components
     const LineChartBottomSPCTT = <LineChart id="BottomSPCTT" data={[{ id: "Recipe", data: dataBottomSPCTT }]} />;
