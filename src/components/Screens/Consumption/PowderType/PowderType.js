@@ -16,6 +16,7 @@ import {
 
 // TEMPORAL
 import Table from "../../../UI/Table/MaterialUI/Table";
+import Foo from "./utilities/Table";
 const tableRows = [
   { id: 1, type: "2021/03/17", consumption: 5.7 },
   { id: 2, type: "2021/03/18", consumption: 5.3 },
@@ -238,7 +239,8 @@ class PowderType extends Component {
         </Col>
 
         <Col className={styles.right}>
-          <Table rows={tableRows} {...propsTableCPT} />
+          {/* <Table data="data" rows={tableRows} {...propsTableCPT} /> */}
+          <Foo data="EXPRESS DATA" {...propsTableCPT} />
         </Col>
       </Row>
     );

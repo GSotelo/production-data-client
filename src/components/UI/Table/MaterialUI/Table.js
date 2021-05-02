@@ -5,14 +5,17 @@ import "./Table.css";
 /**
  * Material UI
  */
-const Table = ({ rows, columns, pageSize }) => (
-  <DataGrid
-    columns={columns} 
-    className="dataTable"
-    pageSize={pageSize} 
-    rows={rows} 
-    onPageChange={(param) => console.log("changing page...", param)}
-  />
-);
+const Table = ({ rows, columns, pageSize }) => {
+  console.log("Mounting table STANDARD");
+  return (
+    <DataGrid
+      columns={columns}
+      className="dataTable"
+      pageSize={pageSize}
+      rows={rows}
+      onPageChange={(param) => console.log("changing page...", param)}
+    />
+  );
+};
 
 export default Table;
