@@ -12,18 +12,17 @@ const filterDataFromAPI = (arr) => {
    * "undefined". Before assigning a value to any chart, 
    * I validate data is different than "undefined"
    */
-  arr.map(({ timestamp, value, value2, value3, value4 }) => results.push({ x: timestamp, y: value, y2: value2, y3: value3, y4:value4 }));
+  arr.map(({ timestamp, value, value2, value3, value4 }) => results.push({ x: timestamp, y: value, y2: value2, y3: value3, y4: value4 }));
   return results;
+};
+
+const filterMultipleDataFromAPI = (res) => {
+  return res.map(el => filterDataFromAPI(el));
 };
 
 const get = async (axios, endpoint) => {
   const response = await axios.get(endpoint);
   return filterDataFromAPI(response.data);
-};
-
-const filterMultipleDataFromAPI = (res) => {
-  const [file1, file2] = res;
-  return [filterDataFromAPI(file1), filterDataFromAPI(file2)];
 };
 
 const getMultipleResources = async (axios, endpoint) => {

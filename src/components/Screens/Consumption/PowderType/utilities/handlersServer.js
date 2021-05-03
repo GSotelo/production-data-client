@@ -16,6 +16,9 @@ const getEndpoint = (currentValueDropdown, id, timeRange) => {
     case "TopSPCTT":
       endpoint = `/types/${currentValueDropdown}/${timeRange}`;
       break;
+    case "TableAPT":
+      endpoint = "/types/all";
+      break;
     default:
       break;
   }
@@ -60,7 +63,11 @@ const connectServer = async (currentValueDropdown, id, timeRange) => {
     const endpoint = getEndpoint(currentValueDropdown, id, timeRange);
     let filteredData = false;
     try {
-      filteredData = await connectAPI.get(axiosPowderType, endpoint);
+      if(id !== "TableAPT"){
+        filteredData = await connectAPI.get(axiosPowderType, endpoint);
+      }else{
+        filteredData = await connectAPI.getMultipleResources(axiosPowderType, endpoint);
+      }
     } catch (err) {
       toaster.danger(...propsToasterDanger);
       console.error("[connectServer]: Request to server API failed (GET)");
@@ -96,6 +103,9 @@ const processDataFromServer = async (currentValueDropdown, id, timeRange) => {
   switch (id) {
     case "BottomSPCTT":
     case "TopSPCTT":
+      data = dataFromServer;
+      break;
+    case "TableAPT":
       data = dataFromServer;
       break;
     default:

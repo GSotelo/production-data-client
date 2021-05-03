@@ -80,10 +80,12 @@ class PowderType extends Component {
     api: {
       dataBottomSPCTT: [],
       dataTopSPCTT: [],
+      dataTableAPT:[]
     },
     currentTimeRange: {
       currentTimeRangeBottomSPCTT: "week",
       currentTimeRangeTopSPCTT: "week",
+      currentTimeRangeTableAPT: "allTime",
     },
     currentValueDropdown: {
       currentValueDropdownBottomSPCTT: 1,
@@ -116,7 +118,7 @@ class PowderType extends Component {
   async updateDataOnScreen() {
     // Define id's to target all UI elements
     const { currentTimeRange, currentValueDropdown } = this.state;
-    const ids = ["TopSPCTT", "BottomSPCTT"];
+    const ids = ["TopSPCTT", "BottomSPCTT", "TableAPT"];
 
     // Get data for all elements
     const data = await Promise.all(ids.map(async (id) => {
@@ -131,7 +133,8 @@ class PowderType extends Component {
         api:
         {
           dataTopSPCTT: data[0],
-          dataBottomSPCTT: data[1]
+          dataBottomSPCTT: data[1],
+          dataTableAPT: data[2],
         }
       }
     );
@@ -202,7 +205,7 @@ class PowderType extends Component {
     const { createContextValues, optionsDropdownCPT } = this;
 
     // Data from express server
-    const { dataBottomSPCTT, dataTopSPCTT } = this.state.api;
+    const { dataBottomSPCTT, dataTopSPCTT, dataTableAPT } = this.state.api;
 
     // Current time range for elements
     //const { } = this.state.currentTimeRange;
@@ -240,7 +243,9 @@ class PowderType extends Component {
 
         <Col className={styles.right}>
           {/* <Table data="data" rows={tableRows} {...propsTableCPT} /> */}
-          <Foo data="EXPRESS DATA" {...propsTableCPT} />
+          <Foo data={dataTableAPT} {...propsTableCPT} />
+          {/* <GraphContainer {...propsTitleBarCPTT} graph={<Foo data="EXPRESS DATA" {...propsTableCPT} />} dropdown={DropdownHS} /> */}
+
         </Col>
       </Row>
     );

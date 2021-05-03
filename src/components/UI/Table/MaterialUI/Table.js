@@ -6,7 +6,7 @@ import "./Table.css";
  * Material UI
  */
 const Table = ({ rows, columns, pageSize }) => {
-  console.log("Mounting table STANDARD");
+  console.log("MOUNTING TABLE STANDARD");
   return (
     <DataGrid
       columns={columns}

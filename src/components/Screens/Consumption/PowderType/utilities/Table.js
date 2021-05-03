@@ -46,16 +46,23 @@ const tableRows = [
   { id: 42, type: "2021/05/30", consumption: 6.7 }
 ];
 
-const CustomTable = (props) => {
-  const { data, ...otherProps } = props;
-  //console.log("Data for table: ", data);
-  console.log("Mounting table CUSTOM");
 
-  return (
-    <Fragment>
-      <Table rows={tableRows} {...otherProps} />
-    </Fragment>
-  )
+class CustomTable extends React.PureComponent {
+
+
+  render() {
+    console.log("MOUNTING");
+    const { data, ...otherProps } = this.props;
+    console.log("Data for table: ", data);
+
+    // Here some processing for data...
+
+    return (
+      <Fragment>
+        <Table rows={tableRows} {...otherProps} />
+      </Fragment>
+    );
+  }
 }
 
 export default CustomTable;
