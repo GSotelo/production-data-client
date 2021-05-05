@@ -8,7 +8,7 @@ import { ReactComponent as Average } from "../../../../../assets/svg/average.svg
 import styles from "./CustomElements.module.css";
 import processDataDeck from "../../../../../utils/processDataDeck";
 import groupData from "../../../../../utils/groupDataByDate";
-import { formatDate } from "../../../../../utils/time";
+import { formatDate, createDateObject } from "../../../../../utils/time";
 import _ from "lodash";
 
 const { setFooterLabel, setFooterValue } = processDataDeck;
@@ -94,7 +94,8 @@ const processGroupedBarData = (data, fallback, timeRange, assertData) => {
 
   const barData = _.map(currentData, ({ x, y, y2 }) => (
     {
-      date: formatDate(x),
+      //date: formatDate(x),
+      date: createDateObject(x).format('YYYY/MM/DD HH:mm'),
       Quickest: y,
       Longest: y2
     }

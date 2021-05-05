@@ -2,7 +2,7 @@ import React from "react";
 import Bar from "../../../../UI/Graph/Bar/Bar";
 
 import _ from "lodash";
-import { formatDate } from "../../../../../utils/time";
+import { formatDate, createDateObject } from "../../../../../utils/time";
 
 /**
  * General notes:
@@ -47,7 +47,8 @@ const processBarData = (data, fallback, assertData) => {
 
   const barData = _.map(data, ({ x, y }) => (
     {
-      date: formatDate(x),
+      //date: formatDate(x),
+      date: createDateObject(x).format('YYYY/MM/DD HH:mm'),
       "Coated parts": y
     }
   ));

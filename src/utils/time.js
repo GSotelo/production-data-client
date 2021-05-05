@@ -2,15 +2,21 @@ import * as dayjs from "dayjs";
 import * as utc from "dayjs/plugin/utc";
 import * as isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import * as customParseFormat from "dayjs/plugin/customParseFormat";
+import * as toObject  from "dayjs/plugin/toObject";
 import * as isBetween from "dayjs/plugin/isBetween";
 import * as duration from "dayjs/plugin/duration";
 
 // Extend "dayjs" configuration to use plugins
 dayjs.extend(utc);
 dayjs.extend(isSameOrBefore);
+dayjs.extend(customParseFormat);
+dayjs.extend(toObject);
 
 // Create "dayjs" object
-export const createDateObject = dateAsString => {
+export const createDateObject = (dateAsString, format) => {
+  if(format){
+    return dayjs(dateAsString, format);
+  }
   return dayjs.utc(dateAsString);
 };
 
@@ -30,3 +36,4 @@ export const formatDate = (dateAsString) => {
   // Format
   return `${day}.${month}.${$y} ${hour}:${minute}:${second}`;
 };
+

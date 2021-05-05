@@ -1,19 +1,23 @@
 import React from "react";
-import { DataGrid } from '@material-ui/data-grid';
+import { DataGrid, GridToolbar } from '@material-ui/data-grid';
 import "./Table.css";
+import { Empty } from 'antd';
 
-/**
- * Material UI
- */
-const Table = ({ rows, columns, pageSize }) => {
-  console.log("MOUNTING TABLE STANDARD");
+
+const Table = ({ rows, columns, pageSize, onCellDoubleClick }) => {
   return (
     <DataGrid
+      components={{
+        Toolbar: GridToolbar,
+        // NoRowsOverlay: Empty
+      }}
       columns={columns}
       className="dataTable"
       pageSize={pageSize}
       rows={rows}
-      onPageChange={(param) => console.log("changing page...", param)}
+      onPageChange={(params) => console.log("[onPageChange]", params)}
+      onCellDoubleClick={(params) => onCellDoubleClick(params)}
+      disableSelectionOnClick={true}
     />
   );
 };

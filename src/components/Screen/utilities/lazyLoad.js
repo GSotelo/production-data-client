@@ -1,6 +1,7 @@
 import React from "react";
 export const AirPressure = React.lazy(() => import("../../Screens/Consumption/AirPressure/AirPressure"));
 export const BatchInformation = React.lazy(() => import("../../Screens/Production/BatchInformation/BatchInformation"));
+export const BatchDetails = React.lazy(() => import("../../Screens/Production/BatchInformation/BatchDetails"));
 export const ColorChange = React.lazy(() => import("../../Screens/Production/ColorChange/ColorChange"));
 export const ElectricityAir = React.lazy(() => import("../../Screens/Consumption/ElectricityAir/ElectricityAir"));
 export const FreshPowder = React.lazy(() => import("../../Screens/Consumption/FreshPowder/FreshPowder"));

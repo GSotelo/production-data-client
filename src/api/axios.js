@@ -32,3 +32,8 @@ export const axiosSprayedPowder = axios.create({
   baseURL: "/consumption/sprayed-powder"
 });
 
+export const axiosBatchInformation = axios.create({
+  baseURL: "/batch-information"
+});
+
+

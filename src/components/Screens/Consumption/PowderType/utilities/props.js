@@ -51,13 +51,14 @@ export const propsTableCPT = {
       field: "type",
       headerName: "Type",
       sortable: true,
-
+      flex:1
     },
     {
       field: "consumption",
       headerName: "Kilograms",
       sortable: true,
       type: "number",
+      flex:1
     }
   ],
   pageSize: 14

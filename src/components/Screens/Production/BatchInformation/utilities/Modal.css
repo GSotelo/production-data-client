@@ -1,0 +1,45 @@
+/*General styles for all ANT modals*/
+
+.ant-modal-content {
+  height: 100%;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.ant-modal-title {
+  color: var(--color-nordson-blue);
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.ant-modal-header {
+  display: flex;
+  height: 10%;
+  align-items: center;
+}
+
+.ant-modal-body {
+  display: flex;
+  height: 80%;
+}
+
+.ant-modal-footer {
+  display: flex;
+  height: 10%;
+  align-items: center;
+  justify-content: center;
+}
+
+.ant-modal {
+  padding-bottom: 0;
+}
+
+.ant-btn-primary {
+  background-color: var(--color-nordson-blue);
+}
+
+.ant-btn {
+  height: 3rem;
+  padding: 4px 20px;
+  font-size: 1rem;
+}

@@ -2,7 +2,7 @@ import React, { Fragment } from "react";
 import Table from "../../../../UI/Table/MaterialUI/Table";
 
 import _ from "lodash";
-import { formatDate } from "../../../../../utils/time";
+import { formatDate, createDateObject } from "../../../../../utils/time";
 
 /**
  * 
@@ -20,7 +20,8 @@ const processDataTable = (data, fallback) => {
   return _.map(data, (el, index) => (
     {
       id: index,
-      date: formatDate(el.x),
+      //date: formatDate(el.x),
+      date: createDateObject(el.x).format('YYYY/MM/DD HH:mm'),
       pressure: el.y
     }
   ));

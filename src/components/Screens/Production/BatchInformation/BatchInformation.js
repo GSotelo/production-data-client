@@ -1,50 +1,44 @@
-import React, { Component } from 'react';
-import Card from "./utilities/CustomCard";
+import React, { Component } from "react";
+import Table from "./utilities/Table";
+import TitleBar from "../../../Bar/TitleBar/StandardTitleBar";
 
 import styles from "./BatchInformation.module.css";
-import { Row, Col } from "antd";
-import { 
-  propsSystemInformation, 
-  propsEstimatedCosts,
-  propsConsumption,
-  propsColorChange,
-  propsConveyorInformation,
-  propsInstrumentation,
-  propsBatchInformation 
-} from "./utilities/propsCard";
+import { getDataForTable } from "./utilities/handlersServer";
+import { propsTitleBarBI, propsTableBI } from "./utilities/props";
 
 class BatchInformation extends Component {
+  state = {
+    api: {
+      dataTableBI: []
+    }
+  }
+
+  async componentDidMount() {
+    // Fallback data for table
+    const response = await getDataForTable();
+    this.setState({ api: { dataTableBI: response.data } });
+  }
 
   render() {
+    // Extract some class methods / fields
+    const { dataTableBI } = this.state.api;
     const {
-      batchInformation,
-      left,
-      right,
-      top,
-      bottom
+      batchOverview,
+      tableBox,
+      titleBarBox,
     } = styles;
 
     return (
-      <Row className={batchInformation}>
-        <Col className={left}>
-          <Card {...propsBatchInformation} />
-        </Col>
+      <div className={batchOverview}>
+        <div className={titleBarBox}>
+          <TitleBar {...propsTitleBarBI} />
+        </div>
 
-        <Col className={right}>
-          <div className={top}>
-            <Card {...propsSystemInformation} />
-            <Card {...propsEstimatedCosts} />
-            <Card {...propsConsumption} />
-          </div>
-
-          <div className={bottom}>
-            <Card {...propsColorChange} />
-            <Card {...propsConveyorInformation} />
-            <Card {...propsInstrumentation} />
-          </div>
-        </Col>
-      </Row>
-    );
+        <div className={tableBox}>
+          <Table data={dataTableBI} {...propsTableBI} />
+        </div>
+      </div>
+    )
   }
 }
 

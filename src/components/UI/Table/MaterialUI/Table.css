@@ -4,6 +4,8 @@
   font-size: 1.3rem;
   background-color: #fff;
   border: 1px solid var(--color-light-gray);
+  
+  overflow: hidden;
 }
 
 .dataTable.MuiDataGrid-root .MuiDataGrid-columnsContainer {
@@ -43,21 +45,21 @@
   font-size: 1rem;
 }
 
-.dataTable.MuiDataGrid-root .MuiDataGrid-cellLeft {
-  min-width: 50% !important;
-}
-
-.dataTable.MuiDataGrid-root .MuiDataGrid-colCellSortable {
-  min-width: 50% !important;
-}
-
-.dataTable.MuiDataGrid-root .MuiDataGrid-cellRight {
-  min-width: 50% !important;
-  text-align: start;
-}
-
 .dataTable.MuiDataGrid-root .MuiDataGrid-colCellRight .MuiDataGrid-colCellTitleContainer {
   justify-content: start;
 }
 
-.dataTable.MuiDataGrid-root .MuiDataGrid-colCellTitleContainer {}
+.dataTable.MuiDataGrid-root .ant-empty-image,
+.dataTable.MuiDataGrid-root .ant-empty{
+  height: 100%;
+}
+
+.dataTable.MuiDataGrid-root .MuiButton-textPrimary {
+  color: var(--color-nordson-blue);
+}
+
+.dataTable.MuiDataGrid-root .MuiButton-textSizeSmall {
+  padding: 10px 8px;
+  font-size: 0.9rem;
+  font-family: Arial, Helvetica, sans-serif;
+}
