@@ -5,7 +5,6 @@ import React, { Component } from 'react';
 import "./Modal.css";
 
 class CustomModal extends Component {
-
   render() {
     // Unpacking some props
     const { 
@@ -22,14 +21,14 @@ class CustomModal extends Component {
     const propsCloseBtn = {
       key: "cancel",
       type: "primary",
-      onClick: onCancel.bind(this, id),
+      onClick: onCancel.bind(this, id)
     };
 
     const propsDownloadBtn = {
       icon: <DownloadOutlined />,
       key: "download",
       type: "primary",
-      onClick: (e) => onDownload(e, data, id),
+      onClick: (e) => onDownload(e, data, id)
     };
 
     return (

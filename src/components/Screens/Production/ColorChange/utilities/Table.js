@@ -2,7 +2,7 @@ import React, { Fragment } from "react";
 import Table from "../../../../UI/Table/MaterialUI/Table";
 
 import _ from "lodash";
-import { formatDate, createDateObject } from "../../../../../utils/time";
+import { createDateObject } from "../../../../../utils/time";
 
 /**
  * 
@@ -62,7 +62,7 @@ const TableCCA = (props) => {
 
   return (
     <Fragment>
-      <Table rows={tableRows} {...propsTable} />
+      <Table rows={tableRows} {...propsTable} enableToolbar={true} />
     </Fragment>
   );
 }

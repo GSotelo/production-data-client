@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import Table from "./utilities/Table";
-import TitleBar from "../../../Bar/TitleBar/StandardTitleBar";
+import TitleBar from "../../../Bar/TitleBar/DropdownTitleBar";
 
 import styles from "./BatchInformation.module.css";
 import { getDataForTable } from "./utilities/handlersServer";
-import { propsTitleBarBI, propsTableBI } from "./utilities/props";
+import { propsTitleBarBO, propsTableBO } from "./utilities/props";
 
 class BatchInformation extends Component {
   state = {
@@ -31,11 +31,11 @@ class BatchInformation extends Component {
     return (
       <div className={batchOverview}>
         <div className={titleBarBox}>
-          <TitleBar {...propsTitleBarBI} />
+          <TitleBar {...propsTitleBarBO} />
         </div>
 
         <div className={tableBox}>
-          <Table data={dataTableBI} {...propsTableBI} />
+          <Table data={dataTableBI} {...propsTableBO} />
         </div>
       </div>
     )

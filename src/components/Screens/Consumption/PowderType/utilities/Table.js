@@ -59,7 +59,7 @@ class CustomTable extends React.PureComponent {
 
     return (
       <Fragment>
-        <Table rows={tableRows} {...otherProps} />
+        <Table rows={tableRows} {...otherProps} enableToolbar={true} />
       </Fragment>
     );
   }

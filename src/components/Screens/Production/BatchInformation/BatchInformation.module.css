@@ -1,5 +1,4 @@
 /*** Batch overview ***/
-
 .batchOverview {
   display: flex;
   flex-direction: column;
@@ -15,12 +14,12 @@
 }
 
 .batchOverview .titleBarBox {
-  height: 8%;
+  height: 7%;
   width: 100%;
 }
 
 .batchOverview .tableBox {
-  height: 92%;
+  height: 93%;
   width: 100%;
   padding: 0.75rem 0.5rem;
 }
@@ -41,8 +40,11 @@
   font-size: 1.5rem;
 }
 
-/*** Batch details ***/
+.batchOverview :global(.MuiDataGrid-root .MuiDataGrid-cellRight), .batchOverview :global(.MuiDataGrid-root .MuiDataGrid-cellLeft) {
+  text-align: center;
+}
 
+/*** Batch details ***/
 .batchDetails {
   height: 100%;
   padding: 0.5rem;

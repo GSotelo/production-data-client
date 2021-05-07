@@ -25,236 +25,173 @@ import whiteColor from "../../../../../assets/icons/whiteColor.ico";
 import whiteConveyor from "../../../../../assets/icons/whiteConveyor.ico";
 import whiteMeasure from "../../../../../assets/icons/whiteMeasure.ico";
 
-export const propsSystemInformation = {
+/**
+ * The following props (specifically "basedData") are going 
+ * to be updated with data from the server.
+ */
+// Base props: System information
+export const basePropsSI = {
   title: "System information",
   icon: <img alt="home" src={whiteHome} />,
-  data: [
+  baseData: [
     {
       icon: <CoatingTime />,
-      description: "Coating time",
       key: "r1",
-      units: "h",
-      value: 14.3,
     },
     {
       icon: <Pause />,
-      description: "Standby time",
       key: "r2",
-      units: "h",
-      value: 1.2,
     },
     {
       icon: <Maintenance />,
-      description: "Downtime",
       key: "r3",
-      units: "h",
-      value: 1.9,
     }
   ]
 };
 
-export const propsEstimatedCosts = {
+// Base props: Estimated costs
+export const basePropsEC = {
   title: "Estimated costs",
   icon: <img alt="average" src={whiteAverage} />,
-  data: [
+  baseData: [
     {
       icon: <Powder />,
-      description: "Powder",
       key: "r1",
-      units: "€",
       showUnitsFirst: true,
-      value: 373.17,
     },
     {
       icon: <Energy />,
-      description: "Energy",
       key: "r2",
-      units: "€",
       showUnitsFirst: true,
-      value: 175.99,
     },
     {
       icon: <AirFlow />,
-      description: "Air",
       key: "r3",
-      units: "€",
       showUnitsFirst: true,
-      value: 277.33,
     }
   ]
 };
 
-export const propsConsumption = {
-  title: "Consumption",
+// Base props: Total consumption
+export const basePropsTC = {
+  title: "Total consumption",
   icon: <img alt="system-utility" src={whiteSystemUtility} />,
-  data: [
+  baseData: [
     {
       icon: <Powder />,
-      description: "Powder",
       key: "r1",
-      units: "kg",
-      value: 185,
+
     },
     {
       icon: <Energy />,
-      description: "Energy",
       key: "r2",
-      units: "kW",
-      value: 650,
+
     },
     {
       icon: <AirFlow />,
-      description: "Air",
       key: "r3",
-      units: "m3",
-      value: 17,
     }
   ]
 };
 
-export const propsColorChange = {
+// Base props: Color change
+export const basePropsCC = {
   title: "Color change",
   icon: <img alt="color" src={whiteColor} />,
-  data: [
+  baseData: [
     {
       icon: <Runtime />,
-      description: "Total time",
       key: "r1",
-      units: "h",
-      value: 6.3,
     },
     {
       multiIcon: [<Total />, <Color />],
-      description: "Total number",
       key: "r2",
-      units: "#",
-      value: 12,
     },
     {
       multiIcon: [<PowderGun />, <Product />],
-      description: "Coated area",
       key: "r3",
-      units: "m2",
-      value: 26,
     }
   ]
 };
 
-export const propsConveyorInformation = {
+// Base props: Conveyor information
+export const basePropsCI = {
   title: "Conveyor information",
   icon: <img alt="conveyor" src={whiteConveyor} />,
-  data: [
+  baseData: [
     {
       icon: <Stop />,
-      description: "Stop time",
       key: "r1",
-      units: "h",
-      value: 2.5,
     },
     {
       icon: <ConveyorSpeed />,
-      description: "Average speed",
       key: "r2",
-      units: "m/min",
-      value: 3,
     },
     {
       icon: <LineDensity />,
-      description: "Throughput",
       key: "r3",
-      units: "m",
-      value: 17,
     }
   ]
 };
 
-export const propsInstrumentation = {
+// Base props: Instrumentation
+export const basePropsIT = {
   title: "Instrumentation",
   icon: <img alt="sensors" src={whiteMeasure} />,
-  data: [
+  baseData: [
     {
       icon: <Temperature />,
-      description: "Temperature",
       key: "r1",
-      units: "°C",
-      value: 28,
     },
     {
       icon: <Humidity />,
-      description: "Humidity booth",
       key: "r2",
-      units: "%",
-      value: 17,
     },
     {
       icon: <Humidity />,
-      description: "Humidity storage",
       key: "r3",
-      units: "%",
-      value: 23,
     }
   ]
 };
 
-export const propsBatchInformation = {
+// Base props: Batch information (large card on the left side)
+export const basePropsBI = {
   title: "Batch information",
   icon: <img alt="batch" src={whiteBatch} />,
-  data: [
+  baseData: [
     {
       icon: <BatchNumber />,
-      description: "Batch number",
       key: "r1",
       units: "",
-      value: "BN1785295",
     },
     {
       icon: <Calendar />,
-      description: "Date",
       key: "r2",
       units: "",
-      value: "20/03/2021",
     },
     {
       icon: <Runtime />,
-      description: "Start time",
       key: "r3",
-      units: "",
-      value: "08:10:47 AM",
     },
     {
       icon: <Runtime />,
-      description: "Stop time",
       key: "r4",
-      units: "",
-      value: "15:37:15 PM",
     },
     {
       icon: <Runtime />,
-      description: "Duration time",
       key: "r5",
-      units: "",
-      value: "7h 17min",
     },
     {
       icon: <Color />,
-      description: "Color code",
       key: "r6",
-      units: "",
-      value: "RAL1013",
     },
     {
       icon: <Product />,
-      description: "Product",
       key: "r7",
-      units: "",
-      value: "Flat panel",
     },
     {
       icon: <Total />,
-      description: "Coated products",
       key: "r8",
-      units: "",
-      value: 150,
     }
   ]
 };

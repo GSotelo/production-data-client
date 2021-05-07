@@ -1,8 +1,7 @@
-import React from "react";
+import React, { Fragment } from "react";
 import "./CardBI.css"
 
 const CardBI = (props) => {
-
   return (
     <div className="cardBI">
       <div className="titleBox">
@@ -15,7 +14,14 @@ const CardBI = (props) => {
           props.data.map(({ key, icon, description, value, units, showUnitsFirst, multiIcon }) =>
             <div key={key} className="row">
               {!multiIcon && <div className="iconBox">{icon}</div>}
-              {multiIcon && <div className="iconBox multiIcon">{multiIcon.map(icon => icon)}</div>}
+              {
+                multiIcon &&
+                <div className="iconBox multiIcon">
+                  {
+                    multiIcon.map((icon, index) => <Fragment key={index}> {icon}</Fragment>)
+                  }
+                </div>
+              }
 
               <div className="contentBox">
                 <div className="description">{description}</div>
