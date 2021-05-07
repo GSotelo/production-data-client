@@ -118,7 +118,6 @@ const run = (data, fallbackData, timeRange) => {
   return groupedData;
 }
 
-
 const groupData = {
   filterArrayByObjectProperty,
   getAverage,
