@@ -15,7 +15,8 @@ import {
   propsTitleBarLD,
   propsTitleBarRH,
   propsTitleBarSM,
-  propsTitleBarSYS
+  propsTitleBarSYS,
+  propsTitleBarCP
 } from "./utilities/props";
 
 
@@ -32,7 +33,8 @@ class Monitoring extends Component {
       dataLD: [],
       dataRH: [],
       dataSM: [],
-      dataSYS: []
+      dataSYS: [],
+      dataCP: []
     },
     currentTimeRange: {
       currentTimeRangeCS: "week",
@@ -41,6 +43,7 @@ class Monitoring extends Component {
       currentTimeRangeRH: "week",
       currentTimeRangeSM: "week",
       currentTimeRangeSYS: "week",
+      currentTimeRangeCP: "week",
     }
   }
 
@@ -82,7 +85,7 @@ class Monitoring extends Component {
   async updateDataOnScreen() {
     // Define id's to target all UI elements
     const { currentTimeRange } = this.state;
-    const ids = ["CS", "CVS", "LD", "RH", "SM", "SYS"];
+    const ids = ["CS", "CVS", "LD", "RH", "SM", "SYS", "CP"];
 
     // Get data for all elements
     const data = await Promise.all(ids.map(async (id) => {
@@ -100,7 +103,8 @@ class Monitoring extends Component {
           dataLD: data[2],
           dataRH: data[3],
           dataSM: data[4],
-          dataSYS: data[5]
+          dataSYS: data[5],
+          dataCP: data[6]
         }
       }
     );
@@ -146,15 +150,16 @@ class Monitoring extends Component {
     const { createContextValues } = this;
 
     // Data from express server
-    const { dataCS, dataCVS, dataLD, dataRH, dataSM, dataSYS } = this.state.api;
+    const { dataCS, dataCVS, dataLD, dataRH, dataSM, dataSYS, dataCP } = this.state.api;
 
     // Create context values
-    const ids = ["RH", "SM", "SYS", "CS", "LD", "CVS"];
+    const ids = ["RH", "SM", "SYS", "CS", "LD", "CVS", "CP"];
     const contextValue = createContextValues(ids);
 
     // Line chart UI components
     const LineChartCVS = <LineChart id="CVS" data={dataCVS} />;
     const LineChartCS = <LineChart id="CS" data={dataCS} />;
+    const LineChartCP = <LineChart id="CP" data={dataCP} />;
 
     // Bar chart UI components
     const BarChartLD = <BarChart id="LD" data={dataLD} />;
@@ -189,13 +194,20 @@ class Monitoring extends Component {
         </Col>
 
         <Col className={styles.right}>
-          <div className={styles.large} >
-            {/* <GraphContext.Provider value={contextValue[3]}>
-              <GraphContainer  {...propsTitleBarCS} graph={LineChartCS} />
-            </GraphContext.Provider> */}
-            <div>c1</div>
-            <div>c2</div>
-           
+          <div className={styles.group}>
+            <div>
+              <div className={styles.medium}>
+                <GraphContext.Provider value={contextValue[3]}>
+                  <GraphContainer  {...propsTitleBarCS} graph={LineChartCS} />
+                </GraphContext.Provider>
+              </div>
+
+              <div className={styles.medium}>
+                <GraphContext.Provider value={contextValue[6]}>
+                  <GraphContainer  {...propsTitleBarCP} graph={LineChartCP} />
+                </GraphContext.Provider>
+              </div>
+            </div>
           </div>
 
           <div className={[styles.group, styles.pb0].join(" ")}>

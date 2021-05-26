@@ -30,6 +30,9 @@ const getEndpoint = (id, timeRange) => {
     case "SYS":
       endpoint = `/system-status/${timeRange}`;
       break;
+    case "CP":
+      endpoint = `/coated-parts/${timeRange}`;
+      break;
     default:
       break;
   }
@@ -61,6 +64,9 @@ const getFilename = (id) => {
       break;
     case "SYS":
       filename = "system_status.csv";
+      break;
+    case "CP":
+      filename = "coated_parts.csv";
       break;
     default:
       break;

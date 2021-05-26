@@ -84,6 +84,17 @@ export const propsTitleBarCS = {
 };
 
 /**
+ * [propsTitleBarCP]: Title bar in "Coated parts" (trend)
+ * Title bar: Two icons and description text (type 2)
+ */
+ export const propsTitleBarCP = {
+  icon1: <PowderGun />,
+  icon2: <Product />,
+  title: "Coated parts",
+  type: 2
+};
+
+/**
  * [propsToasterDanger]: Alert configuration if API request fails
  */
  export const propsToasterDanger = [

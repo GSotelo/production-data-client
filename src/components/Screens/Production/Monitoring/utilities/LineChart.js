@@ -35,10 +35,21 @@ const layoutCVS = {
 };
 
 /**
+ * [layoutCP]: Layout for coated parts trend
+ */
+const layoutCP = {
+  colors: "#86a315",
+  enableArea: false,
+  translateX: -30,
+  xtitle: "Date",
+  ytitle: "Coated parts (#)"
+};
+
+/**
  * @param {*} data Data from server
  * @returns Boolean. True: Data is valid. Otherwise, false
  */
- const assertData = (data) => {
+const assertData = (data) => {
   // Check is no data from server
   if ((data === false) || _.isEmpty(data)) {
     return false;
@@ -54,22 +65,26 @@ const layoutCVS = {
  * @param {*} assertData Evaluates if data is according to what is expected
  * @returns 
  */
- const processLineData = (data, id, fallback, assertData) => {
+const processLineData = (data, id, fallback, assertData) => {
   let legend;
   if (!assertData(data)) {
     return fallback;
   }
 
-  if(id === "CVS"){
-    legend= "Conveyor speed"
+  if (id === "CVS") {
+    legend = "Conveyor speed"
   }
 
-  if(id === "CS"){
-    legend= "Coated surface"
+  if (id === "CS") {
+    legend = "Coated surface"
+  }
+
+  if (id === "CP") {
+    legend = "Coated parts"
   }
 
   // If data is provided, then give format as defined in "Line" component
-  const processedData = [{ id:legend, data }];
+  const processedData = [{ id: legend, data }];
   return processedData;
 };
 
@@ -83,6 +98,7 @@ const LineChart = ({ data, id }) => {
    */
   if (id === "CS") layout = layoutCS;
   if (id === "CVS") layout = layoutCVS;
+  if (id === "CP") layout = layoutCP;
 
   const defaultLineData = [
     {
@@ -92,7 +108,7 @@ const LineChart = ({ data, id }) => {
   ];
 
   const lineData = processLineData(data, id, defaultLineData, assertData);
- 
+
   return (
     <Line {...layout} data={lineData} />
   );

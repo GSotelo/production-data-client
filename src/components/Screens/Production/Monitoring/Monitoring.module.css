@@ -99,10 +99,6 @@
   width: 82%;
 }
 
-.large{
-  display: flex;
-}
-
 .large :global(.titleBox) {
   height: 10%;
 }
