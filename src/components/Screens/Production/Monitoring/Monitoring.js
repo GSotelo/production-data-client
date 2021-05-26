@@ -190,9 +190,12 @@ class Monitoring extends Component {
 
         <Col className={styles.right}>
           <div className={styles.large} >
-            <GraphContext.Provider value={contextValue[3]}>
+            {/* <GraphContext.Provider value={contextValue[3]}>
               <GraphContainer  {...propsTitleBarCS} graph={LineChartCS} />
-            </GraphContext.Provider>
+            </GraphContext.Provider> */}
+            <div>c1</div>
+            <div>c2</div>
+           
           </div>
 
           <div className={[styles.group, styles.pb0].join(" ")}>
