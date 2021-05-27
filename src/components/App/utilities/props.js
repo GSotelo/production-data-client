@@ -13,8 +13,7 @@ export const propsSideBar = {
 
 export const propsTopBar = {
   brandLogo: <Logo />,
-  currentDate: <SystemDate />,
-  closeButton: <CloseButton />
+  currentDate: <SystemDate />
 };
 
 export const propsLayout = {
