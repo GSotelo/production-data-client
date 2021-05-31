@@ -16,6 +16,7 @@ import { ReactComponent as Runtime } from "../../../../../assets/svg/runtime.svg
 import { ReactComponent as Stop } from "../../../../../assets/svg/stop.svg";
 import { ReactComponent as Temperature } from "../../../../../assets/svg/temperature.svg";
 import { ReactComponent as Total } from "../../../../../assets/svg/total.svg";
+import { ReactComponent as PressureSensor } from "../../../../../assets/svg/pressureSensor.svg";
 
 import whiteHome from "../../../../../assets/icons/whiteHome.ico";
 import whiteBatch from "../../../../../assets/icons/whiteBatch.ico";
@@ -148,7 +149,7 @@ export const basePropsIT = {
       key: "r2",
     },
     {
-      icon: <Humidity />,
+      icon: <PressureSensor />,
       key: "r3",
     }
   ]
